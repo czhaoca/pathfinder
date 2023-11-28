@@ -1,6 +1,8 @@
 # AI-Enhanced PERT Reporting Assistance for CPA Candidates
 
-[Slack Community (expring Dec 10, 2023)](https://join.slack.com/t/pertgpt/shared_invite/zt-26urht86b-EIxruvhPewqVObMyXnBpTA)
+[![Slack Community (expring Dec 10, 2023)](https://img.shields.io/static/v1?label=Slack&message=Join%20Dev%20Disucssion&color=red&logo=slack)](https://join.slack.com/t/pertgpt/shared_invite/zt-26urht86b-EIxruvhPewqVObMyXnBpTA)
+[![Open Issues](https://img.shields.io/github/issues-raw/czhaoca/pertgpt)](https://github.com/czhaoca/pertgpt/issues)
+[![Twitter](https://img.shields.io/twitter/url/https/x.com/langchainai.svg?style=social&label=Follow%20%40yvrlab)](https://x.com/yvrlab)
 
 ## Objective
 To develop an AI-based tool, leveraging a Large Language Model (LLM), to guide CPA candidates in crafting comprehensive and compliant PERT job experience reports, ensuring they meet the professional standards and competency requirements set by the CPA regulatory body.
