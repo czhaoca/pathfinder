@@ -1,0 +1,24 @@
+graph LR
+    subgraph "Core System"
+        Exp[Experience Database]
+        Skills[Skills Analysis]
+        Profile[User Profile]
+    end
+    
+    subgraph "PERT Add-on"
+        Comp[CPA Competency Mapping]
+        PERT[PERT Report Generator]
+        Valid[Compliance Validator]
+    end
+    
+    Exp --> Comp
+    Skills --> Comp
+    Profile --> Comp
+    Comp --> PERT
+    PERT --> Valid
+    
+    classDef core fill:#e8f5e8,stroke:#2e7d32
+    classDef addon fill:#fff3e0,stroke:#ef6c00
+    
+    class Exp,Skills,Profile core
+    class Comp,PERT,Valid addon

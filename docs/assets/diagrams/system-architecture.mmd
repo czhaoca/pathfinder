@@ -1,0 +1,72 @@
+graph TB
+    subgraph "Frontend Layer"
+        UI[Web Interface]
+        Chat[Chat Interface]
+    end
+    
+    subgraph "Application Layer"
+        CN[Career Navigator]
+        ESM[Experience Story Manager]
+        API[REST API]
+    end
+    
+    subgraph "LLM Integration"
+        LLM[Large Language Model]
+        MCP[MCP Server]
+        Context[Context Manager]
+    end
+    
+    subgraph "Data Layer"
+        subgraph "Experience Database"
+            L1[(Level 1: Detailed<br/>Experiences)]
+            L2[(Level 2: Profile<br/>Summaries)]
+            L3[(Level 3: Quick<br/>Summaries)]
+        end
+        
+        subgraph "Supporting Tables"
+            Skills[Skills Mapping]
+            Careers[Career Paths]
+            Roles[Role Profiles]
+            Timeline[Timeline Data]
+        end
+    end
+    
+    subgraph "Data Flow"
+        direction TB
+        Input[User Input] --> Processing[Experience Processing]
+        Processing --> L1
+        L1 --> Aggregation[Profile Aggregation]
+        Aggregation --> L2
+        L2 --> Summary[Quick Summary Generation]
+        Summary --> L3
+    end
+    
+    %% Connections
+    UI --> API
+    Chat --> CN
+    CN --> LLM
+    CN --> ESM
+    ESM --> L1
+    ESM --> L2
+    ESM --> L3
+    
+    MCP --> L2
+    MCP --> L3
+    Context --> MCP
+    LLM --> Context
+    
+    L1 --> Skills
+    L1 --> Careers
+    L1 --> Roles
+    L1 --> Timeline
+    
+    %% Styling
+    classDef frontend fill:#e1f5fe
+    classDef application fill:#f3e5f5
+    classDef llm fill:#fff3e0
+    classDef data fill:#e8f5e8
+    
+    class UI,Chat frontend
+    class CN,ESM,API application
+    class LLM,MCP,Context llm
+    class L1,L2,L3,Skills,Careers,Roles,Timeline data

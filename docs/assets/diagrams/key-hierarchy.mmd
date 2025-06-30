@@ -1,0 +1,20 @@
+graph TB
+    MK[Master Key]
+    |Derives| UK[User Keys]
+    UK |Derives| SK[Session Keys]
+    UK |Derives| FK[Field-Level Keys]
+    UK |Derives| BK[Backup Keys]
+
+    SK --> TD[Temp Data]
+    FK --> DF[DB Fields]
+    BK --> EB[Encrypted Backups]
+
+    classDef masterkey fill:#ffcdd2,stroke:#d32f2f
+    classDef userkey fill:#f3e5f5,stroke:#7b1fa2
+    classDef sessionkey fill:#e8f5e8,stroke:#388e3c
+    classDef fieldkey fill:#fff3e0,stroke:#f57c00
+
+    class MK masterkey
+    class UK userkey
+    class SK sessionkey
+    class FK,BK fieldkey

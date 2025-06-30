@@ -1,0 +1,64 @@
+graph TB
+    subgraph "Frontend Layer"
+        A[React/Next.js Web App]
+        B[Mobile App - React Native]
+        C[Desktop App - Electron]
+    end
+    
+    subgraph "API Layer"
+        D[Node.js/Express REST API]
+        E[GraphQL Endpoint]
+        F[WebSocket Server]
+        G[MCP Server]
+    end
+    
+    subgraph "Business Logic"
+        H[Career Analysis Engine]
+        I[Story Development Engine]
+        J[Resume Builder]
+        K[AI Integration Layer]
+    end
+    
+    subgraph "Data Layer"
+        L[PostgreSQL Primary]
+        M[Redis Cache]
+        N[Vector Database]
+        O[File Storage]
+    end
+    
+    subgraph "External Services"
+        P[AI Services - OpenAI/Anthropic]
+        Q[Job Board APIs]
+        R[Social Media APIs]
+        S[Email Services]
+    end
+    
+    A --> D
+    B --> D
+    C --> D
+    D --> H
+    E --> I
+    F --> J
+    G --> K
+    
+    H --> L
+    I --> M
+    J --> N
+    K --> O
+    
+    K --> P
+    H --> Q
+    I --> R
+    D --> S
+    
+    classDef frontend fill:#e3f2fd,stroke:#1976d2
+    classDef api fill:#fff3e0,stroke:#ef6c00
+    classDef logic fill:#f3e5f5,stroke:#7b1fa2
+    classDef data fill:#e8f5e8,stroke:#2e7d32
+    classDef external fill:#ffebee,stroke:#c62828
+    
+    class A,B,C frontend
+    class D,E,F,G api
+    class H,I,J,K logic
+    class L,M,N,O data
+    class P,Q,R,S external

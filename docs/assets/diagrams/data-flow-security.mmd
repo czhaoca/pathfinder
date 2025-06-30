@@ -1,0 +1,29 @@
+sequenceDiagram
+    participant User
+    participant App
+    participant Encrypt
+    participant UserDB
+    participant LLM
+    
+    Note over User,LLM: All communications over HTTPS/TLS 1.3
+    
+    User->>App: Login with credentials
+    App->>App: Generate session token (short-lived)
+    
+    User->>App: Submit experience data
+    App->>Encrypt: Encrypt data with user's key
+    Encrypt-->>App: Return encrypted payload
+    App->>UserDB: Store encrypted data
+    
+    User->>App: Request career analysis
+    App->>UserDB: Fetch encrypted experience data
+    UserDB-->>App: Return encrypted data
+    App->>Encrypt: Decrypt with user's key
+    Encrypt-->>App: Return plaintext for processing
+    
+    App->>LLM: Send context (via user's API key)
+    LLM-->>App: Return analysis
+    App->>User: Display results
+    
+    Note over App: No plaintext data stored<br/>in application layer
+    Note over UserDB: All data encrypted at rest

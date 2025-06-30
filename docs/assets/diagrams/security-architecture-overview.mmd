@@ -1,0 +1,60 @@
+graph TB
+    subgraph "User Env"
+        Browser[Browser]
+        UserDB[(User DB)]
+        UserKeys[User API Keys]
+    end
+    
+    subgraph "App Layer"
+        LB[Load Balancer]
+        App[App Server]
+        MCP[MCP Server]
+    end
+    
+    subgraph "Security"
+        Auth[Auth]
+        Encrypt[Encrypt]
+        KeyMgmt[Key Mgmt]
+        Audit[Audit]
+    end
+    
+    subgraph "Storage Options"
+        OCI[(OCI)]
+        CF[(Cloudflare D1)]
+        AWS[(AWS)]
+        Azure[(Azure)]
+    end
+    
+    subgraph "LLM Services"
+        OpenAI[OpenAI]
+        Anthropic[Anthropic]
+        Local[Local LLM]
+    end
+    
+    Browser --> LB
+    LB --> App
+    App --> Auth
+    App --> Encrypt
+    App --> MCP
+    
+    MCP --> UserDB
+    UserDB -.-> OCI
+    UserDB -.-> CF
+    UserDB -.-> AWS
+    UserDB -.-> Azure
+    
+    MCP --> OpenAI
+    MCP --> Anthropic
+    MCP --> Local
+    
+    Auth --> KeyMgmt
+    Encrypt --> KeyMgmt
+    App --> Audit
+    
+    classDef secure fill:#ffebee,stroke:#c62828
+    classDef user fill:#e8f5e8,stroke:#2e7d32
+    classDef external fill:#fff3e0,stroke:#ef6c00
+    
+    class Auth,Encrypt,KeyMgmt,Audit secure
+    class Browser,UserDB,UserKeys user
+    class OpenAI,Anthropic,Local,OCI,CF,AWS,Azure external

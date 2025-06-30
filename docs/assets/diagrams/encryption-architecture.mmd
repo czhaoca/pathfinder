@@ -1,0 +1,51 @@
+graph TB
+    subgraph "Client Side"
+        Browser[Web Browser]
+        ClientKey[Client-Side Key]
+        LocalStorage[Encrypted Local Storage]
+    end
+    
+    subgraph "Transport Layer"
+        TLS[TLS 1.3 Encryption]
+        HSTS[HSTS Headers]
+        CertPin[Certificate Pinning]
+    end
+    
+    subgraph "Application Layer"
+        AppServer[Application Server]
+        SessionKey[Session Encryption]
+        DataProcessor[Data Processor]
+    end
+    
+    subgraph "Database Layer"
+        FieldEnc[Field-Level Encryption]
+        TDE[Transparent Data Encryption]
+        BackupEnc[Encrypted Backups]
+    end
+    
+    subgraph "Key Management"
+        HSM[Hardware Security Module]
+        KMS[Key Management Service]
+        KeyRotation[Automatic Key Rotation]
+    end
+    
+    Browser -->|HTTPS/TLS 1.3| TLS
+    TLS --> AppServer
+    AppServer --> SessionKey
+    SessionKey --> DataProcessor
+    DataProcessor --> FieldEnc
+    FieldEnc --> TDE
+    
+    ClientKey --> LocalStorage
+    HSM --> KMS
+    KMS --> KeyRotation
+    KMS --> FieldEnc
+    KMS --> SessionKey
+    
+    classDef encryption fill:#ffebee,stroke:#c62828
+    classDef keys fill:#fff3e0,stroke:#ef6c00
+    classDef transport fill:#e8f5e8,stroke:#2e7d32
+    
+    class TLS,HSTS,CertPin,FieldEnc,TDE,BackupEnc encryption
+    class HSM,KMS,KeyRotation,ClientKey,SessionKey keys
+    class Browser,AppServer,DataProcessor transport

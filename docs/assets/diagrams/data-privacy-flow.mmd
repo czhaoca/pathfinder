@@ -1,0 +1,20 @@
+graph TB
+    A[User Input] --> B[Client-Side Encryption]
+    B --> C[Encrypted Transport]
+    C --> D[Server Processing]
+    D --> E[Database Encryption]
+    E --> F[User Database]
+    
+    G[Data Retrieval] --> H[Database Decryption]
+    H --> I[Server Decryption]
+    I --> J[Encrypted Transport]
+    J --> K[Client Decryption]
+    K --> L[User Display]
+    
+    classDef encryption fill:#ffebee,stroke:#c62828
+    classDef transport fill:#e3f2fd,stroke:#1976d2
+    classDef storage fill:#e8f5e8,stroke:#2e7d32
+    
+    class B,E,H,I,K encryption
+    class C,J transport
+    class F storage

@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant User
+    participant Chat
+    participant LLM
+    participant MCP
+    participant DB
+    
+    User->>Chat: Asks career question
+    Chat->>LLM: Process query
+    LLM->>MCP: Request user context
+    MCP->>DB: Fetch Level 3 summary
+    DB-->>MCP: Return quick context
+    
+    alt Need more detail
+        MCP->>DB: Fetch Level 2 profile
+        DB-->>MCP: Return detailed profile
+    end
+    
+    MCP-->>LLM: Provide context
+    LLM-->>Chat: Generate response
+    Chat-->>User: Career guidance
+    
+    opt Update experience
+        User->>Chat: Share new experience
+        Chat->>DB: Store in Level 1
+        DB->>DB: Aggregate to Level 2
+        DB->>DB: Update Level 3
+    end

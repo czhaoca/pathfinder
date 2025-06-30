@@ -1,0 +1,39 @@
+graph TB
+    subgraph "Tier 1: Detailed Experience Data"
+        A[Raw Experience Entries]
+        B[Skills Extraction]
+        C[Achievement Analysis]
+        D[Context Metadata]
+    end
+    
+    subgraph "Tier 2: Aggregated Profile Data"
+        E[Career Progression Summary]
+        F[Skills Portfolio]
+        G[Achievement Highlights]
+        H[Professional Narrative]
+    end
+    
+    subgraph "Tier 3: Quick Access Data"
+        I[Executive Summary]
+        J[Key Skills List]
+        K[Career Goals]
+        L[Current Status]
+    end
+    
+    A --> E
+    B --> F
+    C --> G
+    D --> H
+    
+    E --> I
+    F --> J
+    G --> K
+    H --> L
+    
+    classDef tier1 fill:#ffebee,stroke:#c62828
+    classDef tier2 fill:#f3e5f5,stroke:#7b1fa2
+    classDef tier3 fill:#e8f5e8,stroke:#2e7d32
+    
+    class A,B,C,D tier1
+    class E,F,G,H tier2
+    class I,J,K,L tier3

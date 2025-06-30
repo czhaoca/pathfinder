@@ -1,0 +1,37 @@
+graph TB
+    subgraph "Experience Input"
+        A[Raw Experience Data]
+        B[User Reflection Input]
+        C[Context Information]
+    end
+    
+    subgraph "Story Development Engine"
+        D[Achievement Extraction]
+        E[Impact Quantification]
+        F[Narrative Construction]
+        G[Storytelling Templates]
+    end
+    
+    subgraph "Resume Generation"
+        H[Dynamic Resume Builder]
+        I[ATS Optimization]
+        J[Format Adaptation]
+        K[Content Personalization]
+    end
+    
+    A --> D
+    B --> E
+    C --> F
+    D --> G
+    E --> H
+    F --> I
+    G --> J
+    H --> K
+    
+    classDef input fill:#e8f5e8,stroke:#2e7d32
+    classDef processing fill:#fff3e0,stroke:#ef6c00
+    classDef output fill:#e3f2fd,stroke:#1976d2
+    
+    class A,B,C input
+    class D,E,F,G processing
+    class H,I,J,K output
