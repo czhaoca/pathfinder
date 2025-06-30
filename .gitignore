@@ -128,3 +128,79 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# PostgreSQL
+*.sql
+pg_data/
+
+# Redis dumps
+dump.rdb
+
+# Environment and secrets
+.env*
+config/local.json
+config/production.json
+secrets/
+*.key
+*.pem
+*.crt
+
+# AI/ML models and data
+models/
+training_data/
+*.pkl
+*.h5
+*.onnx
+
+# User data and uploads
+uploads/
+user_data/
+temp/
+*.pdf
+*.docx
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Performance and profiling
+profile.json
+*.prof
+flame-graph.html
+
+# Testing artifacts
+test-results/
+playwright-report/
+coverage/
+.nyc_output
+
+# Local development
+local/
+dev-notes.md
+scratch.js
