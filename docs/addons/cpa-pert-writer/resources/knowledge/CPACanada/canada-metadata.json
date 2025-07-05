@@ -1,8 +1,101 @@
 {
   "metadata": {
-    "last_updated": null,
-    "total_documents": 0,
+    "last_updated": "2025-07-05T18:56:49Z",
+    "total_documents": 2,
     "metadata_version": "1.0.0"
   },
-  "documents": {}
+  "documents": {
+    "cpacanada_guiding_questions_rubric_v1": {
+      "document_id": "cpacanada_guiding_questions_rubric_v1",
+      "title": "Guiding Questions and Practical Experience Rubric",
+      "url": "https://www.cpacanada.ca/-/media/site/operational/ec-education-certification/docs/02639-ec_guiding-questions-practical-experience-rubric.pdf",
+      "source": "CPACanada",
+      "route_relevance": "Both",
+      "document_type": "competency-framework",
+      "competency_classification": "mixed",
+      "content_categories": [
+        "assessment rubric",
+        "guiding questions",
+        "technical competencies",
+        "enabling competencies",
+        "proficiency levels"
+      ],
+      "version_info": {
+        "version": "1.0",
+        "is_current": true,
+        "previous_versions": []
+      },
+      "capture_info": {
+        "timestamp": "2025-07-05T18:56:49Z",
+        "sha256": "pending_capture",
+        "captured_by": "automated_webfetch"
+      },
+      "storage_info": {
+        "saved_path": "snapshots/CPACanada/competency-framework/guiding-questions-practical-experience-rubric.pdf"
+      },
+      "validation_status": "access_restricted",
+      "last_verified": "2025-07-05T18:56:49Z",
+      "description": "CPA Canada official document containing guiding questions and rubric for practical experience assessment across all competency areas",
+      "keywords": [
+        "assessment rubric",
+        "guiding questions",
+        "competency assessment",
+        "proficiency levels",
+        "technical competencies",
+        "enabling competencies"
+      ],
+      "change_history": [
+        {
+          "date": "2025-07-05T18:56:49Z",
+          "change_type": "created",
+          "description": "Initial document discovery - access restricted (403 error)"
+        }
+      ]
+    },
+    "cpacanada_certification_resources_v1": {
+      "document_id": "cpacanada_certification_resources_v1",
+      "title": "CPA Canada Certification Resource Centre",
+      "url": "https://www.cpacanada.ca/en/become-a-cpa/certification-resource-centre/resources-for-cpa-practical-experience-requirements",
+      "source": "CPACanada",
+      "route_relevance": "Both",
+      "document_type": "official",
+      "competency_classification": "general",
+      "content_categories": [
+        "certification resources",
+        "practical experience requirements",
+        "PERT documentation",
+        "competency framework"
+      ],
+      "version_info": {
+        "version": "1.0",
+        "is_current": true,
+        "previous_versions": []
+      },
+      "capture_info": {
+        "timestamp": "2025-07-05T18:56:49Z",
+        "sha256": "pending_capture",
+        "captured_by": "automated_webfetch"
+      },
+      "storage_info": {
+        "saved_path": "snapshots/CPACanada/handbook/certification-resource-centre.pdf"
+      },
+      "validation_status": "access_restricted",
+      "last_verified": "2025-07-05T18:56:49Z",
+      "description": "CPA Canada central resource hub for certification and practical experience requirements documentation",
+      "keywords": [
+        "certification resources",
+        "practical experience",
+        "PERT requirements",
+        "competency framework",
+        "national standards"
+      ],
+      "change_history": [
+        {
+          "date": "2025-07-05T18:56:49Z",
+          "change_type": "created",
+          "description": "Initial document discovery - access restricted (403 error)"
+        }
+      ]
+    }
+  }
 }

@@ -69,8 +69,17 @@ When processing any resource, ALWAYS include:
 
 ### Supporting Sources (CPA Canada)
 - Website: https://www.cpacanada.ca/
-- Search: https://www.cpacanada.ca/search?q=
+- Search: https://www.cpacanada.ca/search#q= (Note: May block automated requests - use alternative methods)
 - Focus: National competency framework and standards
+
+#### CPA Canada Access Issues:
+- **KNOWN ISSUE**: CPA Canada website may block automated WebFetch requests (403 errors)
+- **WORKAROUND**: When automated access fails:
+  1. Document the blocked URL and attempted access in metadata
+  2. Use manual verification or alternative data collection methods
+  3. Note in validation_status as "access_restricted"
+  4. Search for alternative public sources or contact CPA Canada directly
+- **SUCCESSFUL ACCESS**: Known working search URL format: https://www.cpacanada.ca/search#q=PERT
 
 ### Prohibited Sources
 - Other provincial CPA bodies (unless explicitly requested for reference)
@@ -157,16 +166,22 @@ npm run update-checksums             # Regenerate SHA-256 checksums
 ## Error Handling
 
 ### If Resource Fetch Fails:
-1. Mark validation_status as "broken_link"
+1. Mark validation_status as "broken_link" or "access_restricted" (for 403 errors)
 2. Preserve existing metadata
-3. Log failure with timestamp
+3. Log failure with timestamp and error details
 4. Do NOT create empty or placeholder content
+5. For CPA Canada 403 errors: Document alternative access methods needed
 
 ### If Content Changes:
 1. Create new version entry
 2. Update `is_current` flags appropriately
 3. Preserve change history
 4. Generate new SHA-256 checksum
+
+### CPA Canada Specific Error Handling:
+- **403 Forbidden Errors**: Common on CPA Canada - document URL and mark as "access_restricted"
+- **Alternative Methods**: Note need for manual verification or direct contact
+- **Known Working URLs**: https://www.cpacanada.ca/search#q=PERT (verified working format)
 
 ## Development Notes
 

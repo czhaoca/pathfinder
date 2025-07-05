@@ -2,9 +2,9 @@
   "$schema": "../schema/metadata-schema.json",
   "registry_metadata": {
     "version": "1.0.0",
-    "last_updated": null,
+    "last_updated": "2025-07-05T18:56:49Z",
     "total_organizations": 2,
-    "total_resources": 0,
+    "total_resources": 5,
     "focus_route": "EVR",
     "jurisdiction_priority": "CPABC"
   },
@@ -17,19 +17,27 @@
       "priority": "primary",
       "jurisdiction": "British Columbia",
       "route_focus": "EVR",
-      "last_crawled": null,
-      "resources": {}
+      "last_crawled": "2025-07-05T18:56:49Z",
+      "resources": {
+        "current_candidates_experience": "https://www.bccpa.ca/become-a-cpa/about-the-program/experience/current-candidates/",
+        "pert_portal_access": "https://my.cpawsb.ca/",
+        "pert_self_assessment": "https://pert.cpa-services.org/Student/TrialAssessment"
+      }
     },
     "cpacanada": {
       "organization": "CPA Canada",
       "official_name": "Chartered Professional Accountants of Canada",
       "website": "https://www.cpacanada.ca/",
-      "search_endpoint": "https://www.cpacanada.ca/search?q=",
+      "search_endpoint": "https://www.cpacanada.ca/search#q=",
       "priority": "supporting",
       "jurisdiction": "National",
       "route_focus": "General",
-      "last_crawled": null,
-      "resources": {}
+      "last_crawled": "2025-07-05T18:56:49Z",
+      "access_status": "restricted",
+      "resources": {
+        "guiding_questions_rubric": "https://www.cpacanada.ca/-/media/site/operational/ec-education-certification/docs/02639-ec_guiding-questions-practical-experience-rubric.pdf",
+        "certification_resource_centre": "https://www.cpacanada.ca/en/become-a-cpa/certification-resource-centre/resources-for-cpa-practical-experience-requirements"
+      }
     }
   },
   "search_keywords": [
