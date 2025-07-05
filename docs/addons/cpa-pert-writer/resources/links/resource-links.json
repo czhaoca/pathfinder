@@ -1,0 +1,8 @@
+{
+  "cpabc": {
+    "organization": "CPABC",
+    "website": "https://www.bccpa.ca/",
+    "search_endpoint": "https://www.bccpa.ca/search/#q=",
+    "resources": {}
+  }
+}
