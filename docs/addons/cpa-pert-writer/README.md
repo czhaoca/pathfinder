@@ -16,23 +16,30 @@ This add-on leverages the core experience management system to provide specializ
 
 ## Key Features
 
-### 🎯 PERT-Specific Functionality
+### 🎯 PERT-Specific Functionality (EVR Focus)
 - **Competency Mapping**: Automatic mapping of experiences to CPA competency framework
 - **Technical Skills Analysis**: Identification and demonstration of technical competencies
 - **Enabling Skills Integration**: Behavioral and professional skills assessment
-- **Experience Level Validation**: Ensuring experiences meet depth and breadth requirements
+- **Experience Level Validation**: Ensuring experiences meet EVR depth and breadth requirements
+- **BC-Specific Compliance**: Tailored to CPA BC requirements with national framework support
 
 ### 📋 Report Generation
-- **Structured Templates**: PERT-compliant report templates
-- **Experience Narratives**: AI-assisted writing of detailed experience descriptions
-- **Competency Demonstrations**: Guided examples of how experiences demonstrate specific competencies
-- **Quality Assurance**: Built-in checks for completeness and compliance
+- **Structured Templates**: PERT-compliant report templates for EVR route
+- **Experience Narratives**: AI-assisted writing of detailed industry experience descriptions
+- **Competency Demonstrations**: Guided examples specific to EVR route competencies
+- **Quality Assurance**: Built-in checks for completeness and EVR compliance
 
 ### 🔍 Compliance Verification
-- **Requirement Mapping**: Verification against current CPA requirements
-- **Experience Duration**: Tracking and validation of required experience hours
-- **Supervisor Validation**: Guidelines for supervisor sign-off requirements
+- **BC Requirement Mapping**: Verification against current CPA BC requirements
+- **Experience Duration**: Tracking and validation of required EVR experience hours
+- **Supervisor Validation**: Guidelines for industry supervisor sign-off requirements
 - **Documentation Standards**: Ensuring reports meet professional documentation standards
+
+### 📚 Live Knowledge Base
+- **Real-time Resource Gathering**: Live capture of official CPA documents
+- **Version Control**: SHA-256 tracking of document changes
+- **Competency Classification**: Automatic categorization of technical vs enabling competencies
+- **EVR Route Filtering**: Focused content relevant to industry experience verification
 
 ## Integration with Core System
 
@@ -47,6 +54,7 @@ addons/cpa-pert-writer/
 ├── README.md                           # This file
 ├── COPYRIGHT-DISCLAIMER.md             # Copyright and legal disclaimers
 ├── package.json                        # Module dependencies and metadata
+├── snapshot-process.md                 # Resource gathering and management process
 ├── src/
 │   ├── competency-mapper.js           # CPA competency analysis engine
 │   ├── pert-generator.js              # PERT report generation logic
@@ -55,23 +63,32 @@ addons/cpa-pert-writer/
 │       ├── experience-templates.json   # PERT-specific experience templates
 │       └── competency-examples.json    # Example competency demonstrations
 ├── resources/
-│   ├── cpa-resource-links.json        # Links to official CPA documents
-│   ├── competency-framework/          # CPA competency framework documents
-│   │   ├── technical-competencies.pdf  # Official technical competency guide
-│   │   ├── enabling-competencies.pdf   # Professional skills framework
-│   │   └── pert-handbook.pdf          # Official PERT handbook
-│   └── snapshots/                     # Webpage snapshots for offline access
-│       ├── cpa-ontario-pert.html      # CPA Ontario PERT requirements
-│       ├── cpa-alberta-pert.html      # CPA Alberta specific requirements
-│       └── national-competencies.html  # National competency standards
+│   ├── links/
+│   │   └── resource-links.json        # Central registry of CPA resources
+│   ├── knowledge/                     # Extracted knowledge from live sources
+│   │   ├── CPABC/                     # BC-specific knowledge and metadata
+│   │   │   ├── cpabc-knowledge.json    # BC knowledge content
+│   │   │   └── cpabc-metadata.json     # BC document metadata
+│   │   └── CPACanada/                 # National standards and framework
+│   │       ├── canada-knowledge.json   # National knowledge content
+│   │       └── canada-metadata.json    # National document metadata
+│   ├── snapshots/                     # Live-captured PDF documents
+│   │   ├── CPABC/                     # BC-specific documents
+│   │   │   ├── official-docs/          # Official CPA BC documents
+│   │   │   ├── forms/                  # BC-specific forms
+│   │   │   └── guidance/               # BC guidance documents
+│   │   └── CPACanada/                 # National documents
+│   │       ├── competency-framework/   # National competency framework
+│   │       ├── handbook/               # PERT handbook and guides
+│   │       └── standards/              # National standards
+│   └── schema/
+│       └── metadata-schema.json        # JSON schema for metadata validation
 ├── docs/
 │   ├── user-guide.md                  # How to use the PERT writer
 │   ├── competency-mapping.md          # Understanding CPA competencies
 │   ├── writing-guidelines.md          # Best practices for PERT writing
 │   └── examples/                      # Sample PERT reports and experiences
-│       ├── accounting-experience.md    # Accounting role PERT example
-│       ├── audit-experience.md        # Audit experience PERT example
-│       └── tax-experience.md          # Tax practice PERT example
+│       └── evr-industry-experience.md  # EVR route industry experience examples
 └── tests/
     ├── competency-mapping.test.js     # Tests for competency analysis
     ├── compliance-validation.test.js   # Tests for compliance checking
@@ -152,10 +169,11 @@ const pertMCPTools = {
 
 This add-on is specifically designed for:
 
-- **CPA Candidates**: Preparing PERT reports for practical experience requirements
-- **CPA Students**: Learning to document professional experience effectively
-- **Career Coaches**: Assisting clients with CPA designation requirements
-- **HR Professionals**: Understanding CPA competency requirements for hiring
+- **CPA Candidates (EVR Route)**: Industry professionals preparing PERT reports for practical experience requirements
+- **CPA Students (BC Focus)**: Learning to document professional experience effectively under BC requirements
+- **Career Coaches**: Assisting clients with CPA designation requirements specific to industry experience
+- **HR Professionals**: Understanding CPA competency requirements for hiring in BC
+- **Industry Supervisors**: Understanding EVR supervision and sign-off requirements
 
 ## Compliance and Legal
 

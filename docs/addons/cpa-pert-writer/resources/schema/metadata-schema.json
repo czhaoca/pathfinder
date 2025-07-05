@@ -1,0 +1,169 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CPA PERT Resource Metadata Schema",
+  "description": "Schema for tracking CPA PERT resources with version control and content classification",
+  "type": "object",
+  "properties": {
+    "document_id": {
+      "type": "string",
+      "description": "Unique identifier for the document",
+      "pattern": "^[a-z0-9_-]+$"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title of the document"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Original URL where the document was fetched"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["CPABC", "CPACanada"],
+      "description": "Source organization"
+    },
+    "route_relevance": {
+      "type": "string",
+      "enum": ["EVR", "PublicPractice", "Both", "General"],
+      "description": "Relevance to CPA routes"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": ["official", "guidance", "form", "example", "handbook", "competency-framework", "standards"],
+      "description": "Classification of document type"
+    },
+    "competency_classification": {
+      "type": "string",
+      "enum": ["technical", "enabling", "general", "mixed"],
+      "description": "Type of competency content"
+    },
+    "content_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific content categories within the document"
+    },
+    "version_info": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Version number of this document instance"
+        },
+        "is_current": {
+          "type": "boolean",
+          "description": "Whether this is the most current version"
+        },
+        "previous_versions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of previous version identifiers"
+        }
+      },
+      "required": ["version", "is_current"]
+    },
+    "capture_info": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when document was captured"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hash of the document content"
+        },
+        "file_size": {
+          "type": "integer",
+          "description": "File size in bytes"
+        },
+        "captured_by": {
+          "type": "string",
+          "description": "System or user that captured the document"
+        }
+      },
+      "required": ["timestamp", "sha256"]
+    },
+    "storage_info": {
+      "type": "object",
+      "properties": {
+        "saved_path": {
+          "type": "string",
+          "description": "Relative path to the saved PDF file"
+        },
+        "backup_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional backup locations"
+        }
+      },
+      "required": ["saved_path"]
+    },
+    "validation_status": {
+      "type": "string",
+      "enum": ["verified", "needs_review", "outdated", "broken_link"],
+      "description": "Current validation status"
+    },
+    "last_verified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time the document was verified against source"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the document content"
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Keywords for search and categorization"
+    },
+    "change_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "change_type": {
+            "type": "string",
+            "enum": ["created", "updated", "deprecated", "restored"]
+          },
+          "description": {
+            "type": "string"
+          },
+          "previous_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": ["date", "change_type", "description"]
+      }
+    }
+  },
+  "required": [
+    "document_id",
+    "title",
+    "url",
+    "source",
+    "route_relevance",
+    "document_type",
+    "competency_classification",
+    "version_info",
+    "capture_info",
+    "storage_info",
+    "validation_status"
+  ]
+}

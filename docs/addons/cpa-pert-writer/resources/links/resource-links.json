@@ -1,8 +1,52 @@
 {
-  "cpabc": {
-    "organization": "CPABC",
-    "website": "https://www.bccpa.ca/",
-    "search_endpoint": "https://www.bccpa.ca/search/#q=",
-    "resources": {}
-  }
+  "$schema": "../schema/metadata-schema.json",
+  "registry_metadata": {
+    "version": "1.0.0",
+    "last_updated": null,
+    "total_organizations": 2,
+    "total_resources": 0,
+    "focus_route": "EVR",
+    "jurisdiction_priority": "CPABC"
+  },
+  "organizations": {
+    "cpabc": {
+      "organization": "CPABC",
+      "official_name": "Chartered Professional Accountants of British Columbia",
+      "website": "https://www.bccpa.ca/",
+      "search_endpoint": "https://www.bccpa.ca/search/#q=",
+      "priority": "primary",
+      "jurisdiction": "British Columbia",
+      "route_focus": "EVR",
+      "last_crawled": null,
+      "resources": {}
+    },
+    "cpacanada": {
+      "organization": "CPA Canada",
+      "official_name": "Chartered Professional Accountants of Canada",
+      "website": "https://www.cpacanada.ca/",
+      "search_endpoint": "https://www.cpacanada.ca/search?q=",
+      "priority": "supporting",
+      "jurisdiction": "National",
+      "route_focus": "General",
+      "last_crawled": null,
+      "resources": {}
+    }
+  },
+  "search_keywords": [
+    "PERT",
+    "Practical Experience Requirements",
+    "Experience Verification Route",
+    "EVR",
+    "Competency Framework",
+    "Technical Competencies",
+    "Enabling Competencies",
+    "CPA Candidate",
+    "Professional Development"
+  ],
+  "excluded_keywords": [
+    "Public Practice",
+    "Audit Training",
+    "Assurance Training",
+    "Public Accounting Firm"
+  ]
 }
