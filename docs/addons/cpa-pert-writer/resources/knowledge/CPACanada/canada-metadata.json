@@ -27,13 +27,14 @@
       },
       "capture_info": {
         "timestamp": "2025-07-05T18:56:49Z",
-        "sha256": "pending_capture",
-        "captured_by": "automated_webfetch"
+        "sha256": "65b9e839a4791dd8d48d757387d604080eaec74f0ede3c8e4d6fd77f9ce2bb83",
+        "file_size": 333940,
+        "captured_by": "wget_download"
       },
       "storage_info": {
         "saved_path": "snapshots/CPACanada/competency-framework/guiding-questions-practical-experience-rubric.pdf"
       },
-      "validation_status": "access_restricted",
+      "validation_status": "verified",
       "last_verified": "2025-07-05T18:56:49Z",
       "description": "CPA Canada official document containing guiding questions and rubric for practical experience assessment across all competency areas",
       "keywords": [
@@ -48,7 +49,7 @@
         {
           "date": "2025-07-05T18:56:49Z",
           "change_type": "created",
-          "description": "Initial document discovery - access restricted (403 error)"
+          "description": "Successfully downloaded PDF using wget with browser headers"
         }
       ]
     },

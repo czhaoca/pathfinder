@@ -1,0 +1,1062 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--[if lt IE 7]> <html xmlns="http://www.w3.org/1999/xhtml" class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>    <html xmlns="http://www.w3.org/1999/xhtml" class="lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>    <html xmlns="http://www.w3.org/1999/xhtml" class="lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<![endif]-->
+<head id="Head1" runat="server">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>PERT | Self-Assessment</title>
+    
+    <link href="/css/Pert-1.0.css?v=1.1" rel="stylesheet" type="text/css" />
+    <link href="/css/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/ico"  href="/images/favicon.ico">
+    <script src="/js/jquery-1.10.2.js" type="text/javascript"></script>
+    <script src="/js/jquery.tablesorter.js" type="text/javascript"></script>   
+    <script src="/js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+    <script src="/js/MicrosoftAjax.js" type="text/javascript"></script>
+    <script src="/js/MicrosoftMvcAjax.js" type="text/javascript"></script> 
+      <!-- PROD -->
+    <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6432556/7176832/css/fonts.css" /> 
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async=async async=async src="https://www.googletagmanager.com/gtag/js?id=UA-113069782-1"></script>
+    <script type="text/javascript">
+
+            $(document).ready(function () {
+                if ('False' == 'True') {
+                    $(".main-header-en").switchClass('main-header-en', 'main-header-fr');
+                } else {
+                    $(".main-header-fr").switchClass('main-header-en', 'main-header-en');
+                }
+            });
+
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'UA-113069782-1');
+
+    </script>
+    <script src="https://www.datadoghq-browser-agent.com/datadog-rum.js"
+            type="text/javascript">
+    </script>
+    <script>
+        window.DD_RUM && window.DD_RUM.init({
+            applicationId: '96b9f242-cd8b-47ba-bb23-dc24b2fbf891',
+            clientToken: 'pubb0a7659b45bcae3610f0b499442a7037',
+            site: 'datadoghq.com',
+            service: 'pert-prod',
+            env: 'prod',
+            // Specify a version number to identify the deployed version of your application in Datadog
+            // version: '1.0.0',
+            sampleRate: 100,
+            trackInteractions: true
+        });
+    </script>
+<script type="text/javascript">!function(T,l,y){var S=T.location,k="script",D="instrumentationKey",C="ingestionendpoint",I="disableExceptionTracking",E="ai.device.",b="toLowerCase",w="crossOrigin",N="POST",e="appInsightsSDK",t=y.name||"appInsights";(y.name||T[e])&&(T[e]=t);var n=T[t]||function(d){var g=!1,f=!1,m={initialize:!0,queue:[],sv:"5",version:2,config:d};function v(e,t){var n={},a="Browser";return n[E+"id"]=a[b](),n[E+"type"]=a,n["ai.operation.name"]=S&&S.pathname||"_unknown_",n["ai.internal.sdkVersion"]="javascript:snippet_"+(m.sv||m.version),{time:function(){var e=new Date;function t(e){var t=""+e;return 1===t.length&&(t="0"+t),t}return e.getUTCFullYear()+"-"+t(1+e.getUTCMonth())+"-"+t(e.getUTCDate())+"T"+t(e.getUTCHours())+":"+t(e.getUTCMinutes())+":"+t(e.getUTCSeconds())+"."+((e.getUTCMilliseconds()/1e3).toFixed(3)+"").slice(2,5)+"Z"}(),iKey:e,name:"Microsoft.ApplicationInsights."+e.replace(/-/g,"")+"."+t,sampleRate:100,tags:n,data:{baseData:{ver:2}}}}var h=d.url||y.src;if(h){function a(e){var t,n,a,i,r,o,s,c,u,p,l;g=!0,m.queue=[],f||(f=!0,t=h,s=function(){var e={},t=d.connectionString;if(t)for(var n=t.split(";"),a=0;a<n.length;a++){var i=n[a].split("=");2===i.length&&(e[i[0][b]()]=i[1])}if(!e[C]){var r=e.endpointsuffix,o=r?e.location:null;e[C]="https://"+(o?o+".":"")+"dc."+(r||"services.visualstudio.com")}return e}(),c=s[D]||d[D]||"",u=s[C],p=u?u+"/v2/track":d.endpointUrl,(l=[]).push((n="SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)",a=t,i=p,(o=(r=v(c,"Exception")).data).baseType="ExceptionData",o.baseData.exceptions=[{typeName:"SDKLoadFailed",message:n.replace(/\./g,"-"),hasFullStack:!1,stack:n+"\nSnippet failed to load ["+a+"] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: "+(S&&S.pathname||"_unknown_")+"\nEndpoint: "+i,parsedStack:[]}],r)),l.push(function(e,t,n,a){var i=v(c,"Message"),r=i.data;r.baseType="MessageData";var o=r.baseData;return o.message='AI (Internal): 99 message:"'+("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) ("+n+")").replace(/\"/g,"")+'"',o.properties={endpoint:a},i}(0,0,t,p)),function(e,t){if(JSON){var n=T.fetch;if(n&&!y.useXhr)n(t,{method:N,body:JSON.stringify(e),mode:"cors"});else if(XMLHttpRequest){var a=new XMLHttpRequest;a.open(N,t),a.setRequestHeader("Content-type","application/json"),a.send(JSON.stringify(e))}}}(l,p))}function i(e,t){f||setTimeout(function(){!t&&m.core||a()},500)}var e=function(){var n=l.createElement(k);n.src=h;var e=y[w];return!e&&""!==e||"undefined"==n[w]||(n[w]=e),n.onload=i,n.onerror=a,n.onreadystatechange=function(e,t){"loaded"!==n.readyState&&"complete"!==n.readyState||i(0,t)},n}();y.ld<0?l.getElementsByTagName("head")[0].appendChild(e):setTimeout(function(){l.getElementsByTagName(k)[0].parentNode.appendChild(e)},y.ld||0)}try{m.cookie=l.cookie}catch(p){}function t(e){for(;e.length;)!function(t){m[t]=function(){var e=arguments;g||m.queue.push(function(){m[t].apply(m,e)})}}(e.pop())}var n="track",r="TrackPage",o="TrackEvent";t([n+"Event",n+"PageView",n+"Exception",n+"Trace",n+"DependencyData",n+"Metric",n+"PageViewPerformance","start"+r,"stop"+r,"start"+o,"stop"+o,"addTelemetryInitializer","setAuthenticatedUserContext","clearAuthenticatedUserContext","flush"]),m.SeverityLevel={Verbose:0,Information:1,Warning:2,Error:3,Critical:4};var s=(d.extensionConfig||{}).ApplicationInsightsAnalytics||{};if(!0!==d[I]&&!0!==s[I]){var c="onerror";t(["_"+c]);var u=T[c];T[c]=function(e,t,n,a,i){var r=u&&u(e,t,n,a,i);return!0!==r&&m["_"+c]({message:e,url:t,lineNumber:n,columnNumber:a,error:i}),r},d.autoExceptionInstrumented=!0}return m}(y.cfg);function a(){y.onInit&&y.onInit(n)}(T[t]=n).queue&&0===n.queue.length?(n.queue.push(a),n.trackPageView({})):a()}(window,document,{
+src: "https://js.monitor.azure.com/scripts/b/ai.2.min.js", // The SDK URL Source
+crossOrigin: "anonymous", 
+cfg: { // Application Insights Configuration
+    connectionString: 'InstrumentationKey=14b6ed7c-c466-4382-924d-b63de1d167b1;IngestionEndpoint=https://canadacentral-1.in.applicationinsights.azure.com/;LiveEndpoint=https://canadacentral.livediagnostics.monitor.azure.com/'
+}});</script></head>
+<body>
+    <div id="top-header">
+        <div id="header" class="main-header-en">
+            <ul style="float: right;top: 40px;" class="top-list-left">
+                <li><a href="/Home/SetCulture?culture=fr">Fran&#xE7;ais</a></li>
+                <li><a href="/Home/SetCulture?culture=en-CA">English</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <strong class="slogan">
+        <div class="slogan-align">PRACTICAL EXPERIENCE REPORTING TOOL (PERT)</div>
+    </strong>
+    <div id="wrapper">
+        <div class="wrapper-c">
+            <div id="main">
+                <div id="sidebar" class="sidebarHidden">
+                    &nbsp;
+                </div>
+                <div id="content" class="contentNormalWidth">
+                    <div class="wrapper">
+                        <div>
+                            
+<script src="/js/jquery.blockUI.js" type="text/javascript"></script>
+<script src="/js/pertUtils-1.1.js" type="text/javascript"></script> 
+<script type="text/javascript" src="/js/ToggleTableRow.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        hideSidebar();
+
+        setBlockUiForPost("trialAssessmentForm", "Processing...");
+
+        $(".proficiencyHelp").click(function() {
+            setupDialog.call($(this));
+            showDialog.call($(this));
+            return false;
+        });
+
+        $("#perStartHelp").click(function() {
+            $("#perStartHelpDialog").dialog({
+                position: ['center+20%', 'center'],
+                resizable: true,
+                draggable: true,
+                height: 375,
+                width: 500,
+                modal: true,
+                buttons: [
+                    {
+                        text: 'Close',
+                        click: function() {
+                            $(this).dialog('close');
+                        }
+                    }
+                ]
+            });
+        });
+
+        $("#month12Help").click(function() {
+            $("#month12HelpDialog").dialog({
+                position: ['center+20%', 'center'],
+                resizable: true,
+                draggable: true,
+                height: 350,
+                width: 500,
+                modal: true,
+                buttons: [
+                    {
+                        text: 'Close',
+                        click: function() {
+                            $(this).dialog('close');
+                        }
+                    }
+                ]
+            });
+        });
+
+        $("#exitHelp").click(function() {
+            $("#exitHelpDialog").dialog({
+                position: ['center+20%', 'center'],
+                resizable: true,
+                draggable: true,
+                height: 350,
+                width: 500,
+                modal: true,
+                buttons: [
+                    {
+                        text: 'Close',
+                        click: function() {
+                            $(this).dialog('close');
+                        }
+                    }
+                ]
+            });
+        });
+
+        var scroll = "" == "true";
+
+        if (scroll) {
+            window.scrollTo(0, $("#resultsArea").offset().top);
+        };
+
+    });
+
+    function showDialog() {
+        $("#box").dialog({
+            width: 550,
+            height: 430,
+            modal: true,
+            position: ['center+20%', 'center'],
+            resizable: true,
+            draggable: true,
+            show: 'fade',
+            open: function() {
+                $("span.ui-dialog-title").text('Proficiency Levels - ' + $(this).data('competency'));
+                var markup = "<table><thead><tr>";
+                markup += "<th style=\"width:33%\">Level 0</th>";
+                markup += "<th style=\"width:33%\">Level 1</th>";
+                markup += "<th style=\"width:33%\">Level 2</th>";
+                markup += "</tr></thead>";
+
+                markup += "<tbody style=\"vertical-align: top;\"><tr>";
+                markup += "<td>" + $(this).data('text0') + "</td>";
+                markup += "<td>" + $(this).data('text1') + "</td>";
+                markup += "<td>" + $(this).data('text2') + "</td>";
+                
+                markup += "</tr></tbody></table>";
+                $(this).html(markup);
+            },
+            buttons: [
+                {
+                    text: 'Close',
+                    click: function() {
+                        $(this).dialog('close');
+                    }
+                }
+            ]
+        });
+    }
+
+    function setupDialog() {
+        $('#box').data('competency', $(this).parent().parent().children().first().attr('value'));
+
+        var next = $(this).next();
+        $('#box').data('text0', next.text());
+
+        next = next.next();
+        $('#box').data('text1', next.text());
+
+        next = next.next();
+        $('#box').data('text2', next.text());
+
+        next = next.next();
+        $('#box').data('example0', next.text());
+
+        next = next.next();
+        $('#box').data('example1', next.text());
+
+        next = next.next();
+        $('#box').data('example2', next.text());
+    }
+
+</script>
+
+<div id="box" title="Proficiency Levels" style="display: none;"></div>
+
+<div id="perStartHelpDialog" title="Practical Experience Entry Requirement" class="hidden">
+    <p>
+        <p>You must meet these three conditions to report Practical Experience.</p>
+
+<p>1. You are working in a position that allows you to gain experience in at least one technical sub-competency to at least a Level 1 proficiency;</p>
+
+<p>2. You are accepted as a future CPA by a provincial/regional body; and</p>
+
+<p>3. You have a CPA mentor.</p>
+    </p>
+</div>
+
+<div id="month12HelpDialog" title="12 Month Requirement" class="hidden">
+    <p>
+        CPA students/candidates qualifying under the experience verification model who have not developed any two competency sub-areas to at least Level 1 proficiency are at the foundational level and will have their accumulated duration suspended at 12 months (8 months in Quebec; could be less in Quebec, pending results of initial assessment). Duration will resume when this proficiency requirement has been satisfied.
+    </p>
+</div>
+
+<div id="exitHelpDialog" title="Trial Assessment - PER Exit Help" class="hidden">
+    <p>
+        <p>You must develop both technical (and enabling – see disclaimer) competencies through your term of qualifying practical experience.</p>
+
+<p>Technical sub-competencies fall into six competency areas; you must develop a range of these sub-competencies in accordance with core, depth, breadth, and progression.</p>
+    </p>
+</div>
+
+<div id="content-pad">
+    <h2 style="text-transform:none!important;">PER Self-Assessment</h2>
+
+    <div>
+        <p>This tool is intended to assist individuals in determining whether their job is relevant toward meeting the CPA Practical Experience Requirements (PER).  </p>
+
+ 
+
+<p>To begin reporting practical experience, Future CPAs need to develop at least a level 1 proficiency, in one technical sub-competency.  </p>
+
+ 
+
+<p>To be recognised for 12 months of experience, Future CPAs must be able to demonstrate at least two technical sub-competencies to at least a level 1 proficiency. </p>
+
+ 
+
+<p>To complete the practical experience requirements, individuals must be able to meet the technical competency criteria of core, depth and breadth. Progression, duration, supervision and enabling competencies must also be met. See the <a href="https://www.cpacanada.ca/en/become-a-cpa/certification-resource-centre/resources-for-cpa-practical-experience-requirements" target="_blank">CPA Canada Certification Resources Centre</a> for more details on all the practical experience requirements.</p>
+    </div>
+    <h2 style="text-transform:none!important; margin-top:35px;">How To Use This Tool</h2>
+
+    <div style="margin-top: 20px">
+        <p>Identify which sub-competencies you expect to develop in your role using the <a href="https://www.cpacanada.ca/-/media/site/operational/ec-education-certification/docs/02639-ec_guiding-questions-practical-experience-rubric.pdf">Guiding Questions and Practical Experience Rubric CPA PER Appendix A</a></p>
+<br/>
+<p>Select the proficiency level you expect to achieve (use the<img class="help" src="/images/help-icon.svg" alt="?"> to help guide you).</p>
+<br/>
+<p>Click Run Self-Assessment.</p>
+    </div>
+
+<form action="/Student/TrialAssessment" id="trialAssessmentForm" method="post">        <div class="section">
+            <div class="consolidated-summary-levels">
+                <div class="competency-group">Technical Competencies</div>
+<input id="TechnicalCompetencyAreas_0__IsCore" name="TechnicalCompetencyAreas[0].IsCore" type="hidden" value="True" /><input id="TechnicalCompetencyAreas_0__Name" name="TechnicalCompetencyAreas[0].Name" type="hidden" value="Financial Reporting (FR)" />                    <div class="competency-area">Financial Reporting (FR)</div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_0__Name" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[0].Name" type="hidden" value="Financial reporting needs and systems (FR1)" />
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_0__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[0].CompetencyAreaOrderNumber" type="hidden" value="1" />
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_0__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[0].CompetencySubAreaOrderNumber" type="hidden" value="1" />
+                                <div>Financial reporting needs and systems (FR1)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_0__TechnicalCompetencies_0__MaximumLevelAttained" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[0].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Use the accounting system to process transactions and/or generate reports.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Verify mathematical accuracy of financial information (sub-totals, totals).&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Perform simple reconciliations.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; the financial reporting information required by external stakeholders, including regulatory requirements (can include specialized financial reporting requirements); &lt;strong&gt;plus&lt;/strong&gt; &lt;/p&gt;&#xD;&#xA;(a) &lt;strong&gt;Analyze/identify&lt;/strong&gt; the appropriateness of the basis of financial reporting; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the accuracy and reliability of financial information
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; financial reporting information required by external stakeholders, including regulatory requirements (can include specialized financial reporting requirements); plus &lt;/p&gt;&#xD;&#xA;(a) &lt;strong&gt;Evaluate&lt;/strong&gt; the appropriateness of the basis of financial reporting; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; reporting systems, data requirements or business processes to support reliable financial reporting
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Explain the financial reporting needs of some stakeholders (other departments, Board of Directors, banks, shareholders, audit committee etc.); &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Identify the basis of financial reporting (International Financial Reporting Standards (IFRS), Accounting Standards for Private Enterprises (ASPE), Not-for-Profit Accounting or Public Sector) and analyze why it was chosen.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Explain the financial reporting needs of some stakeholders (other departments, Board of Directors, banks, shareholders, audit committee etc.); &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Identify the basis of financial reporting (International Financial Reporting Standards (IFRS), Accounting Standards for Private Enterprises (ASPE), Not-for-Profit Accounting or Public Sector) and analyze why it was chosen.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Identify the financial reporting needs of various stakeholders (other departments, Board of Directors, banks, shareholders, audit committee etc.); &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Evaluate the Company&#x27;s information system(s) for accuracy and ensure content meets the stakeholders&#x27;  needs - recommend changes if needed.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Identify the needs of clients vs. those of internal and external users, legal and regulatory requirements, type of entity; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Evaluate financial reporting process used to prepare the entity&#x27;s financial statements, including significant accounting estimates and disclosures (such as analytical review and understanding internal control processes).&#xD;&#xA;&#xD;&#xA;Evaluates the reporting processes to ensure the information can be relied upon.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_1__Name" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[1].Name" type="hidden" value="Accounting policies and transactions (FR2)" />
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_1__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[1].CompetencyAreaOrderNumber" type="hidden" value="1" />
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_1__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[1].CompetencySubAreaOrderNumber" type="hidden" value="2" />
+                                <div>Accounting policies and transactions (FR2)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_0__TechnicalCompetencies_1__MaximumLevelAttained" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[1].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Record accounting entries for routine transactions.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Roll forward provisions from prior years.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Research&lt;/strong&gt; the appropriate accounting policies and procedures (or explains the basis in which&#xD;&#xA;they were selected and applied to an organization); or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Research and analyze&lt;/strong&gt; treatment for routine transactions.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; appropriate accounting policies and procedures; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; treatment for routine and non-routine transactions; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Research and evaluate&lt;/strong&gt; treatment for complex events/transactions.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Prepare/review routine journal entries (i.e. low judgement required), such as working capital reserves &amp; accruals.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze the accounting policy and impact on results through day-to-day responsibilities, monthly and quarterly close process. The accounting policy decision would be made by another group/individual.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze the client&#x27;s routine journal entries (i.e. low judgement required), such as working capital reserves and accruals.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze the client&#x27;s accounting policies and impact on results through completion of audit/review work.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Prepare/review non-routine and/or complex journal entries -  (i.e. judgement required), such as goodwill impairment, revenue accounting for multiple years, tax provision, business acquisition accounting and financial instruments, etc. &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Research and summarize the new accounting standards that need to be implemented and provide alternatives, with the impact on financial results and recommendations. This may include communicating the impact of these standards to others.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Review the client&#x27;s non-routine and/or complex journal entries -  (i.e. judgement required), such as equity accounting, impairment, purchase accounting, development cost and wind-ups, financial instruments, etc. Then recommend any required adjustments.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Evaluate the client&#x27;s implementation of new accounting standards required including assessing alternatives, impact on financial results and recommendations for changes if required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_2__Name" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[2].Name" type="hidden" value="Financial report preparation (FR3)" />
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_2__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[2].CompetencyAreaOrderNumber" type="hidden" value="1" />
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_2__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[2].CompetencySubAreaOrderNumber" type="hidden" value="3" />
+                                <div>Financial report preparation (FR3)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_0__TechnicalCompetencies_2__MaximumLevelAttained" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[2].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Verify mathematical accuracy of the financial statements and note disclosures.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Prepare or review&lt;/strong&gt; financial statements, including note disclosures.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; financial statements, including note disclosures.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Assist with preparing sections (such as Financial Instruments) of the financial statements for a complex company or prepare the majority of the statements for a smaller non-complex company.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Explain components (such as sections of the balance sheet, income statement, cash flow statement &amp; notes) of the financial statements for a complex company.&#xA0; For example, how debt is accounted for and integrated into the financial statements. Such as debt classification and interest expense; ideally includes related long-term debt note and accounting for debt movement in the cash flow statement.&#xA0;&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Through audit/review process, explain possible adjustments to the financial statements including note disclosures. The focus may be on several components (such as sections of the balance sheet, income statement, cash flow statement &amp; notes) of the financial statements for a complex company (for example, debt classification, interest expense, long-term debt note and accounting for debt movement in the cash flow statement), or the majority of the financial statements and applicable notes for a smaller company, for fair presentation.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Prepare several components (such as sections of the balance sheet, income statement, cash flow statement &amp; notes ) of the financial statements for a complex company.  For example, debt classification, interest expense, long-term debt note and accounting for debt movement in the cash flow statement.  &lt;strong&gt;NOTE: For a smaller company, expectation would be to prepare the majority of the entity&#x27;s financial statements and applicable notes.&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Through audit/review process, identify possible adjustments to the financial statements including note disclosures. The focus may be on several components (such as sections of the balance sheet, income statement, cash flow statement &amp; notes) of the financial statements for a complex company (for example, debt classification, interest expense, long-term debt note and accounting for debt movement in the cash flow statement), or the majority of the financial statements and applicable notes for a smaller company, for fair presentation.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_3__Name" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[3].Name" type="hidden" value="Financial statement analysis (FR4)" />
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_3__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[3].CompetencyAreaOrderNumber" type="hidden" value="1" />
+                                <input id="TechnicalCompetencyAreas_0__TechnicalCompetencies_3__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[3].CompetencySubAreaOrderNumber" type="hidden" value="4" />
+                                <div>Financial statement analysis (FR4)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_0__TechnicalCompetencies_3__MaximumLevelAttained" name="TechnicalCompetencyAreas[0].TechnicalCompetencies[3].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Calculate ratios and/or % changes in account balances.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Prepare or review&lt;/strong&gt; the management communication (e.g., MD&amp;A), or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Prepare or review&lt;/strong&gt; financial reporting results for stakeholders (external or internal), or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Prepare or review&lt;/strong&gt; the impact of strategic and operational decision on financial results (external or internal).
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; management communication (e.g., MD&amp;A), or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; financial reporting results for stakeholders (internal or external), or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the impact of strategic, and operational decision on financial results (external or internal).
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explain the results to external auditors or internal management but the analysis itself is prepared by another group or employee.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Explain the results to the client, partner or manager on the team but the analysis itself is prepared by the client.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Responsible for preparation and/or interpretation of financial statement analysis (including considering interrelationships). Depending on the complexity of the business, it may be sections rather than the entire results (e.g. revenue and cost of goods sold). Also discusses the results to the external auditors or to internal management.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Responsible for preparation and/or interpretation of financial statement analysis (including considering interrelationships). Depending on the complexity of the business, it may be sections rather than the entire results (e.g. revenue and cost of goods sold).  Also discuss with management to understand the results.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+<input id="TechnicalCompetencyAreas_1__IsCore" name="TechnicalCompetencyAreas[1].IsCore" type="hidden" value="False" /><input id="TechnicalCompetencyAreas_1__Name" name="TechnicalCompetencyAreas[1].Name" type="hidden" value="Audit and Assurance (AA)" />                    <div class="competency-area">Audit and Assurance (AA)</div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_0__Name" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[0].Name" type="hidden" value="Internal control (AA1)" />
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_0__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[0].CompetencyAreaOrderNumber" type="hidden" value="2" />
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_0__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[0].CompetencySubAreaOrderNumber" type="hidden" value="1" />
+                                <div>Internal control (AA1)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_1__TechnicalCompetencies_0__MaximumLevelAttained" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[0].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Execute procedures that relates to existing internal controls.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze or prepare&lt;/strong&gt; the entity&#x27;s risk assessment processes; or&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the information system and processes, using knowledge of data requirements and risk exposures.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s risk assessment processes; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the information system and processes, using knowledge of data requirements and risk exposures.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze the general computer controls and application controls of the company. Also involved in testing the application controls, such as access controls. &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze control activities relevant to the audit in order to assess the risk of material misstatement at the assertion level and design further audit procedures responsive to assessed risks.&lt;/p&gt;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze the general computer controls and application controls of the company under review/audit. Also involved in testing the application controls, such as access controls.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Evaluate the design and operating effectiveness of the information system, which will involve a detailed understanding of both the general and application controls (e.g.  segregation of duties, access controls, processing controls, disaster recovery plan).  Provide recommendations to address deficiencies and/or risks identified, as well as inefficiencies and opportunities within the process. &#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Evaluate control activities relevant to the audit in order to assess the risk of material misstatement at the assertion level and design further audit procedures responsive to assessed risks.&lt;/p&gt;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Evaluate the entity&#x27;s information system (e.g. segregation of duties, access control, disaster recovery plan, processing controls, etc.) and related processes, and how it impacts the risk of material misstatement. This analysis is then used to provide a recommendation on the audit approach being mainly substantive or control-based.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_1__Name" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[1].Name" type="hidden" value="Internal audit or external assurance requirements, basis and risk assessment (AA2)" />
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_1__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[1].CompetencyAreaOrderNumber" type="hidden" value="2" />
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_1__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[1].CompetencySubAreaOrderNumber" type="hidden" value="2" />
+                                <div>Internal audit or external assurance requirements, basis and risk assessment (AA2)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_1__TechnicalCompetencies_1__MaximumLevelAttained" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[1].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Assemble information about the business (external), or department (internal).
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; an entity&#x2019;s assurance needs plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Basis: Analyze&lt;/strong&gt; which set of criteria to apply to&#xD;&#xA;the subject matter being evaluated, or &lt;strong&gt;analyze&lt;/strong&gt; which standards/guidelines to apply based on the nature and expectations of the assurance engagement/project, plus &lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Risk assessment: &lt;/strong&gt;&lt;br /&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; issues related to the undertaking of the engagement or project, &lt;strong&gt;prepare and analyze&lt;/strong&gt; materiality for the assurance engagement/project, or &lt;strong&gt;analyze&lt;/strong&gt; the risks of the project (for audit engagements, &lt;strong&gt;analyze&lt;/strong&gt; the risks of material mis-statement at the financial statement level and at the assertion level for classes of transactions, account balances, and disclosures).
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; an entity&#x2019;s assurance needs plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Basis: Evaluate&lt;/strong&gt; which set of criteria to apply to the subject matter being evaluated, or &lt;strong&gt;evaluate&lt;/strong&gt; which standards/guidelines to apply based on the nature and expectations of the assurance engagement/project, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Risk assessment: &lt;/ br&gt;&#xD;&#xA;Evaluate&lt;/strong&gt; issues related to&#xD;&#xA;the undertaking of the engagement or project, or &lt;strong&gt;evaluate&lt;/strong&gt; materiality for the assurance engagement/project, or &lt;strong&gt;evaluate&lt;/strong&gt; the risks of the project (for audit engagements, &lt;strong&gt;evaluate&lt;/strong&gt; the risks of material misstatement at the&#xD;&#xA;financial statement level and at the assertion level for classes of transactions, account balances, and disclosures).
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explain the assurance needs of the Board of Directors/Audit Committee for Internal Audit and what criteria is used for scoping decisions; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Explain the Institute of Internal Auditors Professional Practices Framework which includes guidelines on assessing independence, competence and objectivity for audit assignments; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Explain the risks of the project they are doing and understand how it impacts the audit plan.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Explain the assurance needs of the Shareholders/Audit Committee; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Explain what is expected for the type of engagement in accordance with Generally Accepted Auditing Standards (GAAS);&lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Explain the risk assessment which was performed by another member of the team and understand how it impacts the audit plan.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze the assurance needs of the Board of Directors/Audit Committee and what criteria is used for scoping decisions; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Follow the Institute of Internal Auditors Professional Practices Framework which includes guidelines on analyzing independence, competence and objectivity for audit assignments;  &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Perform the risk assessment of the project and conclude on areas of concern.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze the assurance needs of the Shareholders/Audit Committee; plus &#xD;&#xA;Analyze what is expected for the type of engagement in accordance with Generally Accepted Auditing Standards (review, special purpose, audit, specified audit procedures, etc.); &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Analyze risks of material misstatement at the financial statement and assertion level that could prevent engagement acceptance/continuance. Considerations may include lack of independence, risk of fraud, aggressive deadlines, and the need/availability of specialists.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_2__Name" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[2].Name" type="hidden" value="Internal audit projects or external assurance engagements (AA3)" />
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_2__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[2].CompetencyAreaOrderNumber" type="hidden" value="2" />
+                                <input id="TechnicalCompetencyAreas_1__TechnicalCompetencies_2__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[2].CompetencySubAreaOrderNumber" type="hidden" value="3" />
+                                <div>Internal audit projects or external assurance engagements (AA3)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_1__TechnicalCompetencies_2__MaximumLevelAttained" name="TechnicalCompetencyAreas[1].TechnicalCompetencies[2].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Compile planning documentation.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Coordinate third party confirmations; identify outstanding items.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Work plan: Perform&lt;/strong&gt; the work plan on less complex/riskier areas, &lt;strong&gt;analyze&lt;/strong&gt; the evidence and results of analysis, documents the work performed and its results, plus &lt;/p&gt;&#xD;&#xA;Draw conclusion, communicate results, and contribute to a report for stakeholders, using data visualization where possible.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Work plan: Evaluate or develop&lt;/strong&gt; appropriate procedures, considering the use of data analytics, based on the identified risk of material misstatement, &lt;strong&gt;evaluate or perform&lt;/strong&gt; the work plan, &lt;strong&gt;evaluate&lt;/strong&gt; the evidence and results of analysis, documents the work performed and its results, plus &lt;/p&gt;&#xD;&#xA;Draw conclusions, communicate results, and contribute to a report for stakeholders, using data visualization where possible.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Perform the work plan prepared by senior internal auditor of less complex areas, such as cash, accounts payables, selling, general &amp; administrative expenses (SG&amp;A) or low risk business unit processes (e.g. clerical focus), document the results, evaluate the evidence obtained; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Draw a conclusion to be included in the Internal Audit report or communicated to management. &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Perform the work plan prepared by senior auditor of less complex areas, such as cash, accounts payables, selling, general &amp; administrative expenses (SG&amp;A) or low risk business unit processes (e.g. clerical focus), document the results, evaluate the evidence obtained; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Draw a conclusion to be included in the Audit Committee report or Management closing report.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Develop or modify the audit program including determining the most efficient and effective testing procedures (i.e. Test of Controls vs. Substantive Testing and Nature/Timing &amp; Extent of procedures).This includes integrating the knowledge obtained from the risk assessment and the assurance needs of the stakeholders with audit testing procedures to achieve a sufficient amount of testing coverage; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Perform the audit program, evaluate the results and conclude on next steps for more complex areas such as the manufacturing process, financial close for financial instruments or material subjective accruals. If control testing, assess if the items found are a deficiency, significant deficiency or material weakness, including how the weakness could impact the accuracy of the results and identify any compensating controls. Must communicate the results to the manager or department being audited. Also, required to ensure the audit working paper file meets Internal Audit&#x27;s documentation standards and the International Standards for the Professional Practice of Internal Auditing.&lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Develop or modify the audit program including determining the most efficient and effective testing procedures (i.e. Test of Controls vs. Substantive Testing and Nature/Timing &amp; Extent of procedures). This includes integrating the knowledge obtained from the risk assessment and the assurance needs of the stakeholders with audit testing procedures  to achieve a sufficient amount of testing coverage; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Perform the audit program and evaluate the results, and conclude on next steps for more complex areas, such as inventory, financial instruments and gross margin. If an error in the results is found, draft what the adjusting entry should be, document how it happened and whether there is a control point to communicate to Management. If control testing, assess whether the items found are a deficiency, significant deficiency or material weakness, including an evaluation of how the weakness could impact the accuracy of the results, and identify any compensating controls.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+<input id="TechnicalCompetencyAreas_2__IsCore" name="TechnicalCompetencyAreas[2].IsCore" type="hidden" value="False" /><input id="TechnicalCompetencyAreas_2__Name" name="TechnicalCompetencyAreas[2].Name" type="hidden" value="Finance (FN)" />                    <div class="competency-area">Finance (FN)</div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_0__Name" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[0].Name" type="hidden" value="Financial analysis &amp; planning (FN1)" />
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_0__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[0].CompetencyAreaOrderNumber" type="hidden" value="3" />
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_0__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[0].CompetencySubAreaOrderNumber" type="hidden" value="1" />
+                                <div>Financial analysis &amp; planning (FN1)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_2__TechnicalCompetencies_0__MaximumLevelAttained" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[0].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Perform calculations to support analysis (ratios and/or % changes in account balances).
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; the entity&#x27;s financial state, or&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Analyze or prepare&lt;/strong&gt; financial proposals and financing plans
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s financial state considering an assessment of reporting systems, data quality and the analytical models used to support financial analysis and decision-making; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; financial proposals and financing plans considering an assessment of reporting systems, data quality and the analytical models used to support financial analysis and decision-making
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Review ratio analysis, industry benchmarking and trend analysis prepared by the business unit and analyze how it affects the entity&#x27;s financial state. &lt;/p&gt;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze financial proposals from the business unit. This would include reviewing their underlying assumptions used and understanding the alternatives including the risks/opportunities. May assist with the recommendation.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze financial analysis as part of audit/review or consulting work and understand how it affects the entity&#x27;s financial state. This would include reviewing the client&#x27;s ratio analysis, industry benchmarking, trend analysis and cash flow analysis.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Perform financial analysis including a combination of ratio analysis, industry benchmarking, trend analysis, cash flow analysis, or capital structure assessment. This analysis would be used to evaluate the entity&#x27;s financial state.&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Evaluate financial proposals from the business unit. This includes validating the underlying assumptions used, evaluating the alternatives including sensitivity analysis, evaluating the risks/opportunities and when appropriate consider financing options. When the analysis is completed, provide a recommendation.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Perform financial analysis as part of audit/review or consulting work. This would include a combination of ratio analysis, industry benchmarking, trend analysis, cash flow analysis or capital structure assessment.  This analysis would be used to evaluate the entity&#x27;s financial state.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_1__Name" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[1].Name" type="hidden" value="Treasury management (FN2)" />
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_1__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[1].CompetencyAreaOrderNumber" type="hidden" value="3" />
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_1__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[1].CompetencySubAreaOrderNumber" type="hidden" value="2" />
+                                <div>Treasury management (FN2)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_2__TechnicalCompetencies_1__MaximumLevelAttained" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[1].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Record investment/FX transactions based on confirmations; update market values from third-party sources, if applicable.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Reconcile differences between records and third-party statements.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; the entity&#x2019;s cash flow and working capital, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze or research&lt;/strong&gt; the entity&#x2019;s investment portfolio (less complex), or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze or research&lt;/strong&gt; sources of financing and decisions affecting capital structure, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze or research&lt;/strong&gt; the entity&#x2019;s cost of capital, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze or research&lt;/strong&gt; decisions related to distribution of profits
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s cash flow and working capital, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s investment portfolio, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; sources of financing and decisions affecting capital structure, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s cost of capital, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; decisions related to distribution of profits
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Calculate the entity&#x27;s cash flow and working capital, including cash, accounts receivable, inventory and payable balances; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Analyze the entity&#x27;s investment portfolio (e.g. public equities, mutual funds, money markets and bonds) including benchmarking performance and identifying risks and return of the portfolio.&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Calculate the entity&#x27;s cash flow and working capital, including cash, accounts receivable, inventory and payable balances; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Assist with researching available financing alternatives. The analysis would include cost, benefits and implications for future financing decisions (including tax implications).&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Audit/review the entity&#x27;s cash flow and working capital, including cash, accounts receivable, inventory and payable balances; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Assess the entity&#x27;s investment portfolio (e.g. public equities, mutual funds, money market, bonds) including benchmarking performance and identifying risks and return of the portfolio. 
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze and monitor the entity&#x27;s cash flow and working capital, including cash, accounts receivable, inventory and payable balances. This would include ensuring the entity&#x27;s needs are met; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Evaluate the entity&#x27;s financial instruments (e.g. derivatives, swaps, future and forward contracts, options and convertible securities) and other investments (real estate and other businesses) including benchmarking performance and identifying risks and return of the portfolio. &lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze and monitor the entity&#x27;s cash flow and working capital, including cash, accounts receivable, inventory and payable balances.  This would include ensuring the entity&#x27;s needs are met; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Evaluate the entity&#x27;s financing needs and their available financing alternatives. The analysis would include cost, benefits and implications for future financing decisions (including tax implications).  Use this analysis to provide a recommendation for the best option.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Audit/review the entity&#x27;s cash flow and working capital, including cash, accounts receivable, inventory and payable balances.  This would include ensuring the entity&#x27;s needs are met and there is no going concern risk; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Evaluate the entity&#x27;s financial instruments (e.g. derivatives, swaps, future and forward contracts, options and convertible securities) and other investments (real estate and other businesses) including benchmarking performance and identifying risks and return of the portfolio.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_2__Name" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[2].Name" type="hidden" value="Capital budgeting, valuation, corporate finance (FN3)" />
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_2__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[2].CompetencyAreaOrderNumber" type="hidden" value="3" />
+                                <input id="TechnicalCompetencyAreas_2__TechnicalCompetencies_2__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[2].CompetencySubAreaOrderNumber" type="hidden" value="3" />
+                                <div>Capital budgeting, valuation, corporate finance (FN3)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_2__TechnicalCompetencies_2__MaximumLevelAttained" name="TechnicalCompetencyAreas[2].TechnicalCompetencies[2].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Coordinate the capital budgeting process.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Calculate market value of publicly-traded security.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Calculate/collect multiples for market-based valuations.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze or prepare&lt;/strong&gt; information to aid in the capital budgeting processes and related decisions, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze or estimate&lt;/strong&gt; the value of a tangible asset, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the value of a business, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; financial risk management policies, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the use of derivatives as a form of financial risk management, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the purchase, expansion or sale of a business, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;strong&gt; possible solutions to aid a financially troubled entity.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; financial models or business plans as part of or in addition to: &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; capital budgeting processes and decisions, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the value of a tangible asset or analyze or estimate the value of an intangible asset, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the value of a business, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; financial risk management policies, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the use of derivatives as a form of financial risk management, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the purchase, expansion or sale of a business, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; or advise a financially troubled entity.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Prepare the required information to support a capital budget request, including the cost and feasibility of the request. &lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze the work done by another department for considering a purchase, expansion or sale of the business. This also includes assisting with inputs for the analysis or requesting further back-up to understand the report.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Audit/review the value of a tangible asset by using net realizable value, for example.&lt;/p&gt;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze less complex items of a purchase, expansion or sale of a business - e.g. valuing working capital accounts.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Evaluate capital budget request using established criteria/policies. Consider benchmarking, feasibility, return, and cost, then recommend a course of action consistent with the objectives of the company.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Evaluate assets (including both tangible and intangible), liabilities (existing and potential), risks and opportunities of the purchase, expansion or sale of the business. Based on the analysis, recommend a suitable course of action or items to consider.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Audit/review the value of a tangible asset or estimate of an intangible asset, using different methods such as replacement value, net realizable value, precedent transactions and/or discounted cash flow. This includes evaluating critical assumptions and concluding on a reasonable value.&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Evaluate critical assumptions and facts underlying the company&#x27;s valuation.  This would include valuing the business using asset-based, transaction-based (discounted cash flow) or  market-based methods (precedent transactions).  Then conclude on a plausible range of values for the business.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+<input id="TechnicalCompetencyAreas_3__IsCore" name="TechnicalCompetencyAreas[3].IsCore" type="hidden" value="False" /><input id="TechnicalCompetencyAreas_3__Name" name="TechnicalCompetencyAreas[3].Name" type="hidden" value="Taxation (TX)" />                    <div class="competency-area">Taxation (TX)</div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_0__Name" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[0].Name" type="hidden" value="Income tax legislation and research (TX1)" />
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_0__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[0].CompetencyAreaOrderNumber" type="hidden" value="4" />
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_0__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[0].CompetencySubAreaOrderNumber" type="hidden" value="1" />
+                                <div>Income tax legislation and research (TX1)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_3__TechnicalCompetencies_0__MaximumLevelAttained" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[0].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Use Income Tax Act to assemble rates, fling deadlines and requirements.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; the relevant section of the Income Tax Act, tax conventions and/or treaties, as it relates to specific transactions/events.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; treatment for transactions/events, plus &lt;/p&gt;&#xD;&#xA;Draw conclusions and communicate results.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explain treatment for non-routine or complex tax issues, including assisting in research but not drawing the conclusion. For example, involved in scientific research and experimental development (SR&amp;ED), corporate restructuring transactions (Section 85 elections, reorganization of share capital),  manufacturing and processing credits, development cost and disposition of assets. &lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Explain the client&#x27;s treatment for non-routine or complex tax issues by reviewing management&#x27;s position.  For example, involved in scientific research and experimental development (SR&amp;ED), Corporate restructuring transactions (Section 85 elections, reorganization of share capital), manufacturing and processing credits, development cost and disposition of assets. &lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Explain treatment for non-routine or complex tax issues, including assisting in research but not drawing the conclusion. For example, allocation of income/loss from a partnership, attribution rules, returns for a deceased individual or impact of distributions from trust to a beneficiary.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Research treatment for non-routine or complex tax issues.  For example, scientific research and experimental development,  corporate restructuring transactions (i.e. Section 85 elections, reorganization of share capital), manufacturing and processing credits, development cost and disposition of assets; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Draw conclusions on how it should be treated and communicate results.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze the client&#x27;s treatment for non-routine or complex tax issues by reviewing management&#x27;s position.  For example, scientific research and experimental development, Corporate restructuring transactions (i.e. Section 85 elections, reorganization of share capital), reorganization of share capital,  manufacturing and processing credits, development cost and disposition of assets; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Draw conclusions on how it should be treated and communicate results.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Research treatment for non-routine or complex tax issues. For example, allocation of income/loss from a partnership, attribution rules, returns for a deceased individual or impact of distributions from a trust to a beneficiary; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Draw conclusions on how it should be treated and communicate results.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_1__Name" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[1].Name" type="hidden" value="Tax compliance: corporate or personal (TX2)" />
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_1__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[1].CompetencyAreaOrderNumber" type="hidden" value="4" />
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_1__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[1].CompetencySubAreaOrderNumber" type="hidden" value="2" />
+                                <div>Tax compliance: corporate or personal (TX2)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_3__TechnicalCompetencies_1__MaximumLevelAttained" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[1].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Assemble information for a tax return and explains required information.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Use tax software to process corporate tax returns.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Prepare schedule of due dates.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; the relevant tax issues, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; or prepare information to support the preparation of a tax return
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; the relevant tax issues, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze or prepare&lt;/strong&gt; a tax return
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explains the entity&#x27;s general tax issues (such as sources and type of income), including deadlines and explain how those items are treated in the tax return. Also explain filing requirements; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Prepare relevant sections to support the tax return.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Explains the entity&#x27;s general tax issues (such as sources and type of income), including deadlines and explain how those items are treated in the tax return. As well, explain filing requirements; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Prepare or Audit/Review relevant sections to support the tax return.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Explain general tax issues such as residency, sources and types of income, dividend tax credits, personal tax credits, related persons or affiliated persons etc., including deadlines and explain how those items are treated in the tax return.  As well, explain filing requirements; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Prepare sections of the tax return.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze general tax issues and ensure filing position is supported, such as legal form and structure, type of corporation, sources and type of income, risk tolerance &amp; impact to different stakeholders and relationships. Be sure to meet filing requirements; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Prepare main aspects of the tax return (i.e. fixed asset, manufacturing and processing credits, scientific research and experimental development (SR&amp;ED) claims, Corporate restructuring sections, etc.).  If applicable, analyze the notice of assessment and prepare responses to notice of objections or appeals.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze general tax issues and ensure filing position is supported, such as legal form and structure, type of corporation, sources and type of income, risk tolerance &amp; impact to different stakeholders and relationships. Ensure filing requirements are met; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Prepare or Audit/Review main aspects of the tax return (i.e. fixed asset, manufacturing and processing credits, scientific research and experimental development (SR&amp;ED) claims, Corporate restructuring sections).  If applicable, analyze the notice of assessment and prepare responses to notice of objections or appeals.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze general tax issues such as residency, sources and types of income, dividend tax credits, personal tax credits, related persons or affiliated persons, etc. Ensure filing requirements are met; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Prepare main aspects of the tax return.  If applicable, analyze the notice of assessment and prepare responses to notice of objections or appeals.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_2__Name" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[2].Name" type="hidden" value="Tax planning: corporate or personal (TX3)" />
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_2__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[2].CompetencyAreaOrderNumber" type="hidden" value="4" />
+                                <input id="TechnicalCompetencyAreas_3__TechnicalCompetencies_2__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[2].CompetencySubAreaOrderNumber" type="hidden" value="3" />
+                                <div>Tax planning: corporate or personal (TX3)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_3__TechnicalCompetencies_2__MaximumLevelAttained" name="TechnicalCompetencyAreas[3].TechnicalCompetencies[2].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Use information prepared internally/externally to explain changes arising from Federal or Provincial budgets.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Use tax software to calculate pro-forma taxes payable under various tax planning opportunities.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; specific tax-planning opportunities for individuals or corporations, and applicable GST implications, such as: (a) income tax implications of death of an individual (b) compensation planning between shareholders and a corporation, or (c) purchase and sale of a corporation.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; specific tax-planning opportunities for individuals or corporations, and applicable GST implications, such as: (a) income tax implications of death of an individual (b) compensation planning between shareholders and a corporation, or&#xD;&#xA;(c) purchase and sale of a corporation.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explain the tax consequences for routine/lower complex opportunities such as of compensation options for owner-manager (employment income versus a dividend), or taxable impact to employee(s) by them receiving certain employee benefits, such as having a company car vs. car allowance, fitness allowance, and/or computing allowance.&lt;/p&gt;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Explain corporate tax planning opportunities relating to restructuring transactions, including items to consider such as optimal corporate structure (use of holding companies, creditor protection), sale or acquisition of shares vs. assets, wind-ups vs. amalgamation.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Explain the tax consequences for routine/lower complex opportunities such as of compensation options for owner-manager (employment income vs. a dividend), or taxable impact to employee(s) by them receiving certain employee benefits, such as having a company car vs. car allowance, fitness allowance, and/or computing allowance.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Explain corporate tax planning opportunities relating to restructuring transactions, including items to consider such as optimal corporate structure (use of holding companies, creditor protection), sale or acquisition of shares vs. assets, wind-ups vs. amalgamation).&lt;/p&gt;&lt;strong&gt;Firm 3 Example&lt;/strong&gt;&lt;/p&gt;Explain what information is required for estate planning and specific aspects such as income splitting and attribution rules, capital losses in estate and transfer of property to spouse or children. &lt;/p&gt;&lt;strong&gt;Firm 4 Example&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Explain tax-planning opportunities such as income splitting, RESP, RRSP, self-employment vs. employee or incorporating vs. non-incorporated businesses.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze corporate tax planning opportunities, which could include a specific technical component such as scientific research and experimental development (SR&amp;ED) claims, transfer pricing etc.  Research different alternatives to support position and provide a recommendation including an estimate to the Manager.&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Corporate 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze corporate tax planning opportunities relating to restructuring transactions, including optimal corporate structure (use of holding companies, creditor protection), sale or acquisition of shares vs. assets, wind-ups vs. amalgamation. Research different alternatives to support position and provide a recommendation including an estimate to the Manager.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze corporate tax planning opportunities, which could include a specific technical component such as scientific research and experimental development (SR&amp;ED) claims, transfer pricing, etc.  Research different alternatives to support position and provide a recommendation including an estimate to the Client.&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze corporate tax planning opportunities relating to restructuring transactions, including optimal corporate structure (use of holding companies, creditor protection), sale or acquisition of shares vs. assets, wind-ups vs. amalgamation. Research different alternatives to support position and provide a recommendation including an estimate to the Client.&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Firm 3 Example&lt;/strong&gt;&lt;/p&gt;Based on the facts of the client (individual and/or family) prepare estate planning which requires understanding the client&#x27;s objectives. Items include income splitting and attribution rules, capital losses in estate and transfer of property to spouse or children.  &#xD;&#xA; &lt;/p&gt;&lt;strong&gt;Firm 4 Example&lt;/strong&gt;&lt;/p&gt;Analyze tax-planning opportunities such as income splitting, RESP, RRSP, self-employment vs. employee or incorporating vs. non-incorporated businesses.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+<input id="TechnicalCompetencyAreas_4__IsCore" name="TechnicalCompetencyAreas[4].IsCore" type="hidden" value="False" /><input id="TechnicalCompetencyAreas_4__Name" name="TechnicalCompetencyAreas[4].Name" type="hidden" value="Strategy and Governance (SG)" />                    <div class="competency-area">Strategy and Governance (SG)</div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_0__Name" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[0].Name" type="hidden" value="Governance mission, vision, values &amp; mandate (SG1)" />
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_0__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[0].CompetencyAreaOrderNumber" type="hidden" value="5" />
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_0__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[0].CompetencySubAreaOrderNumber" type="hidden" value="1" />
+                                <div>Governance mission, vision, values &amp; mandate (SG1)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_4__TechnicalCompetencies_0__MaximumLevelAttained" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[0].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Describe the entity&#x27;s governance policies, processes, and/or code.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; the entity&#x2019;s governance policies, processes, and/or code, and &lt;strong&gt;prepare&lt;/strong&gt; information to aid in the analysis to ensure entity remains compliant with regulatory/compliance requirements, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; management decisions to the entity&#x2019;s mission, vision and values.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s governance policies, processes, and/or code, and &lt;strong&gt;evaluate&lt;/strong&gt; information and analysis to ensure entity remains compliant with regulatory/compliance requirements, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; whether management decisions align with the entity&#x2019;s mission, vision and values.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explain the company&#x27;s governance structure, including the mandate/role of Board of Directors, Audit Committee, Code of Conduct and prepare information to ensure they are compliant with other regulatory bodies (e.g. public companies meeting filing deadlines). &#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;As part of audit/review procedures explain company&#x27;s governance structure, including the mandate/role of Board of Directors, Audit Committee, Code of Conduct and reviews controls to ensure they are compliant with other regulatory bodies (e.g. public companies meeting filing deadlines). 
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze the effectiveness of the company&#x27;s governance structure, including Board of Directors, Audit Committee, External Auditor and Code of Conduct, and ensure they are in compliance with other regulatory bodies (Sarbanes-Oxley Act of 2002, Canadian Securities Administrators, etc.). This would include a detailed analysis of the structure and the effectiveness of meeting their mandate and evaluating if the controls are designed to ensure compliance.  &lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Through entity-level control testing, understand and analyze the effectiveness of the Company&#x27;s governance structure, including Board of Directors, Internal Auditor, Audit Committee, Code of Conduct and ensure they are in compliance with other regulatory bodies (Sarbanes-Oxley Act of 2002, and Canadian Securities Administrator). This would include a detailed analysis of the structure, effectiveness of meeting their mandate and evaluating if the controls are designed to ensure compliance.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_1__Name" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[1].Name" type="hidden" value="Strategy development / implementation (SG2)" />
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_1__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[1].CompetencyAreaOrderNumber" type="hidden" value="5" />
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_1__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[1].CompetencySubAreaOrderNumber" type="hidden" value="2" />
+                                <div>Strategy development / implementation (SG2)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_4__TechnicalCompetencies_1__MaximumLevelAttained" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[1].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Explain the entity&#x27;s strategic objectives.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Collect information on the entity&#x27;s internal and external environment.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; the entity&#x2019;s strategic objectives and related performance measures, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the entity&#x2019;s internal and external environment and its impact on strategy development; &lt;strong&gt;analyze&lt;/strong&gt; strategic alternatives, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the key operational issues including the use of information assets and explains the alignment with strategy.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s strategic objectives and related performance measures, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s internal and external environment and its impact on strategy development; &lt;strong&gt;evaluate&lt;/strong&gt; strategic alternatives, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the key operational issues including the use of information assets and analyzes alignment with strategy.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze an already prepared external analysis, such as competitor analysis and identifying macro forces affecting the organization (economical, social, cultural, political, competitive, legal, etc.).  Also analyze the internal analysis which could include core competence, resources and internal system. The key is to explain how it impacts the strategy.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Explain the client&#x27;s external analysis, such as competitor analysis and understand macro forces affecting the organization (economical, social, cultural, political, competitive, legal, etc.). Also analyze the internal analysis which could include core competence analysis, resources and internal system. The key is to understand how it impacts the company&#x27;s strategy, and therefore, possible audit/review implications.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Evaluate an external analysis, such as analyzing competitors and identifying macro forces affecting the organization (economical, social, cultural, political, competitive, technology, legal, etc.).  Also evaluate the internal analysis which could include core competence, resources, internal systems and weaknesses. The key is to use this analysis and decide how it impacts the strategy and alternatives of the company.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Evaluate the client&#x27;s external analysis, such as analyzing competitors and identifying macro forces affecting the organization (economical, social, cultural, political, competitive, technology, legal, etc.).  Also analyze the client&#x27;s internal analysis which could include core competence analysis, resources, internal systems and weaknesses. The key is to use this analysis and conclude how it impacts the company&#x27;s strategy and therefore possible audit/review implications.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_2__Name" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[2].Name" type="hidden" value="Enterprise risk management (SG3)" />
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_2__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[2].CompetencyAreaOrderNumber" type="hidden" value="5" />
+                                <input id="TechnicalCompetencyAreas_4__TechnicalCompetencies_2__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[2].CompetencySubAreaOrderNumber" type="hidden" value="3" />
+                                <div>Enterprise risk management (SG3)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_4__TechnicalCompetencies_2__MaximumLevelAttained" name="TechnicalCompetencyAreas[4].TechnicalCompetencies[2].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Record risk responses.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; or research components of a risk management program and &lt;strong&gt;analyze&lt;/strong&gt; its impact on shareholder value, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the impact of IT/IS risks on enterprise risk and &lt;strong&gt;identify&lt;/strong&gt; appropriate risk management strategies
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; components of an effective risk management program and &lt;strong&gt;evaluate&lt;/strong&gt; its impact on shareholder value, or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the impact of IT/IS risks on enterprise risk and &lt;strong&gt;recommend&lt;/strong&gt; appropriate risk management strategies
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Assist in the processes to identify, assess, mitigate and monitor risks of the entity, including analyzing how it impacts shareholder value (cost vs. benefit analysis of risk approach). &#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Would analyze the client&#x27;s processes to identify, assess, mitigate and monitor risks of the entity, including explaining how it impacts shareholder value (cost vs. benefit analysis of risk approach).
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Design the processes to identify, assess, mitigate and monitor risks of the entity. This would include advising on the entity&#x27;s risk tolerance level and recommending risk management strategies (such as avoidance, transference, mitigation or acceptance).  In order to recommend the strategy, shareholder value would be considered by cost vs. benefit analysis of risk approach.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Evaluates the client&#x27;s processes to identify, assess, mitigate and monitor risks of the entity.  This would include assessing the entities risk tolerance level and risk management strategies (such as avoidance, transference, mitigation or acceptance). This would then be used to consider impact to audit/review strategy.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+<input id="TechnicalCompetencyAreas_5__IsCore" name="TechnicalCompetencyAreas[5].IsCore" type="hidden" value="True" /><input id="TechnicalCompetencyAreas_5__Name" name="TechnicalCompetencyAreas[5].Name" type="hidden" value="Management Accounting (MA)" />                    <div class="competency-area">Management Accounting (MA)</div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_0__Name" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[0].Name" type="hidden" value="Management reporting needs and systems (MA1)" />
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_0__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[0].CompetencyAreaOrderNumber" type="hidden" value="6" />
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_0__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[0].CompetencySubAreaOrderNumber" type="hidden" value="1" />
+                                <div>Management reporting needs and systems (MA1)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_5__TechnicalCompetencies_0__MaximumLevelAttained" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[0].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        &lt;p&gt;Use existing information systems to generate management reports.&lt;/p&gt;&#xD;&#xA;&lt;p&gt;Recognize ethical and privacy issues related to information technology.&lt;/p&gt;
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; management information requirements, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; business processes, systems and data requirements or &lt;strong&gt;analyze&lt;/strong&gt; potential improvements to meet information needs, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; ethical and privacy issues related to information technology and its use.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; management information requirements, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; business processes, system and data requirements and &lt;strong&gt;evaluate or recommend&lt;/strong&gt; improvements to meet information needs, plus. &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; ethical and privacy issues related to information technology and its use.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explain the information requirements for other departments and/or senior management; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Analyze the different systems in the company, what the purpose is for each and how they integrate into one another (e.g. how inventory management system syncs with the reporting tool); &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Explain the importance of data integrity and confidentiality.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Explain the information requirements of the client; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Discuss the different systems in the company, what the purpose is for each of them and how they integrate with one another (e.g. how inventory management system syncs with the reporting tool); &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Explain the importance of data integrity and confidentiality.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze the information requirements for other departments and/or senior management; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Recommend improvements to existing systems to meet information needs. This could include new reporting packages or ways to analyze the information, suggesting modifications to the reporting system, or being part of an IT conversion; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Analyze data integrity and confidentiality.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze the information requirements for the client; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Evaluate the types of information systems used and the role they play in the organization as part of Audit/Review procedures, which could include recommendations to improve the reports/systems; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Analyze data integrity and confidentiality.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_1__Name" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[1].Name" type="hidden" value="Planning, budgeting and forecasting (MA2)" />
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_1__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[1].CompetencyAreaOrderNumber" type="hidden" value="6" />
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_1__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[1].CompetencySubAreaOrderNumber" type="hidden" value="2" />
+                                <div>Planning, budgeting and forecasting (MA2)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_5__TechnicalCompetencies_1__MaximumLevelAttained" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[1].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Verify mathematical accuracy of plans, budgets and/or forecasts.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze&lt;/strong&gt; or prepare data and information inputs for operational plans, budgets and forecasts, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Prepare&lt;/strong&gt; operational plans, budgets, or forecasts, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; variances
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; data and information inputs (including assumptions) for operational plans, budgets and forecasts, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; operational plans, budgets, or forecasts, plus &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; implications of variances
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Prepare inputs for sections of the quarterly and annual budget; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Calculate the budget and compute the variance for a section, e.g. working capital items.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze management&#x27;s inputs for sections of the quarterly and annual budget; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Calculate the variance of actuals to budget for a section, e.g. working capital items.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Assist in evaluating inputs for the quarterly and annual budget process, ensuring it is accurate and identify any gaps in the supporting information; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;Using the information supplied, prepare the financial or operational budget; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Analyze actual results against the budget and explain the implications of the variances to management.  &#xD;&#xA;&lt;strong&gt;NOTE: For a large company, the above would be performed for some complex sections but for a smaller company, the above would be done for the majority of the budget.&lt;/strong&gt;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;As part of the engagement, evaluate management budget process by assessing inputs for the quarterly and annual budget process, ensure it is accurate and identify any gaps in the supporting information; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Analyze management&#x27;s financial and operational budget; &lt;strong&gt;plus&lt;/strong&gt;&lt;/p&gt; &#xD;&#xA;Analyze management&#x27;s analysis of actual results against the budget and ensure it is reasonable. For items that require further explanation, investigate with management, including corroborating the information.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_2__Name" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[2].Name" type="hidden" value="Cost / revenue / profitability management (MA3)" />
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_2__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[2].CompetencyAreaOrderNumber" type="hidden" value="6" />
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_2__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[2].CompetencySubAreaOrderNumber" type="hidden" value="3" />
+                                <div>Cost / revenue / profitability management (MA3)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_5__TechnicalCompetencies_2__MaximumLevelAttained" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[2].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Collect information to assist with cost, revenue or profitability management.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Cost management: Apply&lt;/strong&gt; the appropriate cost classifications and costing methods for management of ongoing operations, &lt;strong&gt;apply&lt;/strong&gt; cost management techniques appropriate for specific decisions, and &lt;strong&gt;analyze&lt;/strong&gt; potential changes identified by applying process improvement methodologies; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Revenue management: analyze or prepare&lt;/strong&gt; information to understand the sources/drivers of revenue growth; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Profitability management: prepare&lt;/strong&gt; the sensitivity analysis, and &lt;strong&gt;analyze&lt;/strong&gt; alternatives for sustainable profit maximization/capacity management performance.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Cost management: Evaluate&lt;/strong&gt; appropriate cost classifications and costing methods for management of ongoing operations, and &lt;strong&gt;evaluate&lt;/strong&gt; cost management techniques appropriate&#xD;&#xA;for specific decisions, and &lt;strong&gt;evaluate and recommend&lt;/strong&gt; either: (a) change identified by applying process improvement methodologies or (b) cost management improvements across the entity; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Revenue management: evaluate&lt;/strong&gt; sources and drivers of revenue growth; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Profitability management: evaluate the&lt;/strong&gt; sensitivity analysis, and &lt;strong&gt;evaluate&lt;/strong&gt; sustainable profit maximization and capacity management performance.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explain appropriate cost classifications (variable/fixed, direct/indirect, discretionary).  Then explain the appropriate costing methods such as activity-based costing, process costing, standard costing, joint costing or job costing.  Prepare information to assist in lower in complexity/routine costing decisions, such as make vs. buy, acquisition vs. sourcing. Lastly, analyze potential other costing strategies, such as improving tracking costs or reducing waste, or improving supplier relationships.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze factors contributing to the revenue growth, such as price changes or competitive advantage creating increased volumes.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Explain appropriate cost classifications (variable/fixed, direct/indirect, discretionary). Apply methods such as activity-based costing, process costing, standard costing, joint costing or job costing when appropriate to support specific costing decisions which are complex in nature, such as make vs. buy, acquisition vs. sourcing.  Identify opportunities for continuous improvement for costing strategies, such as improving tracking costs or reducing waste, or improving supplier relationships.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Evaluate the sources and drivers of revenue growth, including pricing alternatives, transfer pricing to related parties, relevant costs in relation to revenue growth and understand the competitive structure of the industry.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="competency technical-competency">
+                            <div class="description clearfix">
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_3__Name" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[3].Name" type="hidden" value="Organizational / individual performance measurement (MA4)" />
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_3__CompetencyAreaOrderNumber" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[3].CompetencyAreaOrderNumber" type="hidden" value="6" />
+                                <input id="TechnicalCompetencyAreas_5__TechnicalCompetencies_3__CompetencySubAreaOrderNumber" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[3].CompetencySubAreaOrderNumber" type="hidden" value="4" />
+                                <div>Organizational / individual performance measurement (MA4)</div>
+                                <div style="float: right;margin-right: 20px; display:flex;">
+                                    <select id="TechnicalCompetencyAreas_5__TechnicalCompetencies_3__MaximumLevelAttained" name="TechnicalCompetencyAreas[5].TechnicalCompetencies[3].MaximumLevelAttained" style="width:80px"><option value="">Select...</option>
+<option value="0">Level 0</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+</select>
+                                    <img id="help" class="help proficiencyHelp" src="/images/help-icon.svg" alt="Proficiency Levels" />
+                                    <div style="display: none">
+                                        Execute procedures that relates to existing internal controls.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Analyze or prepare&lt;/strong&gt; the entity&#x2019;s risk assessment processes; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Analyze&lt;/strong&gt; the information system and processes, using knowledge of data requirements and risk exposures.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Evaluate&lt;/strong&gt; the entity&#x2019;s risk assessment processes; or &lt;/p&gt;&#xD;&#xA;&lt;strong&gt;Evaluate&lt;/strong&gt; the information system and processes, using knowledge of data requirements and risk exposures.
+                                    </div>
+                                    <div style="display: none">
+                                        
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Analyze how key performance indicators (KPIs) can be used to identity performance issues and then analyze the actual performance level against established targets/KPIs and explain differences.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Explain the strengths and weaknesses of management&#x27;s incentive plans and understand the implications it can have on the results and performance issues, including possible fraud risk.&lt;/p&gt;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Analyze how key performance indicators (KPIs) can be used to identity performance issues and then analyze the actual performance level against established targets/KPIs and explain or have management explain the differences.
+                                    </div>
+                                    <div style="display: none">
+                                        &lt;strong&gt;Corporate Example&lt;/strong&gt;&lt;/p&gt;Evaluate how the key performance indicators (KPIs) are designed to identity performance issues. Evaluate the actual performance level against established targets/KPIs/balanced scorecards and explain differences. This includes investigating factors that caused variances in performance and identifying root causes of the performance issues.&#xD;&#xA;&lt;/p&gt;&#xD;&#xA;&#xD;&#xA;&lt;strong&gt;Firm Example&lt;/strong&gt;&lt;/p&gt;Analyze the strengths and weaknesses of management&#x27;s incentive plans and analyze the implications it can have on the results and performance issues, including possible fraud risk and the impact to audit/review approach.&#xD;&#xA;&lt;/p&gt;&lt;strong&gt;Firm 2 Example&lt;/strong&gt;&lt;/p&gt;Evaluate how the key performance indicators (KPIs) are designed to identity performance issues. As part of analytics, evaluate the actual performance level against established targets/KPIs/balanced scorecards and explain the differences. This includes investigating factors that caused variances in performance and identifying the root cause of the performance issues.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+        <div style="margin-top: 10px;height: 40px;">
+            <input style="float: right;margin: 0;margin-top: 15px;" class="edit_btn" type="submit" value="Run Self-Assessment" id="assessButton" />
+        </div>
+        <div class="section" id="resultsArea">
+            <h2 style="color:#006fba!important;">Result</h2>
+            <div class="consolidated-summary-requirements clearfix breadth">
+                <div style="color: #006fba;font-size: 18px;font-weight: normal;    padding-left: 0;" class="trial-assessment-perstart-name">Practical Experience Entry Requirement</div>
+                <img style="margin-right:10px;" id="perStartHelp" class="help" src="/images/help-icon.svg" alt="Help" />
+                <div class="met">
+Not Met                </div>
+                <div class="description-wide">Must be able to demonstrate a level 1 proficiency, in one technical sub-competency</div>
+                <div style="float: right; margin-right: 5px">
+                    <img id="perStartHelp" class="help" src="/images/help-icon.svg" alt="Help" />
+                </div>
+            </div>
+            <div class="consolidated-summary-requirements clearfix depth">
+                <div style="color: #006fba;font-size: 18px;font-weight: normal;    padding-left: 0;" class="trial-assessment-12month-name">12 Month Requirement</div>
+                <img style="margin-right: 10px;" id="month12Help" class="help" src="/images/help-icon.svg" alt="Help" />
+                <div class="met">
+Not Met                </div>
+                <div class="description-wide">Must be able to demonstrate at least two technical sub-competency areas to at least a level 1 proficiency, within 12 months of experience.</div>
+
+            </div>
+
+            <div class="consolidated-summary-requirements clearfix technical trial-assessment-perexit">
+                <div style="color: #006fba;font-size: 18px;width: 260px;font-weight: normal;">
+                    PER Completion Requirement
+                </div>
+                <img id="exitHelp" class="help" src="/images/help-icon.svg" alt="Help" />
+
+            </div>
+            <div class="consolidated-summary-requirements clearfix breadth">
+                <div style="color: #006fba;font-size: 18px;font-weight: normal;"  class="trial-assessment-breadth-name">Breadth</div>
+                <div class="met">
+Not Met                </div>
+                <div class="description-wide">Overall, eight competencies at Level 1 or greater with at least four at Level 2</div>
+            </div>
+            <div class="consolidated-summary-requirements clearfix depth">
+                <div style="color: #006fba;font-size: 18px;font-weight: normal;"  class="trial-assessment-depth-name">Depth</div>
+                <div class="met">
+Not Met                </div>
+                <div class="description-wide">Within at least one competency area, all competencies at Level 1 or greater with at least two at Level 2</div>
+            </div>
+            <div class="consolidated-summary-requirements clearfix core">
+                <div style="color: #006fba;font-size: 18px;font-weight: normal;"  class="trial-assessment-core-name">Core</div>
+                <div class="met">
+Not Met                </div>
+                <div class="description-wide">In Financial Reporting and/or Management Accounting, at least three competencies at Level 1 or greater</div>
+            </div>
+            
+            <p><p>Additional information on the complete CPA Practical Experience Requirements is available in the <a href="https://www.cpacanada.ca/en/become-a-cpa/certification-resource-centre/resources-for-cpa-practical-experience-requirements">CPA Canada Certification Resources Centre</a>.</p></p>
+        </div>
+<input name="__RequestVerificationToken" type="hidden" value="CfDJ8Di2sUySygZClo8Ldw75N8Xtpq_V7DzZXyUjQYGqI3im64dfObhg-hcfhGoAy9tQYOsyrsp_7SVSHQMZFdU-Po07ttuH2DeaKPD9x_w1PiOsbHAXZO2JIJnuUSR4w2BSIC-b1n1U95YWBfefSexV8TY" /></form></div>
+<br />
+<h2 class="disclaimer">Disclaimer</h2>
+<div class="special-instruction-text-in-progress">
+    <p>This tool is for self-assessment purposes only.  No experience will be recognized toward meeting the CPA Practical Experience Requirements.</p>
+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper-b">&nbsp;</div>
+    </div>
+
+    <footer>
+        <div class="footer-spacing"></div>
+        <div class="footer-info">
+            <div class="copyright">
+               <p>Copyright 2025 CPA Canada</p>
+            </div>
+            <div class="footer-menu">
+                <ul>
+                    <li><a href="/Home/Contact/" target="_blank">Contact</a></li>
+
+                        <li><a style="color:white;" href="https://www.cpacanada.ca/en/policies/privacy-policy" target="_blank">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </footer>
+    <script src="//rum-static.pingdom.net/pa-5db9978e9623b000080006d4.js" async></script>
+    </div>
+    
+</body>
+</html>

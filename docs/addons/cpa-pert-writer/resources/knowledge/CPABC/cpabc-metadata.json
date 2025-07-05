@@ -27,11 +27,12 @@
       },
       "capture_info": {
         "timestamp": "2025-07-05T18:56:49Z",
-        "sha256": "pending_capture",
-        "captured_by": "automated_webfetch"
+        "sha256": "360fc4c1b17c0e43d7e815de78a31c1633ed6ecc4ff86817a0adf05a1f5bd357",
+        "file_size": 36992,
+        "captured_by": "wget_download"
       },
       "storage_info": {
-        "saved_path": "snapshots/CPABC/official-docs/cpabc-current-candidates-experience.pdf"
+        "saved_path": "snapshots/CPABC/official-docs/current-candidates-experience.html"
       },
       "validation_status": "verified",
       "last_verified": "2025-07-05T18:56:49Z",
@@ -118,11 +119,12 @@
       },
       "capture_info": {
         "timestamp": "2025-07-05T18:56:49Z",
-        "sha256": "pending_capture",
-        "captured_by": "automated_webfetch"
+        "sha256": "7ea08ef135423541f0000354b6afcda0572c66bbee513eb3c355467793ae050d",
+        "file_size": 138509,
+        "captured_by": "wget_download"
       },
       "storage_info": {
-        "saved_path": "snapshots/CPABC/guidance/pert-self-assessment-tool.pdf"
+        "saved_path": "snapshots/CPABC/guidance/pert-self-assessment-tool.html"
       },
       "validation_status": "verified",
       "last_verified": "2025-07-05T18:56:49Z",
