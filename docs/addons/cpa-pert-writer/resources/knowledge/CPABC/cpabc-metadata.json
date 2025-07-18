@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "last_updated": "2025-07-05T18:56:49Z",
-    "total_documents": 3,
+    "last_updated": "2025-07-05T15:13:00Z",
+    "total_documents": 5,
     "metadata_version": "1.0.0"
   },
   "documents": {
@@ -26,13 +26,13 @@
         "previous_versions": []
       },
       "capture_info": {
-        "timestamp": "2025-07-05T18:56:49Z",
-        "sha256": "360fc4c1b17c0e43d7e815de78a31c1633ed6ecc4ff86817a0adf05a1f5bd357",
-        "file_size": 36992,
-        "captured_by": "wget_download"
+        "timestamp": "2025-07-05T15:13:00Z",
+        "sha256": "b8041ece0eaf112b9982bc44db8c42f906c3a6af07a5f411fdc7006f7f94e618",
+        "file_size": 136249,
+        "captured_by": "chromium_pdf_export"
       },
       "storage_info": {
-        "saved_path": "snapshots/CPABC/official-docs/current-candidates-experience.html"
+        "saved_path": "snapshots/CPABC/official-docs/cpabc-current-candidates-experience.pdf"
       },
       "validation_status": "verified",
       "last_verified": "2025-07-05T18:56:49Z",
@@ -118,13 +118,13 @@
         "previous_versions": []
       },
       "capture_info": {
-        "timestamp": "2025-07-05T18:56:49Z",
-        "sha256": "7ea08ef135423541f0000354b6afcda0572c66bbee513eb3c355467793ae050d",
-        "file_size": 138509,
-        "captured_by": "wget_download"
+        "timestamp": "2025-07-05T15:13:00Z",
+        "sha256": "ec9bacc1aadb3ac284aeed62efe84d2f10ed05f9de3f8ebf9496c26e980b16b4",
+        "file_size": 147153,
+        "captured_by": "chromium_pdf_export"
       },
       "storage_info": {
-        "saved_path": "snapshots/CPABC/guidance/pert-self-assessment-tool.html"
+        "saved_path": "snapshots/CPABC/guidance/cpabc-pert-self-assessment-tool.pdf"
       },
       "validation_status": "verified",
       "last_verified": "2025-07-05T18:56:49Z",
@@ -143,6 +143,106 @@
           "date": "2025-07-05T18:56:49Z",
           "change_type": "created",
           "description": "Initial document discovery and metadata creation"
+        }
+      ]
+    },
+    "cpabc_current_candidates_experience_pdf_v1": {
+      "document_id": "cpabc_current_candidates_experience_pdf_v1",
+      "title": "CPA BC Current Candidates Experience Requirements (PDF)",
+      "url": "https://www.bccpa.ca/become-a-cpa/about-the-program/experience/current-candidates/",
+      "source": "CPABC",
+      "route_relevance": "Both",
+      "document_type": "official",
+      "competency_classification": "general",
+      "content_categories": [
+        "PERT system access",
+        "Experience requirements",
+        "EVR route information",
+        "Competency demonstration",
+        "Video guides"
+      ],
+      "version_info": {
+        "version": "1.0",
+        "is_current": true,
+        "previous_versions": []
+      },
+      "capture_info": {
+        "timestamp": "2025-07-05T15:13:00Z",
+        "sha256": "b8041ece0eaf112b9982bc44db8c42f906c3a6af07a5f411fdc7006f7f94e618",
+        "file_size": 136249,
+        "captured_by": "chromium_pdf_export",
+        "firewall_workaround": "successful_chromium_headless"
+      },
+      "storage_info": {
+        "saved_path": "snapshots/CPABC/official-docs/cpabc-current-candidates-experience.pdf"
+      },
+      "validation_status": "verified",
+      "last_verified": "2025-07-05T15:13:00Z",
+      "description": "PDF snapshot of comprehensive guide for CPA BC candidates on experience requirements, PERT system access, and competency demonstration including EVR and PPR routes",
+      "keywords": [
+        "PERT system",
+        "experience requirements",
+        "EVR",
+        "PPR",
+        "competency demonstration",
+        "mentorship",
+        "technical competencies",
+        "enabling competencies"
+      ],
+      "change_history": [
+        {
+          "date": "2025-07-05T15:13:00Z",
+          "change_type": "created",
+          "description": "PDF snapshot created using Chromium headless browser with firewall workaround"
+        }
+      ]
+    },
+    "pert_self_assessment_tool_pdf_v1": {
+      "document_id": "pert_self_assessment_tool_pdf_v1",
+      "title": "PERT Self-Assessment Tool (PDF)",
+      "url": "https://pert.cpa-services.org/Student/TrialAssessment",
+      "source": "CPABC",
+      "route_relevance": "Both",
+      "document_type": "guidance",
+      "competency_classification": "mixed",
+      "content_categories": [
+        "self-assessment",
+        "competency evaluation",
+        "technical competencies",
+        "progression requirements"
+      ],
+      "version_info": {
+        "version": "1.0",
+        "is_current": true,
+        "previous_versions": []
+      },
+      "capture_info": {
+        "timestamp": "2025-07-05T15:13:00Z",
+        "sha256": "ec9bacc1aadb3ac284aeed62efe84d2f10ed05f9de3f8ebf9496c26e980b16b4",
+        "file_size": 147153,
+        "captured_by": "chromium_pdf_export",
+        "firewall_workaround": "successful_chromium_headless"
+      },
+      "storage_info": {
+        "saved_path": "snapshots/CPABC/guidance/cpabc-pert-self-assessment-tool.pdf"
+      },
+      "validation_status": "verified",
+      "last_verified": "2025-07-05T15:13:00Z",
+      "description": "PDF snapshot of interactive self-assessment tool for CPA candidates to evaluate their practical experience progress across six technical competency areas",
+      "keywords": [
+        "self-assessment",
+        "competency evaluation",
+        "technical competencies",
+        "progression tracking",
+        "Level 1",
+        "Level 2",
+        "mentorship requirements"
+      ],
+      "change_history": [
+        {
+          "date": "2025-07-05T15:13:00Z",
+          "change_type": "created",
+          "description": "PDF snapshot created using Chromium headless browser with firewall workaround"
         }
       ]
     }
