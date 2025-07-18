@@ -164,6 +164,15 @@ temp/
 *.pdf
 *.docx
 
+# Mermaid CLI and diagram generation
+.cache/puppeteer/
+*.mmd.png
+**/assets/*.png.tmp
+
+# Corrupted or temporary files
+*@*
+@@*
+
 # Docker
 .dockerignore
 docker-compose.override.yml
@@ -204,3 +213,12 @@ coverage/
 local/
 dev-notes.md
 scratch.js
+
+# Claude Code specific
+.claude/
+*.claude-session
+
+# Project specific
+test-diagram.*
+*.test.mmd
+*.test.png

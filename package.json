@@ -1,0 +1,12 @@
+{
+  "name": "career-navigator",
+  "version": "1.0.0",
+  "description": "AI-powered career navigation and experience management system",
+  "scripts": {
+    "mermaid": "mmdc",
+    "mermaid:setup": "./scripts/setup-mermaid.sh"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^10.9.1"
+  }
+}

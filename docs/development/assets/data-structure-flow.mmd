@@ -1,0 +1,39 @@
+graph TD
+    subgraph "Tier 1 - Detailed Experiences"
+        D1[Raw Experience Data]
+        D2[Skills Extraction]
+        D3[Role Mappings]
+        D4[Achievement Metrics]
+    end
+    
+    subgraph "Tier 2 - Profile Summaries"
+        P1[Aggregated Skills]
+        P2[Career Progression]
+        P3[Industry Expertise]
+        P4[Leadership Indicators]
+    end
+    
+    subgraph "Tier 3 - Quick Summaries"
+        Q1[Executive Summary]
+        Q2[Key Highlights]
+        Q3[Resume Headers]
+        Q4[Elevator Pitch]
+    end
+    
+    D1 --> D2
+    D2 --> D3
+    D3 --> D4
+    
+    D2 --> P1
+    D3 --> P2
+    D4 --> P3
+    D4 --> P4
+    
+    P1 --> Q1
+    P2 --> Q2
+    P3 --> Q3
+    P4 --> Q4
+    
+    style D1 fill:#ffd,stroke:#333,stroke-width:2px
+    style P1 fill:#dff,stroke:#333,stroke-width:2px
+    style Q1 fill:#ddf,stroke:#333,stroke-width:2px

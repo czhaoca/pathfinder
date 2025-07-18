@@ -8,12 +8,12 @@ The career navigation and experience management system consists of three main co
 
 ## Architecture Diagram
 
-[![System Architecture](../../assets/mermaid/system-architecture.png)](../../assets/diagrams/system-architecture.mmd)
+![System Architecture](./assets/system-architecture.png)
 
 ## Data Structure Flow
 
-[Link to Data Structure Flow Diagram](../../assets/diagrams/data-structure-flow.mmd)
+![Data Structure Flow](./assets/data-structure-flow.png)
 
 ## MCP Integration Flow
 
-[Link to MCP Integration Flow Diagram](../../assets/diagrams/mcp-integration-flow.mmd)
+![MCP Integration Flow](./assets/mcp-integration-flow.png)

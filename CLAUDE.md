@@ -46,7 +46,44 @@ npm run dev              # Start development server
 npm run test             # Run test suite
 npm run lint             # Code linting
 npm run type-check       # TypeScript checking
+npm run mermaid          # Run mermaid CLI (mmdc)
 ```
+
+### Mermaid Diagram Workflow
+
+When creating documentation with Mermaid diagrams:
+
+1. **Create Mermaid source files**: Save `.mmd` files in the `assets/` folder relative to your markdown file
+2. **Convert to PNG**: Use the provided scripts to generate PNG images
+3. **Reference in Markdown**: Link to the PNG file, not the Mermaid code block
+
+Example structure:
+```
+docs/development/
+├── architecture.md
+└── assets/
+    ├── system-diagram.mmd    # Mermaid source
+    └── system-diagram.png    # Generated PNG
+```
+
+Converting Mermaid to PNG:
+```bash
+# Using the bash script
+./scripts/mermaid-to-png.sh docs/development/assets/system-diagram.mmd
+
+# Using the Node.js script
+node scripts/mermaid-converter.js docs/development/assets/system-diagram.mmd
+
+# Using npm script
+npm run mermaid -- -i docs/development/assets/system-diagram.mmd -o docs/development/assets/system-diagram.png
+```
+
+In your markdown file:
+```markdown
+![System Architecture](./assets/system-diagram.png)
+```
+
+**Important**: This project uses system Chromium on ARM architectures. The setup script automatically detects and configures the appropriate Chrome/Chromium for your system.
 
 ## Key Technologies
 
