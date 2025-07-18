@@ -199,6 +199,188 @@ npm run update-checksums             # Regenerate SHA-256 checksums
 - Metadata schema changes require approval and version increment
 - Focus on BC requirements first, then national framework support
 
+## Comprehensive CPA PERT Knowledge Base
+
+### Core PERT Requirements (Based on Live Data Analysis)
+
+#### **Experience Duration & Progression**
+- **Minimum**: 30 months of paid, relevant, and progressive work experience
+- **12-Month Rule**: Must achieve Level 1 proficiency in two technical sub-competencies within 12 months (8 months in Quebec)
+- **Progressive Nature**: Experience must show increasing complexity and responsibility over time
+
+#### **Competency Framework Structure**
+- **Technical Competencies**: 6 major areas with 24 sub-competencies
+- **Enabling Competencies**: Professional skills across multiple domains
+- **Proficiency Levels**: 0 (Administrative), 1 (Analysis), 2 (Knowledge Utilization)
+- **Focus Areas**: 8-10 sub-competencies that are key to candidate's role
+
+#### **EVR Route Specific Requirements**
+- **Pre-Assessment Checklist**: Must be completed before reporting (Updated April 17, 2023)
+- **Self-Assessment Tool**: Available at https://pert.cpa-services.org/Student/TrialAssessment
+- **Mentorship**: Ongoing mentorship required throughout experience period
+- **Supervision**: Must work under qualified supervision with appropriate autonomy levels
+
+### Technical Competencies Deep Dive
+
+#### **Financial Reporting (FR)**
+- **FR1**: Financial reporting needs and systems
+- **FR2**: Accounting policies and transactions
+- **FR3**: Financial report preparation
+- **FR4**: Financial statement analysis
+- **EVR Focus**: Must demonstrate experience with external financial reporting frameworks (ASPE, IFRS, PSAS)
+- **Level 2 Requirement**: 3+ complex examples from multiple framework areas
+
+#### **Management Accounting (MA)**
+- **MA1**: Management reporting needs and systems
+- **MA2**: Planning, budgeting and forecasting
+- **MA3**: Cost, revenue, profitability management
+- **MA4**: Organizational/Individual performance measurement
+- **Industry Focus**: Internal reporting and decision-making support
+
+#### **Audit and Assurance (AA)**
+- **AA1**: Internal control assessment
+- **AA2**: Internal audit or external assurance requirements
+- **AA3**: Internal audit projects or external assurance engagements
+- **EVR Consideration**: Limited to internal audit functions in industry settings
+
+#### **Taxation (TX)**
+- **TX1**: Income tax legislation and research
+- **TX2**: Income tax compliance (corporate or personal)
+- **TX3**: Tax planning (corporate or personal)
+- **Application**: Both internal corporate tax and external client scenarios
+
+#### **Finance (FN)**
+- **FN1**: Financial analysis and planning
+- **FN2**: Treasury management
+- **FN3**: Capital budgeting/valuation/corporate finance
+- **Strategic Focus**: Financial viability, risk assessment, cash flow analysis
+
+#### **Strategy and Governance (SG)**
+- **SG1**: Governance, mission, vision, values and mandate
+- **SG2**: Strategy development/implementation
+- **SG3**: Enterprise risk management
+- **Leadership Component**: Higher-level strategic thinking and analysis
+
+### Proficiency Level Requirements
+
+#### **Level 1 (Analysis)**
+- **Characteristics**: Routine tasks, low-moderate complexity, supervised work
+- **Examples Required**: 1-2 specific examples with frequency notation
+- **Autonomy**: Lower level, work reviewed by supervisor
+- **Complexity**: Straightforward tasks with routine approaches
+
+#### **Level 2 (Knowledge Utilization)**
+- **Characteristics**: Key job requirement, moderate-high complexity, significant judgment
+- **Examples Required**: 3+ complex examples across duration
+- **Autonomy**: Moderate to high level of independence
+- **Complexity**: Multiple variables, ambiguities, non-routine approaches
+- **Transferability**: Skills applicable outside current role/organization
+
+### Response Writing Guidelines
+
+#### **Structure Requirements**
+- **Character Limit**: 5,000 characters maximum per response
+- **Boundaries**: Must stay within PERT response box borders
+- **Clarity**: Clear, concise writing (not story writing)
+- **Focus**: Most complex examples, not routine tasks
+
+#### **Content Requirements**
+- **Guiding Questions**: Must address all questions for targeted proficiency level
+- **Examples**: Specific, quantifiable examples with complete walk-through descriptions
+- **Frequency**: Specify how often work is performed
+- **Complexity Factors**: Research required, multiple analyses, judgment calls
+
+### PERT System Access & Tools
+
+#### **Primary Access Points**
+- **Student/Candidate Portal**: https://my.cpawsb.ca/
+- **Self-Assessment Tool**: https://pert.cpa-services.org/Student/TrialAssessment
+- **Support Contact**: admissionadvising@cpawsb.ca or 1-866-420-2350 ext. 6001
+
+#### **Key Resources Available**
+- **PERT User Guide**: For Future CPAs (Updated April 1, 2023)
+- **Video Training**: Technical and Enabling Competency Response crafting
+- **Checklists**: Pre-assessment, Technical Competency Guiding Questions, Enabling Competencies
+- **Timeline Documents**: EVR and PPR reporting timelines
+
+### Assessment and Evaluation
+
+#### **Evaluation Criteria**
+- **Completeness**: All guiding questions addressed
+- **Complexity**: Appropriate level of difficulty demonstrated
+- **Autonomy**: Level of independence shown
+- **Judgment**: Evidence of decision-making and analysis
+- **Transferability**: Skills applicable beyond current role
+
+#### **Common Quality Issues**
+- **Insufficient Detail**: Examples lacking specific walk-through descriptions
+- **Wrong Level**: Targeting proficiency level that doesn't match experience
+- **Missing Elements**: Not addressing all guiding questions
+- **Generic Responses**: Lacking specific examples and quantifiable results
+
+### Mentorship Requirements
+
+#### **Mentor Qualifications**
+- Must be a CPA with relevant experience
+- Understanding of candidate's role and industry
+- Ability to provide ongoing guidance and support
+
+#### **Mentorship Activities**
+- Regular meetings and discussions
+- Review of PERT responses and feedback
+- Career guidance and professional development
+- Industry-specific competency development
+
+### Job Change Considerations
+
+#### **Available Resources**
+- Change of Job: EVR to EVR (Updated March 1, 2022)
+- Change of Job: EVR to PPR (Updated March 1, 2022)
+- Change of Job: PPR to EVR (Updated March 1, 2022)
+- Change of Job: PPR to PPR (Updated March 1, 2022)
+
+#### **Impact Factors**
+- Competency development continuity
+- Mentorship relationship changes
+- Timeline adjustments
+- Experience diversity requirements
+
+### National Framework Integration
+
+#### **CPA Canada Standards**
+- **Guiding Questions and Practical Experience Rubric** (April 2023)
+- **CPA Practical Experience Requirements** (Updated April 1, 2023)
+- **Harmonized Practical Experience Policies** (Updated April 1, 2023)
+
+#### **Assessment Consistency**
+- National rubric standards applied provincially
+- Consistent proficiency level definitions
+- Standardized competency framework
+- Uniform assessment criteria
+
+### Implementation Best Practices
+
+#### **Preparation Phase**
+1. Complete self-assessment tool
+2. Review pre-assessment checklist
+3. Identify 8-10 key competencies for role
+4. Establish mentorship relationship
+5. Understand proficiency level requirements
+
+#### **Response Development**
+1. Use guiding questions as framework
+2. Focus on most complex examples
+3. Provide specific, quantifiable details
+4. Show progression and growth
+5. Demonstrate judgment and analysis
+
+#### **Quality Assurance**
+1. Address all guiding questions
+2. Stay within character limits
+3. Provide complete walk-through descriptions
+4. Show appropriate proficiency level
+5. Demonstrate transferable skills
+
 ## Important Reminders
 
 1. **NEVER** fabricate CPA content - all content must be live-fetched
@@ -207,3 +389,7 @@ npm run update-checksums             # Regenerate SHA-256 checksums
 4. **VALIDATE** all metadata against the schema before committing
 5. **PRESERVE** version history for audit trail
 6. **VERIFY** SHA-256 checksums for data integrity
+7. **FOCUS** on 8-10 key competencies relevant to candidate's role
+8. **DEMONSTRATE** progressive, complex experience with specific examples
+9. **MAINTAIN** 5,000 character limit and response box boundaries
+10. **ENSURE** all guiding questions are addressed for targeted proficiency level
