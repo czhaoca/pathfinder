@@ -1,248 +1,90 @@
 {
   "metadata": {
-    "last_updated": "2025-07-05T15:13:00Z",
-    "total_documents": 5,
-    "metadata_version": "1.0.0"
+    "last_updated": "2025-07-18T14:28:44.450Z",
+    "total_documents": 2,
+    "metadata_version": "1.0.0",
+    "collection_session": "6562228c-33c7-47b4-b118-4c6c6f6e8dad"
   },
   "documents": {
     "cpabc_current_candidates_experience_v1": {
       "document_id": "cpabc_current_candidates_experience_v1",
-      "title": "CPA BC Current Candidates Experience Requirements",
+      "title": "Current Candidates Experience",
       "url": "https://www.bccpa.ca/become-a-cpa/about-the-program/experience/current-candidates/",
       "source": "CPABC",
-      "route_relevance": "Both",
+      "route_relevance": "EVR",
       "document_type": "official",
       "competency_classification": "general",
-      "content_categories": [
-        "PERT system access",
-        "Experience requirements",
-        "EVR route information",
-        "Competency demonstration",
-        "Video guides"
-      ],
       "version_info": {
         "version": "1.0",
         "is_current": true,
         "previous_versions": []
       },
       "capture_info": {
-        "timestamp": "2025-07-05T15:13:00Z",
-        "sha256": "b8041ece0eaf112b9982bc44db8c42f906c3a6af07a5f411fdc7006f7f94e618",
-        "file_size": 136249,
-        "captured_by": "chromium_pdf_export"
+        "timestamp": "2025-07-18T14:28:19.165Z",
+        "sha256": "35a5cfa3d03e9fe8209ec866bd98cf6469c63277c159039f1615f27988e72abc",
+        "file_size": 9413,
+        "captured_by": "enhanced_wget_human_behavior",
+        "session_id": "6562228c-33c7-47b4-b118-4c6c6f6e8dad",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15"
       },
       "storage_info": {
-        "saved_path": "snapshots/CPABC/official-docs/cpabc-current-candidates-experience.pdf"
+        "saved_path": "resources/snapshots/CPABC/official/cpabc-current_candidates_experience.pdf"
       },
       "validation_status": "verified",
-      "last_verified": "2025-07-05T18:56:49Z",
-      "description": "Comprehensive guide for CPA BC candidates on experience requirements, PERT system access, and competency demonstration including EVR and PPR routes",
+      "last_verified": "2025-07-18T14:28:19.165Z",
+      "description": "CPABC official document: experience requirements",
       "keywords": [
-        "PERT system",
-        "experience requirements",
-        "EVR",
-        "PPR",
-        "competency demonstration",
-        "mentorship",
-        "technical competencies",
-        "enabling competencies"
+        "PERT",
+        "practical experience",
+        "competency framework",
+        "experience requirements"
       ],
       "change_history": [
         {
-          "date": "2025-07-05T18:56:49Z",
+          "date": "2025-07-18T14:28:19.165Z",
           "change_type": "created",
-          "description": "Initial document discovery and metadata creation"
+          "description": "Successfully collected using enhanced wget with human-like behavior patterns"
         }
       ]
     },
-    "cpabc_pert_portal_access_v1": {
-      "document_id": "cpabc_pert_portal_access_v1",
-      "title": "CPA Western School PERT Portal Access",
-      "url": "https://my.cpawsb.ca/",
-      "source": "CPABC",
-      "route_relevance": "Both",
-      "document_type": "official",
-      "competency_classification": "general",
-      "content_categories": [
-        "PERT portal login",
-        "system access",
-        "user guides"
-      ],
-      "version_info": {
-        "version": "1.0",
-        "is_current": true,
-        "previous_versions": []
-      },
-      "capture_info": {
-        "timestamp": "2025-07-05T18:56:49Z",
-        "sha256": "pending_capture",
-        "captured_by": "automated_webfetch"
-      },
-      "storage_info": {
-        "saved_path": "snapshots/CPABC/official-docs/cpabc-pert-portal-access.pdf"
-      },
-      "validation_status": "needs_review",
-      "last_verified": "2025-07-05T18:56:49Z",
-      "description": "CPA Western School portal for PERT system access and student resources",
-      "keywords": [
-        "PERT portal",
-        "login access",
-        "student portal",
-        "system access"
-      ],
-      "change_history": [
-        {
-          "date": "2025-07-05T18:56:49Z",
-          "change_type": "created",
-          "description": "Initial document discovery and metadata creation"
-        }
-      ]
-    },
-    "pert_self_assessment_tool_v1": {
-      "document_id": "pert_self_assessment_tool_v1",
-      "title": "PERT Self-Assessment Tool",
+    "cpabc_pert_self_assessment_v1": {
+      "document_id": "cpabc_pert_self_assessment_v1",
+      "title": "Pert Self Assessment",
       "url": "https://pert.cpa-services.org/Student/TrialAssessment",
       "source": "CPABC",
-      "route_relevance": "Both",
+      "route_relevance": "EVR",
       "document_type": "guidance",
       "competency_classification": "mixed",
-      "content_categories": [
-        "self-assessment",
-        "competency evaluation",
-        "technical competencies",
-        "progression requirements"
-      ],
       "version_info": {
         "version": "1.0",
         "is_current": true,
         "previous_versions": []
       },
       "capture_info": {
-        "timestamp": "2025-07-05T15:13:00Z",
-        "sha256": "ec9bacc1aadb3ac284aeed62efe84d2f10ed05f9de3f8ebf9496c26e980b16b4",
-        "file_size": 147153,
-        "captured_by": "chromium_pdf_export"
+        "timestamp": "2025-07-18T14:28:25.413Z",
+        "sha256": "01c07f478ed4f2b9865e0ae2174675ef142a1ee0e06a19149bb5e364ff575f74",
+        "file_size": 28409,
+        "captured_by": "enhanced_wget_human_behavior",
+        "session_id": "6562228c-33c7-47b4-b118-4c6c6f6e8dad",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15"
       },
       "storage_info": {
-        "saved_path": "snapshots/CPABC/guidance/cpabc-pert-self-assessment-tool.pdf"
+        "saved_path": "resources/snapshots/CPABC/guidance/cpabc-pert_self_assessment.pdf"
       },
       "validation_status": "verified",
-      "last_verified": "2025-07-05T18:56:49Z",
-      "description": "Interactive self-assessment tool for CPA candidates to evaluate their practical experience progress across six technical competency areas",
+      "last_verified": "2025-07-18T14:28:25.413Z",
+      "description": "CPABC guidance document: self-assessment tool",
       "keywords": [
-        "self-assessment",
-        "competency evaluation",
-        "technical competencies",
-        "progression tracking",
-        "Level 1",
-        "Level 2",
-        "mentorship requirements"
+        "PERT",
+        "practical experience",
+        "competency framework",
+        "self-assessment tool"
       ],
       "change_history": [
         {
-          "date": "2025-07-05T18:56:49Z",
+          "date": "2025-07-18T14:28:25.413Z",
           "change_type": "created",
-          "description": "Initial document discovery and metadata creation"
-        }
-      ]
-    },
-    "cpabc_current_candidates_experience_pdf_v1": {
-      "document_id": "cpabc_current_candidates_experience_pdf_v1",
-      "title": "CPA BC Current Candidates Experience Requirements (PDF)",
-      "url": "https://www.bccpa.ca/become-a-cpa/about-the-program/experience/current-candidates/",
-      "source": "CPABC",
-      "route_relevance": "Both",
-      "document_type": "official",
-      "competency_classification": "general",
-      "content_categories": [
-        "PERT system access",
-        "Experience requirements",
-        "EVR route information",
-        "Competency demonstration",
-        "Video guides"
-      ],
-      "version_info": {
-        "version": "1.0",
-        "is_current": true,
-        "previous_versions": []
-      },
-      "capture_info": {
-        "timestamp": "2025-07-05T15:13:00Z",
-        "sha256": "b8041ece0eaf112b9982bc44db8c42f906c3a6af07a5f411fdc7006f7f94e618",
-        "file_size": 136249,
-        "captured_by": "chromium_pdf_export",
-        "firewall_workaround": "successful_chromium_headless"
-      },
-      "storage_info": {
-        "saved_path": "snapshots/CPABC/official-docs/cpabc-current-candidates-experience.pdf"
-      },
-      "validation_status": "verified",
-      "last_verified": "2025-07-05T15:13:00Z",
-      "description": "PDF snapshot of comprehensive guide for CPA BC candidates on experience requirements, PERT system access, and competency demonstration including EVR and PPR routes",
-      "keywords": [
-        "PERT system",
-        "experience requirements",
-        "EVR",
-        "PPR",
-        "competency demonstration",
-        "mentorship",
-        "technical competencies",
-        "enabling competencies"
-      ],
-      "change_history": [
-        {
-          "date": "2025-07-05T15:13:00Z",
-          "change_type": "created",
-          "description": "PDF snapshot created using Chromium headless browser with firewall workaround"
-        }
-      ]
-    },
-    "pert_self_assessment_tool_pdf_v1": {
-      "document_id": "pert_self_assessment_tool_pdf_v1",
-      "title": "PERT Self-Assessment Tool (PDF)",
-      "url": "https://pert.cpa-services.org/Student/TrialAssessment",
-      "source": "CPABC",
-      "route_relevance": "Both",
-      "document_type": "guidance",
-      "competency_classification": "mixed",
-      "content_categories": [
-        "self-assessment",
-        "competency evaluation",
-        "technical competencies",
-        "progression requirements"
-      ],
-      "version_info": {
-        "version": "1.0",
-        "is_current": true,
-        "previous_versions": []
-      },
-      "capture_info": {
-        "timestamp": "2025-07-05T15:13:00Z",
-        "sha256": "ec9bacc1aadb3ac284aeed62efe84d2f10ed05f9de3f8ebf9496c26e980b16b4",
-        "file_size": 147153,
-        "captured_by": "chromium_pdf_export",
-        "firewall_workaround": "successful_chromium_headless"
-      },
-      "storage_info": {
-        "saved_path": "snapshots/CPABC/guidance/cpabc-pert-self-assessment-tool.pdf"
-      },
-      "validation_status": "verified",
-      "last_verified": "2025-07-05T15:13:00Z",
-      "description": "PDF snapshot of interactive self-assessment tool for CPA candidates to evaluate their practical experience progress across six technical competency areas",
-      "keywords": [
-        "self-assessment",
-        "competency evaluation",
-        "technical competencies",
-        "progression tracking",
-        "Level 1",
-        "Level 2",
-        "mentorship requirements"
-      ],
-      "change_history": [
-        {
-          "date": "2025-07-05T15:13:00Z",
-          "change_type": "created",
-          "description": "PDF snapshot created using Chromium headless browser with firewall workaround"
+          "description": "Successfully collected using enhanced wget with human-like behavior patterns"
         }
       ]
     }
