@@ -177,6 +177,12 @@ temp/
 .dockerignore
 docker-compose.override.yml
 
+# Oracle wallet files and database credentials
+wallets/
+*.wallet
+instantclient/
+*.ora
+
 # IDE and editor files
 .vscode/
 .idea/

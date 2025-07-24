@@ -1,12 +1,150 @@
 {
-  "name": "career-navigator",
+  "name": "career-navigator-mcp",
   "version": "1.0.0",
-  "description": "AI-powered career navigation and experience management system",
+  "description": "Career Navigator Model Context Protocol Server with Oracle Autonomous Database backend",
+  "main": "server/mcp-server.js",
   "scripts": {
-    "mermaid": "mmdc",
-    "mermaid:setup": "./scripts/setup-mermaid.sh"
+    "mcp:start": "node server/mcp-server.js",
+    "mcp:dev": "NODE_ENV=development node server/mcp-server.js",
+    "mcp:prod": "NODE_ENV=production node server/mcp-server.js",
+    "env:dev": "./scripts/switch-env.sh development",
+    "env:prod": "./scripts/switch-env.sh production",
+    "db:setup": "node scripts/setup-database.js",
+    "db:migrate": "node scripts/deploy-prefixed-schema.js",
+    "db:migrate:dev": "NODE_ENV=development node scripts/deploy-prefixed-schema.js development",
+    "db:migrate:prod": "NODE_ENV=production node scripts/deploy-prefixed-schema.js production",
+    "db:seed": "node scripts/seed-data.js",
+    "db:seed:dev": "NODE_ENV=development node scripts/seed-data.js",
+    "db:seed:prod": "NODE_ENV=production node scripts/seed-data.js",
+    "db:health": "node scripts/db-health-check.js",
+    "db:health:dev": "NODE_ENV=development node scripts/db-health-check.js",
+    "db:health:prod": "NODE_ENV=production node scripts/db-health-check.js",
+    "db:test": "node scripts/test-connections.js",
+    "db:test:dev": "NODE_ENV=development node scripts/test-connections.js",
+    "db:test:prod": "NODE_ENV=production node scripts/test-connections.js",
+    "db:access-control": "node scripts/create-access-control.js",
+    "db:access-control:dev": "NODE_ENV=development node scripts/create-access-control.js development",
+    "db:access-control:prod": "NODE_ENV=production node scripts/create-access-control.js production",
+    "test": "jest",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:unit": "jest --testPathPattern=unit",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "dev": "nodemon server/mcp-server.js",
+    "build": "tsc",
+    "clean": "rm -rf dist/ node_modules/",
+    "install:oracle": "node scripts/install-oracle-client.js",
+    "docker:build": "docker build -t career-navigator-mcp .",
+    "docker:dev": "docker-compose --profile development up -d",
+    "docker:prod": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f career-navigator",
+    "security:audit": "node scripts/security-audit.js",
+    "security:encrypt-test": "node scripts/test-encryption.js",
+    "security:compliance-dashboard": "node scripts/compliance-dashboard.js",
+    "security:retention-cleanup": "node scripts/data-retention-cleanup.js",
+    "compliance:hipaa-report": "node scripts/generate-compliance-report.js --framework hipaa",
+    "compliance:gdpr-report": "node scripts/generate-compliance-report.js --framework gdpr"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "career-navigation",
+    "oracle-database",
+    "autonomous-database",
+    "professional-experience"
+  ],
+  "author": "Career Navigator Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "oracledb": "^6.3.0",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "joi": "^17.11.0",
+    "uuid": "^9.0.1",
+    "date-fns": "^3.0.6",
+    "lodash": "^4.17.21",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "speakeasy": "^2.0.0",
+    "redis": "^4.6.0",
+    "ioredis": "^5.3.0"
   },
   "devDependencies": {
-    "@mermaid-js/mermaid-cli": "^10.9.1"
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "@types/lodash": "^4.14.202",
+    "typescript": "^5.3.2",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.8",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "prettier": "^3.1.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/career-navigator/career-navigator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/career-navigator/career-navigator/issues"
+  },
+  "homepage": "https://github.com/career-navigator/career-navigator#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js",
+      "**/tests/**/*.spec.js"
+    ],
+    "collectCoverageFrom": [
+      "lib/**/*.js",
+      "server/**/*.js",
+      "!**/node_modules/**",
+      "!**/tests/**"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2022": true,
+      "jest": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "prettier"
+    ],
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "off",
+      "no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 100,
+    "tabWidth": 2
   }
 }
