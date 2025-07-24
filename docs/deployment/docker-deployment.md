@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Career Navigator MCP Server is designed for containerized deployment using Docker and Docker Compose. This ensures consistent environments, easy scaling, and simplified deployment across development, staging, and production environments.
+Career Navigator uses Docker for containerized deployment of both frontend and backend services. This ensures consistent environments, easy scaling, and simplified deployment across development and production environments.
 
 ## Prerequisites
 
@@ -12,20 +12,32 @@ The Career Navigator MCP Server is designed for containerized deployment using D
 - 4GB+ available RAM
 - 10GB+ available disk space
 
+## Architecture
+
+The Docker setup includes:
+- **Frontend**: React app served by Nginx
+- **Backend**: Node.js API server with Express
+- **Redis**: Session management and caching
+- **Nginx**: Reverse proxy for production (optional)
+
 ## Quick Start
 
 ### 1. Clone and Setup Environment
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/czhaoca/career-navigator.git
 cd career-navigator
 
-# Copy environment template
+# Copy environment templates
 cp .env.example .env
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 
-# Edit .env with your actual values
+# Edit .env files with your actual values
 nano .env
+nano backend/.env
+nano frontend/.env
 ```
 
 ### 2. Prepare Oracle Wallet Files

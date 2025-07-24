@@ -50,26 +50,63 @@ The system implements a **user-prefixed schema architecture** for complete data 
 - Reference data: skills catalog, career paths, role templates
 - User-specific encryption keys with rotation support
 
+## Project Structure
+
+The project follows a clean frontend/backend separation:
+
+```
+career-navigator/
+├── frontend/                # React TypeScript application
+│   ├── src/
+│   │   ├── components/     # UI components
+│   │   ├── pages/          # Route pages  
+│   │   ├── stores/         # Zustand state management
+│   │   ├── services/       # API services
+│   │   └── types/          # TypeScript types
+│   └── package.json
+│
+├── backend/                 # Node.js backend
+│   ├── src/
+│   │   ├── api/            # REST API server
+│   │   ├── services/       # Business logic (database, MCP, encryption)
+│   │   ├── database/       # Migrations, seeds, queries
+│   │   ├── config/         # Configuration
+│   │   └── utils/          # Utility functions
+│   ├── tests/              # Unit, integration, e2e tests
+│   └── package.json
+│
+├── nginx/                   # Reverse proxy configuration
+├── docs/                    # Documentation
+└── docker-compose.yml       # Docker orchestration
+```
+
 ## Development Environment
 
 ### Local Development
-Node.js-based project with the following key commands:
+The project uses npm workspaces for monorepo management:
 
 ```bash
-npm install              # Install dependencies
-npm run db:setup         # Setup database
+# Install all dependencies (frontend + backend)
+npm run install:all
+
+# Start both frontend and backend in development
+npm run dev
+
+# Backend-specific commands
+npm run backend:dev      # Start backend API server
+npm run backend:test     # Run backend tests
 npm run db:migrate       # Run database migrations
 npm run db:seed          # Seed test data
-npm run dev              # Start development server
-npm run test             # Run test suite
-npm run lint             # Code linting
-npm run type-check       # TypeScript checking
-npm run mermaid          # Run mermaid CLI (mmdc)
+npm run mcp:start        # Start MCP server
 
-# Multi-user MCP server commands
-npm run mcp:start         # Start authenticated multi-user MCP server
-npm run mcp:dev           # Start in development mode
-npm run mcp:prod          # Start in production mode
+# Frontend-specific commands
+npm run frontend:dev     # Start frontend dev server
+npm run frontend:build   # Build for production
+npm run frontend:test    # Run frontend tests
+
+# Testing & Quality
+npm run test            # Run all tests
+npm run lint            # Lint all code
 ```
 
 ### Docker Deployment (Required for Production)
@@ -84,13 +121,15 @@ cp .env.example .env
 # Include environment-specific database connections and table prefixing
 
 # Development with Docker
-docker-compose --profile development up -d
+npm run dev:docker
+# Or: docker-compose --profile development up
 
 # Production deployment
-docker-compose up -d
+npm run prod:docker
+# Or: docker-compose --profile production --profile nginx up -d
 
-# Production with reverse proxy
-docker-compose --profile nginx up -d
+# View logs
+npm run docker:logs
 ```
 
 See `docs/deployment/docker-deployment.md` for complete Docker setup guide.

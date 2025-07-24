@@ -3,7 +3,7 @@
  * Tests core database functionality without requiring actual Oracle connection
  */
 
-const DatabaseManager = require('../../lib/database');
+const DatabaseManager = require('../../src/services/database');
 
 // Mock oracledb for unit testing
 jest.mock('oracledb', () => ({

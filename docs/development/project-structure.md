@@ -1,148 +1,198 @@
-# Project Documentation Structure
+# Project Structure
 
-## Documentation Organization
+Career Navigator follows a modern monorepo architecture with clear separation between frontend and backend services.
+
+## Directory Structure
 
 ```
-docs/
-├── README.md                 # Project overview and quick start
-├── architecture.md           # System architecture and flow diagrams
-├── data-structure.md         # Database schema and data models
-├── api/
-│   ├── rest-api.md          # REST API documentation
-│   ├── mcp-server.md        # MCP server implementation
-│   └── websocket-api.md     # Real-time chat API
-├── components/
-│   ├── career-navigator.md  # Career planning module
-│   ├── experience-manager.md # Experience storage and management
-│   └── llm-integration.md   # LLM integration patterns
-├── deployment/
-│   ├── docker-setup.md      # Containerization setup
-│   ├── database-setup.md    # Database configuration
-│   └── environment.md       # Environment variables
-├── security/
-│   ├── authentication.md    # User authentication strategy
-│   ├── data-privacy.md      # Data protection and privacy
-│   └── api-security.md      # API security measures
-├── development/
-│   ├── getting-started.md   # Development environment setup
-│   ├── contributing.md      # Contribution guidelines
-│   └── testing.md           # Testing strategy and setup
-└── user-guides/
-    ├── career-planning.md   # How to use career navigator
-    ├── experience-input.md  # Guide for entering experiences
-    └── resume-generation.md # Using the system for resume building
+career-navigator/
+├── frontend/                    # React TypeScript frontend application
+│   ├── src/
+│   │   ├── components/         # Reusable UI components
+│   │   │   ├── ui/            # Base UI components (buttons, inputs, cards)
+│   │   │   ├── layout/        # Layout components (header, sidebar, footer)
+│   │   │   ├── auth/          # Authentication-related components
+│   │   │   ├── chat/          # Chat interface components
+│   │   │   ├── experience/    # Experience management components
+│   │   │   └── profile/       # Profile and dashboard components
+│   │   ├── features/          # Feature-based modules
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── lib/               # Utility functions and helpers
+│   │   ├── pages/             # Route-based page components
+│   │   ├── services/          # API service layer
+│   │   ├── stores/            # Zustand state management
+│   │   ├── types/             # TypeScript type definitions
+│   │   ├── App.tsx            # Main application component
+│   │   ├── main.tsx           # Application entry point
+│   │   └── index.css          # Global styles with Tailwind
+│   ├── public/                # Static assets
+│   ├── Dockerfile             # Frontend container configuration
+│   ├── nginx.conf             # Nginx configuration for production
+│   ├── package.json           # Frontend dependencies
+│   ├── tailwind.config.js     # Tailwind CSS configuration
+│   ├── tsconfig.json          # TypeScript configuration
+│   └── vite.config.ts         # Vite build configuration
+│
+├── backend/                    # Node.js backend services
+│   ├── src/
+│   │   ├── api/               # REST API server
+│   │   │   ├── routes/        # API route definitions
+│   │   │   ├── middleware/    # Express middleware (auth, validation, etc.)
+│   │   │   ├── controllers/   # Route controllers
+│   │   │   └── index.js       # Main API server entry point
+│   │   ├── services/          # Business logic and services
+│   │   │   ├── database.js    # Database connection manager
+│   │   │   ├── encryption.js  # Encryption service
+│   │   │   ├── mcp-server.js  # Model Context Protocol server
+│   │   │   ├── rate-limiter.js # Rate limiting service
+│   │   │   ├── security-audit.js # Security audit service
+│   │   │   ├── compliance-monitor.js # Compliance monitoring
+│   │   │   └── data-retention.js # Data retention policies
+│   │   ├── database/          # Database-related files
+│   │   │   ├── migrations/    # Schema migration scripts
+│   │   │   ├── seeds/         # Seed data scripts
+│   │   │   └── queries/       # SQL query templates
+│   │   ├── config/            # Configuration files
+│   │   │   └── index.js       # Main configuration loader
+│   │   └── utils/             # Utility functions
+│   │       ├── db-health-check.js
+│   │       ├── test-connections.js
+│   │       └── security/      # Security utilities
+│   ├── tests/                 # Test suites
+│   │   ├── unit/              # Unit tests
+│   │   ├── integration/       # Integration tests
+│   │   └── e2e/               # End-to-end tests
+│   ├── Dockerfile             # Backend container configuration
+│   ├── docker-entrypoint.sh   # Docker startup script
+│   ├── package.json           # Backend dependencies
+│   └── .env.example           # Environment variable template
+│
+├── nginx/                      # Nginx reverse proxy configuration
+│   └── nginx.conf             # Main nginx configuration
+│
+├── docs/                       # Project documentation
+│   ├── deployment/            # Deployment guides
+│   ├── development/           # Development documentation
+│   ├── platform/              # Platform features
+│   ├── user-guides/           # User documentation
+│   └── addons/                # Add-on module documentation
+│
+├── wallets/                    # Oracle wallet files (gitignored)
+├── logs/                       # Application logs (gitignored)
+│
+├── docker-compose.yml          # Docker orchestration configuration
+├── package.json                # Root package.json with npm workspaces
+├── .env.example                # Root environment variable template
+├── CLAUDE.md                   # Claude Code guidance
+├── README.md                   # Project README
+└── LICENSE                     # MIT License
 ```
 
-## Core Components Documentation
+## Key Design Decisions
 
-### 1. Career Navigator (`docs/components/career-navigator.md`)
-- Interactive chat interface design
-- LLM prompt engineering for career guidance
-- Context management and conversation flow
-- Integration with user experience data
+### 1. Monorepo with NPM Workspaces
+- Simplifies dependency management
+- Enables shared TypeScript types between frontend and backend
+- Single command to run both services in development
 
-### 2. Experience Manager (`docs/components/experience-manager.md`)
-- Experience input and validation
-- Skill extraction algorithms
-- Role mapping logic
-- Data aggregation processes
+### 2. Clear Frontend/Backend Separation
+- Frontend is a standalone React SPA
+- Backend provides REST API and MCP server
+- Communication via well-defined API contracts
 
-### 3. LLM Integration (`docs/components/llm-integration.md`)
-- Model selection and configuration
-- Prompt templates and optimization
-- Context window management
-- Response processing and validation
+### 3. Service-Oriented Backend Architecture
+- Business logic separated into services
+- Database operations abstracted through DatabaseManager
+- Clean separation of concerns
 
-## API Documentation Structure
+### 4. Docker-First Deployment
+- Consistent development and production environments
+- Easy scaling with docker-compose
+- Built-in health checks and monitoring
 
-### REST API (`docs/api/rest-api.md`)
-```
-Endpoints:
-- POST /api/v1/experiences          # Create new experience
-- GET /api/v1/experiences           # List user experiences
-- PUT /api/v1/experiences/:id       # Update experience
-- DELETE /api/v1/experiences/:id    # Delete experience
-- GET /api/v1/profile/summary       # Get profile summary
-- POST /api/v1/career/analyze       # Analyze career path
-- GET /api/v1/skills/suggestions    # Get skill suggestions
-```
+### 5. Security at Every Layer
+- Frontend: Input validation, XSS protection
+- API: Authentication, authorization, rate limiting
+- Database: Encrypted fields, user isolation
+- Infrastructure: HTTPS, security headers
 
-### MCP Server (`docs/api/mcp-server.md`)
-```
-MCP Tools:
-- get_user_profile()               # Retrieve user profile
-- get_experience_details()         # Get specific experience
-- search_experiences()             # Search user experiences
-- get_career_suggestions()         # Get career recommendations
-- update_user_context()            # Update conversation context
-```
+## File Naming Conventions
 
-## Database Documentation
+### Frontend (TypeScript/React)
+- Components: PascalCase (e.g., `UserProfile.tsx`)
+- Utilities: camelCase (e.g., `formatDate.ts`)
+- Types: PascalCase with `.types.ts` extension
+- Tests: Same name with `.test.tsx` or `.spec.tsx`
 
-### Schema Evolution (`docs/data-structure.md`)
-- Migration scripts and versioning
-- Index optimization strategies
-- Query performance guidelines
-- Data retention policies
+### Backend (JavaScript/Node.js)
+- Services: kebab-case (e.g., `database-manager.js`)
+- Routes: kebab-case (e.g., `auth-routes.js`)
+- Utilities: kebab-case (e.g., `encrypt-field.js`)
+- Tests: Same name with `.test.js` or `.spec.js`
 
-## Security Documentation Structure
+## Import Path Conventions
 
-### Authentication (`docs/security/authentication.md`)
-- JWT token management
-- OAuth integration options
-- Session handling
-- Multi-factor authentication
-
-### Data Privacy (`docs/security/data-privacy.md`)
-- GDPR compliance measures
-- Data encryption at rest and in transit
-- User consent management
-- Data anonymization strategies
-
-### API Security (`docs/security/api-security.md`)
-- Rate limiting implementation
-- Input validation and sanitization
-- CORS configuration
-- Security headers and middleware
-
-## Development Workflow
-
-### Getting Started (`docs/development/getting-started.md`)
-```bash
-# Development setup commands
-npm install                    # Install dependencies
-npm run db:setup              # Setup database
-npm run db:migrate            # Run migrations
-npm run db:seed               # Seed test data
-npm run dev                   # Start development server
-npm run test                  # Run test suite
-npm run lint                  # Code linting
-npm run type-check            # TypeScript checking
+### Frontend
+```typescript
+// Absolute imports using @ alias
+import { Button } from '@/components/ui/button'
+import { authStore } from '@/stores/authStore'
+import type { User } from '@/types'
 ```
 
-### Testing Strategy (`docs/development/testing.md`)
-- Unit testing with Jest
-- Integration testing for API endpoints
-- E2E testing with Playwright
-- Database testing with test containers
-- LLM response testing and validation
+### Backend
+```javascript
+// Relative imports from src
+const DatabaseManager = require('../services/database');
+const config = require('../config');
+```
 
-## User Guide Structure
+## Environment Configuration
 
-### Career Planning Guide (`docs/user-guides/career-planning.md`)
-- How to start a career conversation
-- Understanding AI recommendations
-- Setting and tracking career goals
-- Interpreting skill gap analysis
+### Development
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:3000`
+- MCP Server: `http://localhost:3001`
 
-### Experience Input Guide (`docs/user-guides/experience-input.md`)
-- Best practices for describing experiences
-- Maximizing skill extraction accuracy
-- Adding quantifiable achievements
-- Organizing different experience types
+### Production
+- All services behind Nginx reverse proxy
+- HTTPS enforced
+- API at `/api` path
+- Frontend at root path
 
-### Resume Generation (`docs/user-guides/resume-generation.md`)
-- Tailoring resumes for specific roles
-- Using AI-generated content
-- Customizing experience descriptions
-- Export formats and options
+## Build Outputs
+
+### Frontend Build
+```
+frontend/dist/
+├── assets/           # Bundled JS/CSS with hashes
+├── index.html        # Main HTML entry
+└── favicon.ico       # Favicon
+```
+
+### Backend Build
+Backend runs directly from source in production (no build step required).
+
+## Testing Structure
+
+### Frontend Tests
+- Unit tests for components and utilities
+- Integration tests for page flows
+- E2E tests with Playwright (planned)
+
+### Backend Tests
+- Unit tests for services and utilities
+- Integration tests for API endpoints
+- E2E tests for full system flows
+
+## Deployment Artifacts
+
+### Docker Images
+- `career-navigator-frontend`: Nginx serving built React app
+- `career-navigator-backend`: Node.js API server
+- `career-navigator-nginx`: Reverse proxy (production only)
+
+### Volumes
+- `redis-data`: Redis persistence
+- `logs`: Application logs
+- `wallets`: Oracle connection wallets

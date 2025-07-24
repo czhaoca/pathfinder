@@ -16,8 +16,8 @@ const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const { format, parseISO, isValid } = require('date-fns');
 
-const DatabaseManager = require('../lib/database');
-const config = require('../config/mcp-config');
+const DatabaseManager = require('./database');
+const config = require('../config');
 
 // Environment-specific server configuration
 const serverInfo = {
