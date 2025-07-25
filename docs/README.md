@@ -1,145 +1,161 @@
 # Career Navigator Documentation
 
-Welcome to the comprehensive documentation for Career Navigator - an AI-powered professional development platform that helps you explore careers, develop your professional story, and build strategic relationships.
+Welcome to the Career Navigator documentation. This comprehensive guide covers everything from getting started to advanced development and deployment.
 
-## 📚 Documentation Structure
+## 📖 Documentation Overview
 
-### 🚀 User Guides
-Start here if you're new to Career Navigator or looking for step-by-step guidance.
+Career Navigator is an AI-powered career development platform that helps professionals:
+- 🧭 Explore career paths with AI guidance
+- 📝 Build compelling professional narratives
+- 🎯 Track and manage career experiences
+- 🤝 Network strategically (coming soon)
 
-- **[Getting Started](user-guides/getting-started.md)** - Complete introduction and quick start guide
-- **[Career Exploration Guide](user-guides/career-exploration-guide.md)** - How to discover and evaluate career opportunities
-- **[Resume Building Guide](user-guides/resume-building-guide.md)** - Creating compelling professional narratives
-- **[Privacy & Security Guide](user-guides/privacy-security-guide.md)** - Understanding data protection and control
+## 🚀 Quick Start
 
-### 🎯 Platform Features
-Detailed documentation of Career Navigator's core capabilities.
+### For Users
+- [**Getting Started Guide**](./guides/getting-started.md) - Start using Career Navigator in minutes
+- [**User Manual**](./guides/user-manual.md) - Complete user documentation
+- [**FAQ**](./guides/faq.md) - Frequently asked questions
 
-- **[Core Features](platform/core-features/)** - Main platform functionality
-  - [Career Exploration & Mentorship](platform/core-features/career-exploration.md) - AI-powered career discovery
-  - [Story Development & Resume Building](platform/core-features/story-development.md) - Professional storytelling tools
-- **[Future Roadmap](platform/future-roadmap/)** - Planned features and development timeline
-  - [Professional Networking](platform/future-roadmap/professional-networking.md) - Relationship management system
+### For Developers
+- [**Development Setup**](./development/setup.md) - Set up your development environment
+- [**Architecture Overview**](./architecture/system-overview.md) - Understand the system design
+- [**Contributing Guide**](./development/contributing/CONTRIBUTING.md) - How to contribute
 
-### 🚀 Deployment & Configuration
-Everything you need to deploy and configure Career Navigator.
+### For Administrators
+- [**Docker Deployment**](./deployment/docker/docker-deployment.md) - Production deployment
+- [**Configuration Guide**](./guides/configuration.md) - System configuration
+- [**Security Guide**](./deployment/security/security-procedures.md) - Security best practices
 
-- **[Security & Privacy](deployment/security/)** - Privacy-first architecture and implementation
-  - [Security Architecture](deployment/security/security-architecture.md) - Complete security overview
-  - [Database Options](deployment/security/database-options.md) - User-controlled database solutions
-  - [BYOK Implementation](deployment/security/byok-implementation.md) - Bring Your Own Key for AI services
-  - [Encryption Specification](deployment/security/encryption-specification.md) - End-to-end encryption details
-- **[MCP Server](deployment/mcp-server/)** - Model Context Protocol server setup
-  - [MCP Overview](deployment/mcp-server/README.md) - Architecture and deployment options
-  - [Self-Hosted Setup](deployment/mcp-server/self-hosted-mcp.md) - Complete self-hosting guide
+## 📚 Complete Documentation
 
-### 👩‍💻 Development Documentation
-Technical documentation for developers and contributors.
+### 1. Architecture & Design
+- [**System Architecture**](./architecture/system-overview.md) - High-level system design and components
+- [**Multi-User Architecture**](./architecture/multi-user-architecture.md) - User isolation and data privacy
+- [**Database Design**](./architecture/database-design.md) - Schema design and data models
+- [**Security Architecture**](./architecture/security-architecture.md) - Security implementation details
+- [**Frontend Architecture**](./architecture/frontend-architecture.md) - React application structure
 
-- **[Architecture](development/architecture.md)** - System architecture and design patterns
-- **[Technical Stack](development/technical-stack/)** - Technology choices and implementation
-- **[Data Models](development/data-models/)** - Database schemas and data architecture
-  - [Data Structure Overview](development/data-models/README.md) - Complete data architecture
-  - [Core Data Models](development/data-models/data-structure.md) - 3-tier experience architecture
-- **[Project Structure](development/project-structure.md)** - Code organization and conventions
+### 2. Features Documentation
+- [**Core Features Overview**](./features/README.md) - All platform capabilities
+  - [Career Exploration](./features/career-exploration.md) - AI-powered career discovery
+  - [Experience Management](./features/experience-management.md) - Professional experience tracking
+  - [Story Development](./features/story-development.md) - Resume and narrative building
+  - [AI Chat Assistant](./features/ai-chat-assistant.md) - Intelligent career guidance
+- [**Add-on Modules**](./features/addons.md) - Extended functionality
+  - [CPA PERT Writer](./addons/cpa-pert-writer/README.md) - Specialized accounting module
 
-### 🔧 Add-on Modules
-Industry-specific extensions and specialized functionality.
+### 3. API Documentation
+- [**REST API Reference**](./api/rest-api.md) - Complete API documentation
+- [**Authentication API**](./api/authentication.md) - Auth endpoints and flows
+- [**Experience API**](./api/experience-api.md) - Experience management endpoints
+- [**Chat API**](./api/chat-api.md) - AI chat integration
+- [**MCP Integration**](./api/mcp-integration.md) - Model Context Protocol details
 
-- **[Add-ons Overview](addons/README.md)** - Available modules and development guide
-- **[CPA PERT Writer](addons/cpa-pert-writer/)** - Accounting profession experience reporting
-  - [Getting Started](addons/cpa-pert-writer/docs/user-guide/getting-started.md) - PERT writing guide
-  - [Module Documentation](addons/cpa-pert-writer/README.md) - Technical implementation
+### 4. Development Guide
+- [**Development Setup**](./development/setup.md) - Local development environment
+- [**Code Architecture**](./development/code-architecture.md) - Code organization and patterns
+- [**Backend Development**](./development/backend-guide.md) - Node.js/Express development
+- [**Frontend Development**](./development/frontend-guide.md) - React/TypeScript development
+- [**Testing Guide**](./development/testing.md) - Testing strategies and execution
+- [**Contributing**](./development/contributing/CONTRIBUTING.md) - Contribution guidelines
 
-## 🎯 Quick Navigation
+### 5. Deployment & Operations
+- [**Deployment Overview**](./deployment/README.md) - Deployment options and strategies
+- [**Docker Deployment**](./deployment/docker/docker-deployment.md) - Container-based deployment
+- [**Cloud Deployment**](./deployment/cloud-deployment.md) - AWS, GCP, Azure guides
+- [**Database Setup**](./deployment/database-setup.md) - Oracle ATP configuration
+- [**Security Procedures**](./deployment/security/security-procedures.md) - Security hardening
+- [**Monitoring & Logging**](./deployment/monitoring.md) - Observability setup
 
-### 👤 I'm a User - I want to...
-- **Get started quickly** → [Getting Started Guide](user-guides/getting-started.md)
-- **Explore career options** → [Career Exploration](platform/core-features/career-exploration.md)
-- **Build a better resume** → [Story Development](platform/core-features/story-development.md)
-- **Understand privacy** → [Security Architecture](deployment/security/security-architecture.md)
-- **Use it safely** → [Privacy & Security Guide](user-guides/privacy-security-guide.md)
+### 6. User Guides
+- [**Getting Started**](./guides/getting-started.md) - First steps with Career Navigator
+- [**User Manual**](./guides/user-manual.md) - Detailed feature documentation
+- [**Career Planning Guide**](./guides/career-planning.md) - Using AI for career decisions
+- [**Experience Writing**](./guides/experience-writing.md) - Crafting compelling experiences
+- [**Privacy Guide**](./guides/privacy-guide.md) - Understanding data privacy
 
-### 🏢 I'm an Organization - I want to...
-- **Deploy for my team** → [Deployment Documentation](deployment/)
-- **Understand security** → [Security Architecture](deployment/security/)
-- **Enterprise features** → [Technical Stack](development/technical-stack/)
-- **Custom integration** → [MCP Server](deployment/mcp-server/)
+### 7. Administrator Guides
+- [**Admin Overview**](./guides/admin-guide.md) - System administration
+- [**Configuration**](./guides/configuration.md) - Environment and system setup
+- [**User Management**](./guides/user-management.md) - Managing users and access
+- [**Backup & Recovery**](./guides/backup-recovery.md) - Data protection strategies
+- [**Troubleshooting**](./guides/troubleshooting.md) - Common issues and solutions
 
-### 👨‍💻 I'm a Developer - I want to...
-- **Understand the system** → [Architecture](development/architecture.md)
-- **Set up development** → [Technical Stack](development/technical-stack/)
-- **Work with data** → [Data Models](development/data-models/)
-- **Create add-ons** → [Add-ons Development](addons/README.md)
-- **Contribute code** → [Project Structure](development/project-structure.md)
+### 8. Add-ons & Extensions
+- [**Add-ons Overview**](./addons/README.md) - Available modules
+- [**CPA PERT Writer**](./addons/cpa-pert-writer/README.md) - CPA experience reporting
+  - [User Guide](./addons/cpa-pert-writer/docs/user-guide.md)
+  - [Integration Guide](./addons/cpa-pert-writer/docs/integration.md)
+- [**Extension Development**](./guides/extension-development.md) - Building custom modules
 
-### 🎓 I'm a CPA Candidate - I want to...
-- **Write PERT reports** → [CPA PERT Writer](addons/cpa-pert-writer/)
-- **Get started with PERT** → [PERT Getting Started](addons/cpa-pert-writer/docs/user-guide/getting-started.md)
-- **Understand requirements** → [CPA Resources](addons/cpa-pert-writer/resources/)
+## 🏗️ Project Structure
 
-## 🆘 Getting Help
+```
+career-navigator/
+├── frontend/          # React TypeScript application
+├── backend/           # Node.js Express API
+├── docs/              # This documentation
+├── nginx/             # Reverse proxy configuration
+└── docker-compose.yml # Container orchestration
+```
 
-### Documentation Issues
-- **Missing Information**: Content gaps or unclear sections
-- **Broken Links**: Links that don't work or go to wrong places  
-- **Outdated Content**: Information that needs updating
-- **Improvement Suggestions**: Ideas for better documentation
+## 🔧 Technology Stack
 
-### Technical Support
-- **Setup Problems**: Issues with installation or configuration
-- **Performance Issues**: Slow response or system problems
-- **Integration Questions**: Connecting with other systems
-- **Bug Reports**: Software defects or unexpected behavior
+- **Frontend**: React, TypeScript, Tailwind CSS, Zustand
+- **Backend**: Node.js, Express, TypeScript
+- **Database**: Oracle Autonomous Database
+- **AI Integration**: Model Context Protocol (MCP)
+- **Security**: JWT, AES-256 encryption, RBAC
+- **Deployment**: Docker, Docker Compose
 
-### Community Support
-- **Feature Discussions**: Ideas for new capabilities
-- **Use Case Sharing**: How others are using the platform
-- **Best Practices**: Tips and recommendations from the community
-- **Networking**: Connect with other Career Navigator users
+## 📊 Key Features
 
-### Professional Services
-- **Custom Implementation**: Tailored setup for complex requirements
-- **Training & Onboarding**: Team training and best practices
-- **Integration Consulting**: Custom integrations and extensions
-- **Enterprise Support**: Dedicated support for large organizations
+### For Individuals
+- ✅ AI-powered career exploration and guidance
+- ✅ Professional experience management
+- ✅ Dynamic resume generation
+- ✅ Skills gap analysis
+- ✅ Career progression tracking
 
-## 📋 Documentation Standards
+### For Organizations
+- ✅ Multi-user support with data isolation
+- ✅ HIPAA-level security standards
+- ✅ Self-hosted deployment options
+- ✅ Customizable add-on modules
+- ✅ Comprehensive audit logging
 
-### Our Commitment
-- **User-Focused**: Written from the user's perspective with clear, actionable guidance
-- **Comprehensive**: Covering both concepts and step-by-step implementation
-- **Current**: Regular updates to keep information accurate and relevant
-- **Accessible**: Clear language avoiding unnecessary jargon
+## 🛡️ Security & Privacy
 
-### How We Maintain Quality
-- **Quarterly Reviews**: Regular content audits and updates
-- **Community Feedback**: Incorporating user suggestions and corrections
-- **Testing**: All code examples and procedures are tested
-- **Version Control**: Clear tracking of changes and improvements
+Career Navigator prioritizes data security and user privacy:
+- **Data Isolation**: Complete user data separation
+- **Encryption**: AES-256 for sensitive data
+- **Authentication**: JWT with short-lived tokens
+- **Audit Trail**: Comprehensive activity logging
+- **Compliance**: HIPAA-level security standards
 
-### Contributing to Documentation
-We welcome contributions to improve our documentation:
+Learn more in our [Security Architecture](./architecture/security-architecture.md) documentation.
 
-1. **Small Fixes**: Submit pull requests for typos and minor corrections
-2. **Content Additions**: Propose new sections or expanded coverage
-3. **Examples**: Share real-world examples and use cases
-4. **Translation**: Help make documentation accessible in other languages
+## 🤝 Contributing
 
-## 🔗 External Resources
+We welcome contributions! See our [Contributing Guide](./guides/contributing-guide.md) for:
+- Code contribution guidelines
+- Documentation improvements
+- Bug reporting procedures
+- Feature request process
 
-### Official Links
-- **GitHub Repository**: Source code and issue tracking
-- **Community Forum**: User discussions and peer support
-- **Project Website**: Latest news and announcements
-- **Social Media**: Updates and community highlights
+## 📞 Support
 
-### Related Projects
-- **Model Context Protocol**: MCP specification and implementations
-- **Privacy Tools**: Related privacy-focused development tools
-- **Career Development**: Other open-source career development resources
-- **AI Integration**: Tools for working with language models
+- **Documentation Issues**: Submit a GitHub issue
+- **Bug Reports**: Use the bug report template
+- **Feature Requests**: Use the feature request template
+- **Security Issues**: Email security@career-navigator.com
+
+## 🔄 Version History
+
+- **v1.0.0** (Current) - Initial release with core features
+- See [CHANGELOG.md](../CHANGELOG.md) for detailed version history
 
 ---
 
-*Career Navigator documentation is designed to help you succeed, whether you're using the platform for personal career development, deploying it for your organization, or contributing to its development. We're committed to providing clear, comprehensive, and up-to-date information to support your goals.*
+*Last updated: December 2024*

@@ -35,6 +35,8 @@ class DatabaseManager {
     this.pool = null;
     this.environment = config.environment;
     this.dbConfig = config.database[this.environment];
+    this.tablePrefix = config.project.tablePrefix;
+    this.schemaPrefix = config.project.schemaPrefix;
     this.isInitialized = false;
     this.connectionStats = {
       totalConnections: 0,
