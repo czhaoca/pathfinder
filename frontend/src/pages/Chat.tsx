@@ -1,28 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: Date
-}
+import { useChat } from '@/hooks/useChat'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { ErrorMessage } from '@/components/common/ErrorMessage'
 
 export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: "Hi! I'm your Career Navigator assistant. I'm here to help you with career planning, skill development, and professional growth. What would you like to discuss today?",
-      timestamp: new Date(),
-    },
-  ])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const { 
+    messages, 
+    input, 
+    setInput, 
+    isLoading, 
+    error, 
+    sendMessage,
+    initializeChat 
+  } = useChat()
+  
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -30,34 +26,16 @@ export default function Chat() {
   }
 
   useEffect(() => {
+    initializeChat()
+  }, [initializeChat])
+
+  useEffect(() => {
     scrollToBottom()
   }, [messages])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input,
-      timestamp: new Date(),
-    }
-
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
-
-    // TODO: Implement actual API call
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: "I understand you're interested in discussing that topic. Let me provide you with some guidance based on your career profile and goals. [This is a placeholder response - actual integration with MCP server pending]",
-        timestamp: new Date(),
-      }
-      setMessages(prev => [...prev, assistantMessage])
-      setIsLoading(false)
-    }, 1500)
+    await sendMessage()
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -104,6 +82,13 @@ export default function Chat() {
           )}
           <div ref={messagesEndRef} />
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="border-t p-4">
+            <ErrorMessage message={error} />
+          </div>
+        )}
 
         {/* Input Area */}
         <div className="border-t p-4">
