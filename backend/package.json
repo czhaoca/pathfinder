@@ -21,6 +21,8 @@
     "db:access-control:prod": "NODE_ENV=production node src/database/migrations/create-access-control.js production",
     "db:health": "node src/utils/db-health-check.js",
     "db:test": "node src/utils/test-connections.js",
+    "cpa:collect": "tsx src/services/cpa-data-collector/run-collection.ts",
+    "cpa:collect:watch": "node-schedule src/services/cpa-data-collector/scheduled-collection.js",
     "test": "jest",
     "test:unit": "jest --testPathPattern=tests/unit",
     "test:integration": "jest --testPathPattern=tests/integration",
@@ -43,7 +45,14 @@
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "natural": "^6.10.0",
+    "node-fetch": "^2.7.0",
+    "node-schedule": "^2.1.1",
     "oracledb": "^6.3.0",
+    "pdf-parse": "^1.1.1",
+    "puppeteer": "^21.6.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "redis": "^4.6.0",
     "speakeasy": "^2.0.0",
     "uuid": "^9.0.1",
@@ -52,10 +61,13 @@
   "devDependencies": {
     "@types/jest": "^29.5.8",
     "@types/node": "^20.10.0",
+    "@types/node-fetch": "^2.6.9",
     "eslint": "^8.54.0",
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=18.0.0",

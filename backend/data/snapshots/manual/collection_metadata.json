@@ -1,0 +1,14 @@
+{
+  "successful": [],
+  "failed": [
+    {
+      "resource": "CPA Canada Guiding Questions",
+      "error": "HTTP 403"
+    },
+    {
+      "resource": "CPA Practical Experience Requirements",
+      "error": "HTTP 403"
+    }
+  ],
+  "metadata": []
+}
