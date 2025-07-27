@@ -21,6 +21,7 @@ const SessionRepository = require('./repositories/sessionRepository');
 const AuditRepository = require('./repositories/auditRepository');
 const ExperienceRepository = require('./repositories/experienceRepository');
 const CPAPertRepository = require('./repositories/cpaPertRepository');
+const ChatRepository = require('./repositories/chatRepository');
 
 // Controllers
 const AuthController = require('./api/controllers/authController');
@@ -50,7 +51,8 @@ class Container {
       this.register('sessionRepository', () => new SessionRepository(this.get('database')));
       this.register('auditRepository', () => new AuditRepository(this.get('database')));
       this.register('experienceRepository', () => new ExperienceRepository(this.get('database')));
-      this.register('cpaPertRepository', () => new CPAPertRepository(this.get('database'), config));
+      this.register('cpaPertRepository', () => new CPaPertRepository(this.get('database'), config));
+      this.register('chatRepository', () => new ChatRepository(this.get('database')));
 
       // Register services
       this.register('auditService', () => new AuditService(this.get('auditRepository')));
@@ -71,7 +73,8 @@ class Container {
       ));
       this.register('chatService', () => new ChatService(
         this.get('userRepository'),
-        this.get('auditService')
+        this.get('auditService'),
+        this.get('chatRepository')
       ));
       this.register('cpaPertService', () => new CPAPertService(
         this.get('cpaPertRepository'),

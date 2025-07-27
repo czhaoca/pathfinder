@@ -44,11 +44,7 @@ class ChatController {
         limit
       );
 
-      res.json({
-        conversationId,
-        messages: history,
-        count: history.length
-      });
+      res.json(history);
     } catch (error) {
       next(error);
     }
@@ -69,6 +65,71 @@ class ChatController {
 
       if (!summary) {
         return res.status(404).json({ error: 'Conversation not found' });
+      }
+
+      res.json(summary);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteConversation(req, res, next) {
+    try {
+      const { conversationId } = req.params;
+
+      if (!conversationId) {
+        return res.status(400).json({ error: 'Conversation ID is required' });
+      }
+
+      await this.chatService.deleteConversation(
+        req.user.userId,
+        conversationId
+      );
+
+      res.json({ success: true, message: 'Conversation deleted' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async searchConversations(req, res, next) {
+    try {
+      const { q } = req.query;
+
+      if (!q || q.trim().length < 2) {
+        return res.status(400).json({ error: 'Search query must be at least 2 characters' });
+      }
+
+      const results = await this.chatService.searchConversations(
+        req.user.userId,
+        q
+      );
+
+      res.json({
+        query: q,
+        results,
+        count: results.length
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async generateSummary(req, res, next) {
+    try {
+      const { conversationId } = req.params;
+
+      if (!conversationId) {
+        return res.status(400).json({ error: 'Conversation ID is required' });
+      }
+
+      const summary = await this.chatService.generateConversationSummary(
+        req.user.userId,
+        conversationId
+      );
+
+      if (!summary) {
+        return res.status(400).json({ error: 'Not enough messages to generate summary' });
       }
 
       res.json(summary);

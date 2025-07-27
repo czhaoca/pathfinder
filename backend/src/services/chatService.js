@@ -2,9 +2,10 @@ const { v4: uuidv4 } = require('uuid');
 const logger = require('../utils/logger');
 
 class ChatService {
-  constructor(userRepository, auditService, mcpClient = null) {
+  constructor(userRepository, auditService, chatRepository, mcpClient = null) {
     this.userRepository = userRepository;
     this.auditService = auditService;
+    this.chatRepository = chatRepository;
     this.mcpClient = mcpClient;
     this.conversationCache = new Map();
   }
@@ -19,19 +20,25 @@ class ChatService {
 
       // Create or get conversation
       if (!conversationId) {
-        conversationId = uuidv4();
+        conversationId = await this.chatRepository.createConversation(userId, message.substring(0, 100));
+      } else {
+        // Verify user owns the conversation
+        const conv = await this.chatRepository.getConversation(conversationId, userId);
+        if (!conv) {
+          throw new Error('Conversation not found or access denied');
+        }
       }
 
-      // Get conversation history
-      const history = this.getConversationHistory(conversationId);
+      // Get conversation history from database
+      const history = await this.chatRepository.getMessages(conversationId, userId, 50);
       
-      // Add user message to history
-      const userMessage = {
-        id: uuidv4(),
-        role: 'user',
-        content: message,
-        timestamp: new Date()
-      };
+      // Add user message to database and history
+      const userMessage = await this.chatRepository.addMessage(
+        conversationId,
+        userId,
+        'user',
+        message
+      );
       history.push(userMessage);
 
       // Process message through MCP if available
@@ -43,17 +50,17 @@ class ChatService {
         response = await this.generateFallbackResponse(message, user);
       }
 
-      // Add assistant response to history
-      const assistantMessage = {
-        id: uuidv4(),
-        role: 'assistant',
-        content: response.content,
-        metadata: response.metadata,
-        timestamp: new Date()
-      };
+      // Add assistant response to database
+      const assistantMessage = await this.chatRepository.addMessage(
+        conversationId,
+        userId,
+        'assistant',
+        response.content,
+        response.metadata
+      );
       history.push(assistantMessage);
 
-      // Update conversation cache
+      // Update conversation cache with latest messages
       this.updateConversationCache(conversationId, history);
 
       // Log chat interaction
@@ -109,6 +116,143 @@ class ChatService {
     }
   }
 
+  async sendStreamingMessage(userId, message, conversationId = null, callbacks) {
+    try {
+      // Get user context
+      const user = await this.userRepository.findById(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Create or get conversation
+      if (!conversationId) {
+        conversationId = await this.chatRepository.createConversation(userId, message.substring(0, 100));
+      } else {
+        // Verify user owns the conversation
+        const conv = await this.chatRepository.getConversation(conversationId, userId);
+        if (!conv) {
+          throw new Error('Conversation not found or access denied');
+        }
+      }
+
+      // Get conversation history from database
+      const history = await this.chatRepository.getMessages(conversationId, userId, 50);
+      
+      // Add user message to database
+      const userMessage = await this.chatRepository.addMessage(
+        conversationId,
+        userId,
+        'user',
+        message
+      );
+      history.push(userMessage);
+
+      // Process message with streaming
+      let fullResponse = '';
+      
+      if (this.mcpClient && this.mcpClient.supportsStreaming) {
+        // Stream from MCP
+        await this.streamFromMCP(user, message, history, {
+          onChunk: (chunk) => {
+            fullResponse += chunk;
+            callbacks.onChunk(chunk);
+          },
+          onComplete: () => {
+            this.completeStreamingResponse(
+              conversationId, 
+              fullResponse, 
+              history, 
+              userId, 
+              callbacks
+            ).catch(err => callbacks.onError(err));
+          },
+          onError: callbacks.onError
+        });
+      } else {
+        // Simulate streaming for fallback response
+        const response = await this.generateFallbackResponse(message, user);
+        await this.simulateStreaming(response.content, callbacks.onChunk);
+        this.completeStreamingResponse(
+          conversationId, 
+          response.content, 
+          history, 
+          userId, 
+          callbacks
+        );
+      }
+    } catch (error) {
+      logger.error('Failed to process streaming message', { userId, error: error.message });
+      callbacks.onError(error);
+    }
+  }
+
+  async simulateStreaming(content, onChunk) {
+    // Simulate streaming by sending chunks of text
+    const words = content.split(' ');
+    const chunkSize = 3; // Send 3 words at a time
+    
+    for (let i = 0; i < words.length; i += chunkSize) {
+      const chunk = words.slice(i, i + chunkSize).join(' ') + ' ';
+      onChunk(chunk);
+      // Add small delay to simulate streaming
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+  }
+
+  async streamFromMCP(user, message, history, callbacks) {
+    try {
+      const context = {
+        user: {
+          id: user.userId,
+          schemaPrefix: user.schemaPrefix,
+          name: `${user.firstName} ${user.lastName}`.trim()
+        },
+        conversation: history.slice(-10)
+      };
+
+      await this.mcpClient.streamMessage({
+        message,
+        context,
+        tools: ['get_quick_context', 'search_experiences', 'get_career_suggestions'],
+        onChunk: callbacks.onChunk,
+        onComplete: callbacks.onComplete,
+        onError: callbacks.onError
+      });
+    } catch (error) {
+      logger.error('MCP streaming failed', { error: error.message });
+      throw error;
+    }
+  }
+
+  async completeStreamingResponse(conversationId, fullResponse, history, userId, callbacks) {
+    // Add assistant response to database
+    const assistantMessage = await this.chatRepository.addMessage(
+      conversationId,
+      userId,
+      'assistant',
+      fullResponse
+    );
+    history.push(assistantMessage);
+
+    // Update conversation cache
+    this.updateConversationCache(conversationId, history);
+
+    // Log chat interaction
+    this.auditService.logDataAccess({
+      userId,
+      action: 'CHAT_MESSAGE_SENT',
+      resourceType: 'chat',
+      resourceId: conversationId,
+      operation: 'create',
+      success: true
+    }).catch(err => logger.error('Failed to log audit', { err }));
+
+    callbacks.onComplete({
+      conversationId,
+      message: assistantMessage
+    });
+  }
+
   async generateFallbackResponse(message, user) {
     // Simple rule-based responses when MCP is unavailable
     const lowerMessage = message.toLowerCase();
@@ -146,13 +290,27 @@ Feel free to ask me about any of these topics!`;
         throw new Error('User not found');
       }
 
-      if (conversationId && this.conversationCache.has(conversationId)) {
-        const history = this.conversationCache.get(conversationId);
-        return history.slice(-limit);
+      if (!conversationId) {
+        // Get user's conversations list
+        const conversations = await this.chatRepository.getUserConversations(userId, 10);
+        return {
+          conversations,
+          messages: []
+        };
       }
 
-      // Return empty history for new conversations
-      return [];
+      // Get messages from database
+      const messages = await this.chatRepository.getMessages(conversationId, userId, limit);
+      
+      // Update cache with database messages
+      if (messages.length > 0) {
+        this.updateConversationCache(conversationId, messages);
+      }
+
+      return {
+        conversationId,
+        messages
+      };
     } catch (error) {
       logger.error('Failed to get chat history', { userId, conversationId, error: error.message });
       throw error;
@@ -189,33 +347,99 @@ Feel free to ask me about any of these topics!`;
 
   async getConversationSummary(userId, conversationId) {
     try {
-      const history = await this.getChatHistory(userId, conversationId);
-      
-      if (history.length === 0) {
-        return null;
+      const conv = await this.chatRepository.getConversation(conversationId, userId);
+      if (!conv) {
+        throw new Error('Conversation not found');
       }
-
-      const firstMessage = history[0];
-      const lastMessage = history[history.length - 1];
-      const messageCount = history.length;
-      const userMessageCount = history.filter(m => m.role === 'user').length;
-
+      
       return {
-        conversationId,
-        firstMessage: {
-          content: firstMessage.content.substring(0, 100) + '...',
-          timestamp: firstMessage.timestamp
-        },
-        lastMessage: {
-          content: lastMessage.content.substring(0, 100) + '...',
-          timestamp: lastMessage.timestamp
-        },
-        messageCount,
-        userMessageCount,
-        duration: lastMessage.timestamp - firstMessage.timestamp
+        conversationId: conv.conversation_id,
+        title: conv.title,
+        firstMessage: conv.first_message,
+        lastMessageAt: conv.last_message_at,
+        messageCount: conv.message_count,
+        createdAt: conv.created_at
       };
     } catch (error) {
       logger.error('Failed to get conversation summary', { userId, conversationId, error: error.message });
+      throw error;
+    }
+  }
+
+  async deleteConversation(userId, conversationId) {
+    try {
+      await this.chatRepository.deleteConversation(conversationId, userId);
+      
+      // Remove from cache
+      if (this.conversationCache.has(conversationId)) {
+        this.conversationCache.delete(conversationId);
+      }
+      
+      // Log deletion
+      await this.auditService.logDataAccess({
+        userId,
+        action: 'CHAT_CONVERSATION_DELETED',
+        resourceType: 'chat',
+        resourceId: conversationId,
+        operation: 'delete',
+        success: true
+      });
+    } catch (error) {
+      logger.error('Failed to delete conversation', { userId, conversationId, error: error.message });
+      throw error;
+    }
+  }
+
+  async searchConversations(userId, searchTerm) {
+    try {
+      const results = await this.chatRepository.searchConversations(userId, searchTerm, 20);
+      return results;
+    } catch (error) {
+      logger.error('Failed to search conversations', { userId, searchTerm, error: error.message });
+      throw error;
+    }
+  }
+
+  async generateConversationSummary(userId, conversationId) {
+    try {
+      const messages = await this.chatRepository.getMessages(conversationId, userId, 100);
+      
+      if (messages.length < 5) {
+        return null; // Not enough messages to summarize
+      }
+
+      // Generate summary using MCP or fallback
+      let summary, keyTopics = [], actionItems = [];
+      
+      if (this.mcpClient) {
+        const result = await this.mcpClient.processMessage({
+          message: `Please provide a brief summary of this conversation, identify key topics discussed, and list any action items mentioned:
+          
+${messages.map(m => `${m.role}: ${m.content}`).join('\n')}`,
+          context: { task: 'summarize' }
+        });
+        
+        // Parse the response
+        const lines = result.content.split('\n');
+        summary = lines[0];
+        // Extract topics and action items from response
+        // This is simplified - in production, use structured parsing
+      } else {
+        // Simple fallback summary
+        summary = `Conversation with ${messages.length} messages discussing career topics`;
+        keyTopics = ['Career guidance'];
+      }
+      
+      await this.chatRepository.saveConversationSummary(
+        conversationId,
+        summary,
+        keyTopics,
+        actionItems
+      );
+      
+      return { summary, keyTopics, actionItems };
+    } catch (error) {
+      logger.error('Failed to generate conversation summary', { userId, conversationId, error: error.message });
       throw error;
     }
   }

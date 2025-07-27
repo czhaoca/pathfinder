@@ -10,7 +10,7 @@
     "mcp:start": "node src/services/mcp-server.js",
     "mcp:dev": "NODE_ENV=development node src/services/mcp-server.js",
     "mcp:prod": "NODE_ENV=production node src/services/mcp-server.js",
-    "db:migrate": "node src/database/migrations/deploy-prefixed-schema.js",
+    "db:migrate": "node src/database/run-migrations.js",
     "db:migrate:dev": "NODE_ENV=development node src/database/migrations/deploy-prefixed-schema.js development",
     "db:migrate:prod": "NODE_ENV=production node src/database/migrations/deploy-prefixed-schema.js production",
     "db:seed": "node src/database/seeds/seed-data.js",

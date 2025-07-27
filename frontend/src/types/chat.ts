@@ -12,16 +12,10 @@ export interface ChatResponse {
 }
 
 export interface ConversationSummary {
-  conversationId: string
-  firstMessage: {
-    content: string
-    timestamp: Date
-  }
-  lastMessage: {
-    content: string
-    timestamp: Date
-  }
-  messageCount: number
-  userMessageCount: number
-  duration: number
+  conversation_id: string
+  title: string
+  first_message: string
+  last_message_at: Date
+  message_count: number
+  created_at: Date
 }

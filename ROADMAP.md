@@ -28,19 +28,19 @@ This roadmap outlines the development progression for Career Navigator from its 
 
 ## Immediate Next Steps (January 2025)
 
-### Week 1-2: Complete Refactoring Migration
-- [ ] **Update existing API endpoints to use new architecture**
-  - Migrate `/api/index.js` endpoints to new controllers
-  - Remove deprecated code from monolithic API file
-  - Update frontend to use new API structure
-- [ ] **Complete frontend migration**
-  - Update all pages to use new hooks and services
-  - Remove business logic from components
-  - Implement proper error boundaries
-- [ ] **Update test suite**
-  - Rewrite tests for new architecture
-  - Add tests for new services and repositories
-  - Achieve 80% code coverage
+### Week 1-2: Complete Refactoring Migration ✅
+- [x] **Update existing API endpoints to use new architecture**
+  - ✅ Migrate `/api/index.js` endpoints to new controllers
+  - ✅ Remove deprecated code from monolithic API file
+  - ✅ Update frontend to use new API structure
+- [x] **Complete frontend migration**
+  - ✅ Update all pages to use new hooks and services
+  - ✅ Remove business logic from components
+  - ✅ Implement proper error boundaries
+- [x] **Update test suite**
+  - ✅ Rewrite tests for new architecture
+  - ✅ Add tests for new services and repositories
+  - ⚠️ Code coverage at 17% (target 80% - ongoing effort)
 
 ### Week 3-6: CPA PERT Module Implementation
 Based on detailed plan in `docs/github-issues/cpa-pert-integration-plan.md`:
