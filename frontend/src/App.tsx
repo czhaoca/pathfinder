@@ -11,6 +11,9 @@ import Dashboard from '@/pages/Dashboard'
 import Chat from '@/pages/Chat'
 import Experiences from '@/pages/Experiences'
 import Profile from '@/pages/Profile'
+import CPAPert from '@/pages/CPAPert'
+import PertResponseDetail from '@/pages/PertResponseDetail'
+import CPAPertProgress from '@/pages/CPAPertProgress'
 
 // Layouts
 import AuthLayout from '@/components/layout/AuthLayout'
@@ -50,6 +53,9 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="chat" element={<Chat />} />
             <Route path="experiences" element={<Experiences />} />
+            <Route path="cpa-pert" element={<CPAPert />} />
+            <Route path="cpa-pert/response/:responseId" element={<PertResponseDetail />} />
+            <Route path="cpa-pert/progress" element={<CPAPertProgress />} />
             <Route path="profile" element={<Profile />} />
           </Route>
           

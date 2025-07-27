@@ -61,6 +61,26 @@ class CpaPertService {
   async deleteResponse(responseId: string): Promise<void> {
     return api.delete(`/cpa-pert/response/${responseId}`);
   }
+
+  async batchAnalyzeExperiences(experienceIds: string[]): Promise<{
+    successful: Array<{ experienceId: string; competenciesFound: number }>;
+    failed: Array<{ experienceId: string; error: string }>;
+    summary: { total: number; processed: number; competenciesFound: number };
+  }> {
+    return api.post('/cpa-pert/batch/analyze', { experienceIds });
+  }
+
+  async batchGeneratePERTResponses(requests: Array<{
+    experienceId: string;
+    competencyCode: string;
+    proficiencyLevel: number;
+  }>): Promise<{
+    successful: Array<{ responseId: string; experienceId: string; competencyCode: string; characterCount: number }>;
+    failed: Array<{ request: any; error: string }>;
+    summary: { total: number; generated: number; totalCharacters: number };
+  }> {
+    return api.post('/cpa-pert/batch/generate', { requests });
+  }
 }
 
 export const cpaPertService = new CpaPertService();

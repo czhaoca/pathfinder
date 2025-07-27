@@ -169,7 +169,9 @@ class App {
             responses: 'GET /api/cpa-pert/responses',
             competencyReport: 'GET /api/cpa-pert/competency-report',
             updateResponse: 'PUT /api/cpa-pert/response/:responseId',
-            deleteResponse: 'DELETE /api/cpa-pert/response/:responseId'
+            deleteResponse: 'DELETE /api/cpa-pert/response/:responseId',
+            batchAnalyze: 'POST /api/cpa-pert/batch/analyze',
+            batchGenerate: 'POST /api/cpa-pert/batch/generate'
           }
         }
       });

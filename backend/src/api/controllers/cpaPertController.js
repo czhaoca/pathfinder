@@ -344,6 +344,78 @@ class CPAPertController {
       next(error);
     }
   }
+
+  /**
+   * Batch analyze multiple experiences
+   * POST /api/cpa-pert/batch/analyze
+   */
+  async batchAnalyzeExperiences(req, res, next) {
+    try {
+      const { experienceIds } = req.body;
+      
+      if (!Array.isArray(experienceIds) || experienceIds.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Experience IDs array is required'
+        });
+      }
+
+      if (experienceIds.length > 20) {
+        return res.status(400).json({
+          success: false,
+          error: 'Maximum 20 experiences can be analyzed at once'
+        });
+      }
+
+      const results = await this.cpaPertService.batchAnalyzeExperiences(
+        experienceIds,
+        req.user.userId
+      );
+      
+      res.json({
+        success: true,
+        data: results
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Batch generate PERT responses
+   * POST /api/cpa-pert/batch/generate
+   */
+  async batchGeneratePERTResponses(req, res, next) {
+    try {
+      const { requests } = req.body;
+      
+      if (!Array.isArray(requests) || requests.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Requests array is required'
+        });
+      }
+
+      if (requests.length > 10) {
+        return res.status(400).json({
+          success: false,
+          error: 'Maximum 10 PERT responses can be generated at once'
+        });
+      }
+
+      const results = await this.cpaPertService.batchGeneratePERTResponses(
+        requests,
+        req.user.userId
+      );
+      
+      res.json({
+        success: true,
+        data: results
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = CPAPertController;

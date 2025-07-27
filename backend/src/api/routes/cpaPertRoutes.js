@@ -79,6 +79,17 @@ function createCPAPertRoutes(container) {
     cpaPertController.deletePERTResponse.bind(cpaPertController)
   );
 
+  // Batch operations
+  router.post(
+    '/batch/analyze',
+    cpaPertController.batchAnalyzeExperiences.bind(cpaPertController)
+  );
+
+  router.post(
+    '/batch/generate',
+    cpaPertController.batchGeneratePERTResponses.bind(cpaPertController)
+  );
+
   return router;
 }
 
