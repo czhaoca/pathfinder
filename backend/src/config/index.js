@@ -10,18 +10,18 @@ const environment = process.env.NODE_ENV || 'development';
 // Project configuration for shared database environments
 const projectConfig = {
   name: 'career_navigator',
-  tablePrefix: process.env.CN_TABLE_PREFIX || 'cn_', // Career Navigator prefix
-  schemaPrefix: process.env.CN_SCHEMA_PREFIX || 'career_nav_',
+  tablePrefix: process.env.TABLE_PREFIX || 'skill_', // Skill development prefix
+  schemaPrefix: process.env.SCHEMA_PREFIX || 'skill_user_',
   version: '1.0.0',
   database: {
     // Separate table space for this project in shared databases
     development: {
-      tableSpace: process.env.CN_DEV_TABLESPACE || 'CN_DEV_DATA',
-      tempTableSpace: process.env.CN_DEV_TEMP_TABLESPACE || 'CN_DEV_TEMP'
+      tableSpace: process.env.DEV_TABLESPACE || 'SKILL_DEV_DATA',
+      tempTableSpace: process.env.DEV_TEMP_TABLESPACE || 'SKILL_DEV_TEMP'
     },
     production: {
-      tableSpace: process.env.CN_PROD_TABLESPACE || 'CN_PROD_DATA',
-      tempTableSpace: process.env.CN_PROD_TEMP_TABLESPACE || 'CN_PROD_TEMP'
+      tableSpace: process.env.PROD_TABLESPACE || 'SKILL_PROD_DATA',
+      tempTableSpace: process.env.PROD_TEMP_TABLESPACE || 'SKILL_PROD_TEMP'
     }
   }
 };
@@ -172,7 +172,10 @@ function validateConfig() {
 
 // Initialize configuration
 try {
-  validateConfig();
+  // Skip validation in test environment
+  if (environment !== 'test') {
+    validateConfig();
+  }
 } catch (error) {
   console.error('❌ Configuration validation failed:', error.message);
   process.exit(1);

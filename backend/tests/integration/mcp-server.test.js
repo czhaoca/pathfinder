@@ -3,10 +3,10 @@
  * Tests MCP tool functionality with mocked database responses
  */
 
-const CareerNavigatorMCP = require('../../server/mcp-server');
+const CareerNavigatorMCP = require('../../src/services/mcp-server');
 
 // Mock the database manager
-jest.mock('../../lib/database', () => ({
+jest.mock('../../src/services/database', () => ({
   initialize: jest.fn().mockResolvedValue(undefined),
   close: jest.fn().mockResolvedValue(undefined),
   healthCheck: jest.fn().mockResolvedValue({ 
@@ -61,7 +61,7 @@ jest.mock('winston', () => ({
 }));
 
 // Mock config
-jest.mock('../../config/mcp-config', () => ({
+jest.mock('../../src/config', () => ({
   environment: 'test',
   mcp: {
     server: {

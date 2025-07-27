@@ -13,18 +13,21 @@ const AuditService = require('./services/auditService');
 const UserService = require('./services/userService');
 const ExperienceService = require('./services/experienceService');
 const ChatService = require('./services/chatService');
+const CPAPertService = require('./services/cpaPertService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
 const SessionRepository = require('./repositories/sessionRepository');
 const AuditRepository = require('./repositories/auditRepository');
 const ExperienceRepository = require('./repositories/experienceRepository');
+const CPAPertRepository = require('./repositories/cpaPertRepository');
 
 // Controllers
 const AuthController = require('./api/controllers/authController');
 const ProfileController = require('./api/controllers/profileController');
 const ExperienceController = require('./api/controllers/experienceController');
 const ChatController = require('./api/controllers/chatController');
+const CPAPertController = require('./api/controllers/cpaPertController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
@@ -47,6 +50,7 @@ class Container {
       this.register('sessionRepository', () => new SessionRepository(this.get('database')));
       this.register('auditRepository', () => new AuditRepository(this.get('database')));
       this.register('experienceRepository', () => new ExperienceRepository(this.get('database')));
+      this.register('cpaPertRepository', () => new CPAPertRepository(this.get('database'), config));
 
       // Register services
       this.register('auditService', () => new AuditService(this.get('auditRepository')));
@@ -69,6 +73,12 @@ class Container {
         this.get('userRepository'),
         this.get('auditService')
       ));
+      this.register('cpaPertService', () => new CPAPertService(
+        this.get('cpaPertRepository'),
+        this.get('experienceRepository'),
+        this.get('auditService'),
+        this.get('chatService')
+      ));
 
       // Register middleware
       this.register('authMiddleware', () => new AuthMiddleware(this.get('authService')));
@@ -78,6 +88,10 @@ class Container {
       this.register('profileController', () => new ProfileController(this.get('userService')));
       this.register('experienceController', () => new ExperienceController(this.get('experienceService')));
       this.register('chatController', () => new ChatController(this.get('chatService')));
+      this.register('cpaPertController', () => new CPAPertController(
+        this.get('cpaPertService'),
+        this.get('authService')
+      ));
 
       logger.info('Dependency container initialized');
     } catch (error) {

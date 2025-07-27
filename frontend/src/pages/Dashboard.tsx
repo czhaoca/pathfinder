@@ -4,16 +4,19 @@ import { Button } from '@/components/ui/button'
 import { ArrowRight, Briefcase, MessageSquare, TrendingUp, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { authStore } from '@/stores/authStore'
+import { useDashboard } from '@/hooks/useDashboard'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user } = authStore()
+  const { stats: dashboardStats, loading } = useDashboard()
 
   const stats = [
-    { name: 'Total Experiences', value: '12', icon: Briefcase, color: 'text-blue-600' },
-    { name: 'Skills Tracked', value: '47', icon: TrendingUp, color: 'text-green-600' },
-    { name: 'Chat Sessions', value: '23', icon: MessageSquare, color: 'text-purple-600' },
-    { name: 'Profile Views', value: '156', icon: User, color: 'text-orange-600' },
+    { name: 'Total Experiences', value: loading ? '-' : dashboardStats.totalExperiences.toString(), icon: Briefcase, color: 'text-blue-600' },
+    { name: 'Skills Tracked', value: loading ? '-' : dashboardStats.skillsTracked.toString(), icon: TrendingUp, color: 'text-green-600' },
+    { name: 'Chat Sessions', value: loading ? '-' : dashboardStats.chatSessions.toString(), icon: MessageSquare, color: 'text-purple-600' },
+    { name: 'Profile Views', value: loading ? '-' : dashboardStats.profileViews.toString(), icon: User, color: 'text-orange-600' },
   ]
 
   return (

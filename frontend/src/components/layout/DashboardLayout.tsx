@@ -12,6 +12,7 @@ import {
 import { authStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { PageErrorBoundary } from '@/components/common/PageErrorBoundary'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -119,7 +120,9 @@ export default function DashboardLayout() {
 
         {/* Page content */}
         <main className="p-6">
-          <Outlet />
+          <PageErrorBoundary>
+            <Outlet />
+          </PageErrorBoundary>
         </main>
       </div>
     </div>

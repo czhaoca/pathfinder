@@ -12,6 +12,7 @@ const createAuthRoutes = require('./routes/authRoutes');
 const createProfileRoutes = require('./routes/profileRoutes');
 const createExperienceRoutes = require('./routes/experienceRoutes');
 const createChatRoutes = require('./routes/chatRoutes');
+const createCPAPertRoutes = require('./routes/cpaPertRoutes');
 
 class App {
   constructor() {
@@ -125,6 +126,7 @@ class App {
     this.app.use('/api/profile', createProfileRoutes(container));
     this.app.use('/api/experiences', createExperienceRoutes(container));
     this.app.use('/api/chat', createChatRoutes(container));
+    this.app.use('/api/cpa-pert', createCPAPertRoutes(container));
 
     // API documentation
     this.app.get('/api', (req, res) => {
@@ -155,6 +157,19 @@ class App {
           chat: {
             message: 'POST /api/chat/message',
             history: 'GET /api/chat/history'
+          },
+          cpaPert: {
+            analyzeExperience: 'POST /api/cpa-pert/analyze-experience',
+            competencyMapping: 'GET /api/cpa-pert/competency-mapping/:experienceId',
+            generateResponse: 'POST /api/cpa-pert/generate-response',
+            complianceCheck: 'GET /api/cpa-pert/compliance-check',
+            validateRequirements: 'POST /api/cpa-pert/validate-requirements',
+            competencyFramework: 'GET /api/cpa-pert/competency-framework',
+            proficiencyAssessment: 'GET /api/cpa-pert/proficiency-assessment/:experienceId',
+            responses: 'GET /api/cpa-pert/responses',
+            competencyReport: 'GET /api/cpa-pert/competency-report',
+            updateResponse: 'PUT /api/cpa-pert/response/:responseId',
+            deleteResponse: 'DELETE /api/cpa-pert/response/:responseId'
           }
         }
       });

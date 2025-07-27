@@ -1,4 +1,3 @@
-const { jest } = require('@jest/globals');
 const AuthController = require('../../../src/api/controllers/authController');
 
 describe('AuthController', () => {

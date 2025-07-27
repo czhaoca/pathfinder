@@ -7,7 +7,7 @@
  */
 
 const oracledb = require('oracledb');
-const mcpConfig = require('../config/mcp-config');
+const config = require('../../config');
 
 // Load environment configuration
 require('dotenv').config();
@@ -49,30 +49,29 @@ async function executeSQL(connection, sql, description) {
  * Create application-specific roles for Career Navigator
  */
 async function createApplicationRoles(connection, environment) {
-  const projectSettings = mcpConfig.database[environment].projectSettings;
-  const tablePrefix = projectSettings.tablePrefix.toUpperCase();
+  const tablePrefix = (config.project.tablePrefix || 'skill_').toUpperCase();
   
   console.log(`\n🔐 Creating Career Navigator access control roles for ${environment}...`);
 
-  // 1. Career Navigator Application Role
+  // 1. Application Role
   await executeSQL(connection, `
-    CREATE ROLE CN_${environment.toUpperCase()}_APP_ROLE
-  `, `Create Career Navigator application role for ${environment}`);
+    CREATE ROLE SKILL_${environment.toUpperCase()}_APP_ROLE
+  `, `Create application role for ${environment}`);
 
-  // 2. Career Navigator Read-Only Role
+  // 2. Read-Only Role
   await executeSQL(connection, `
-    CREATE ROLE CN_${environment.toUpperCase()}_READONLY_ROLE
-  `, `Create Career Navigator read-only role for ${environment}`);
+    CREATE ROLE SKILL_${environment.toUpperCase()}_READONLY_ROLE
+  `, `Create read-only role for ${environment}`);
 
-  // 3. Career Navigator Admin Role
+  // 3. Admin Role
   await executeSQL(connection, `
-    CREATE ROLE CN_${environment.toUpperCase()}_ADMIN_ROLE
-  `, `Create Career Navigator admin role for ${environment}`);
+    CREATE ROLE SKILL_${environment.toUpperCase()}_ADMIN_ROLE
+  `, `Create admin role for ${environment}`);
 
-  // 4. Career Navigator User Role (for individual users)
+  // 4. User Role (for individual users)
   await executeSQL(connection, `
-    CREATE ROLE CN_${environment.toUpperCase()}_USER_ROLE
-  `, `Create Career Navigator user role for ${environment}`);
+    CREATE ROLE SKILL_${environment.toUpperCase()}_USER_ROLE
+  `, `Create user role for ${environment}`);
 
   console.log('✅ Application roles created successfully');
 }
@@ -81,8 +80,7 @@ async function createApplicationRoles(connection, environment) {
  * Grant table permissions to roles
  */
 async function grantTablePermissions(connection, environment) {
-  const projectSettings = mcpConfig.database[environment].projectSettings;
-  const tablePrefix = projectSettings.tablePrefix;
+  const tablePrefix = config.project.tablePrefix || 'skill_';
   const envUpper = environment.toUpperCase();
   
   console.log(`\n📋 Granting table permissions for ${environment}...`);
@@ -103,31 +101,31 @@ async function grantTablePermissions(connection, environment) {
   for (const table of appTables) {
     // Application role gets full access
     await executeSQL(connection, `
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ${table} TO CN_${envUpper}_APP_ROLE
+      GRANT SELECT, INSERT, UPDATE, DELETE ON ${table} TO SKILL_${envUpper}_APP_ROLE
     `, `Grant app permissions on ${table}`);
 
     // Read-only role gets SELECT only
     await executeSQL(connection, `
-      GRANT SELECT ON ${table} TO CN_${envUpper}_READONLY_ROLE
+      GRANT SELECT ON ${table} TO SKILL_${envUpper}_READONLY_ROLE
     `, `Grant read-only permissions on ${table}`);
 
     // Admin role gets full access plus admin operations
     await executeSQL(connection, `
-      GRANT ALL ON ${table} TO CN_${envUpper}_ADMIN_ROLE
+      GRANT ALL ON ${table} TO SKILL_${envUpper}_ADMIN_ROLE
     `, `Grant admin permissions on ${table}`);
   }
 
   // User role permissions (limited to own data)
   await executeSQL(connection, `
-    GRANT SELECT ON ${tablePrefix}ref_skills_catalog TO CN_${envUpper}_USER_ROLE
+    GRANT SELECT ON ${tablePrefix}ref_skills_catalog TO SKILL_${envUpper}_USER_ROLE
   `, `Grant user access to skills catalog`);
 
   await executeSQL(connection, `
-    GRANT SELECT ON ${tablePrefix}ref_career_paths TO CN_${envUpper}_USER_ROLE
+    GRANT SELECT ON ${tablePrefix}ref_career_paths TO SKILL_${envUpper}_USER_ROLE
   `, `Grant user access to career paths`);
 
   await executeSQL(connection, `
-    GRANT SELECT ON ${tablePrefix}ref_role_templates TO CN_${envUpper}_USER_ROLE
+    GRANT SELECT ON ${tablePrefix}ref_role_templates TO SKILL_${envUpper}_USER_ROLE
   `, `Grant user access to role templates`);
 
   console.log('✅ Table permissions granted successfully');
@@ -137,20 +135,19 @@ async function grantTablePermissions(connection, environment) {
  * Create Row Level Security (RLS) policies
  */
 async function createRLSPolicies(connection, environment) {
-  const projectSettings = mcpConfig.database[environment].projectSettings;
-  const tablePrefix = projectSettings.tablePrefix;
+  const tablePrefix = config.project.tablePrefix || 'skill_';
   const envUpper = environment.toUpperCase();
   
   console.log(`\n🛡️  Creating Row Level Security policies for ${environment}...`);
 
   // RLS policy for users table (users can only see their own record)
   await executeSQL(connection, `
-    CREATE OR REPLACE FUNCTION cn_${environment}_user_rls_policy(schema_name VARCHAR2 DEFAULT NULL)
+    CREATE OR REPLACE FUNCTION skill_${environment}_user_rls_policy(schema_name VARCHAR2 DEFAULT NULL)
     RETURN VARCHAR2
     IS
     BEGIN
       -- Allow admin role to see all
-      IF SYS_CONTEXT('USERENV', 'CURRENT_USER') LIKE 'CN_${envUpper}_ADMIN%' THEN
+      IF SYS_CONTEXT('USERENV', 'CURRENT_USER') LIKE 'SKILL_${envUpper}_ADMIN%' THEN
         RETURN '1=1';
       END IF;
       
@@ -166,9 +163,9 @@ async function createRLSPolicies(connection, environment) {
       DBMS_RLS.ADD_POLICY(
         object_schema => USER,
         object_name => '${tablePrefix.toUpperCase()}USERS',
-        policy_name => 'CN_${envUpper}_USER_POLICY',
+        policy_name => 'SKILL_${envUpper}_USER_POLICY',
         function_schema => USER,
-        policy_function => 'cn_${environment}_user_rls_policy',
+        policy_function => 'skill_${environment}_user_rls_policy',
         statement_types => 'SELECT,UPDATE,DELETE'
       );
     END;
@@ -180,9 +177,9 @@ async function createRLSPolicies(connection, environment) {
       DBMS_RLS.ADD_POLICY(
         object_schema => USER,
         object_name => '${tablePrefix.toUpperCase()}AUDIT_LOG',
-        policy_name => 'CN_${envUpper}_AUDIT_POLICY',
+        policy_name => 'SKILL_${envUpper}_AUDIT_POLICY',
         function_schema => USER,
-        policy_function => 'cn_${environment}_user_rls_policy',
+        policy_function => 'skill_${environment}_user_rls_policy',
         statement_types => 'SELECT'
       );
     END;
@@ -200,53 +197,52 @@ async function createApplicationUsers(connection, environment) {
   console.log(`\n👥 Creating application user accounts for ${environment}...`);
 
   // 1. Application service account
-  const appUserPassword = process.env[`CN_${envUpper}_APP_PASSWORD`] || 'ChangeMe123!';
+  const appUserPassword = process.env[`SKILL_${envUpper}_APP_PASSWORD`] || 'ChangeMe123!';
   await executeSQL(connection, `
-    CREATE USER CN_${envUpper}_APP IDENTIFIED BY "${appUserPassword}"
+    CREATE USER SKILL_${envUpper}_APP IDENTIFIED BY "${appUserPassword}"
   `, `Create application user for ${environment}`);
 
   await executeSQL(connection, `
-    GRANT CN_${envUpper}_APP_ROLE TO CN_${envUpper}_APP
+    GRANT SKILL_${envUpper}_APP_ROLE TO SKILL_${envUpper}_APP
   `, `Grant application role to app user`);
 
   await executeSQL(connection, `
-    GRANT CREATE SESSION TO CN_${envUpper}_APP
+    GRANT CREATE SESSION TO SKILL_${envUpper}_APP
   `, `Grant session privileges to app user`);
 
   // 2. Read-only service account
-  const readOnlyPassword = process.env[`CN_${envUpper}_READONLY_PASSWORD`] || 'ReadOnly123!';
+  const readOnlyPassword = process.env[`SKILL_${envUpper}_READONLY_PASSWORD`] || 'ReadOnly123!';
   await executeSQL(connection, `
-    CREATE USER CN_${envUpper}_READONLY IDENTIFIED BY "${readOnlyPassword}"
+    CREATE USER SKILL_${envUpper}_READONLY IDENTIFIED BY "${readOnlyPassword}"
   `, `Create read-only user for ${environment}`);
 
   await executeSQL(connection, `
-    GRANT CN_${envUpper}_READONLY_ROLE TO CN_${envUpper}_READONLY
+    GRANT SKILL_${envUpper}_READONLY_ROLE TO SKILL_${envUpper}_READONLY
   `, `Grant read-only role to readonly user`);
 
   await executeSQL(connection, `
-    GRANT CREATE SESSION TO CN_${envUpper}_READONLY
+    GRANT CREATE SESSION TO SKILL_${envUpper}_READONLY
   `, `Grant session privileges to readonly user`);
 
   console.log('✅ Application users created successfully');
   console.log('⚠️  Please update .env file with the new user credentials:');
-  console.log(`   CN_${envUpper}_APP_USERNAME=CN_${envUpper}_APP`);
-  console.log(`   CN_${envUpper}_APP_PASSWORD=${appUserPassword}`);
-  console.log(`   CN_${envUpper}_READONLY_USERNAME=CN_${envUpper}_READONLY`);
-  console.log(`   CN_${envUpper}_READONLY_PASSWORD=${readOnlyPassword}`);
+  console.log(`   SKILL_${envUpper}_APP_USERNAME=SKILL_${envUpper}_APP`);
+  console.log(`   SKILL_${envUpper}_APP_PASSWORD=${appUserPassword}`);
+  console.log(`   SKILL_${envUpper}_READONLY_USERNAME=SKILL_${envUpper}_READONLY`);
+  console.log(`   SKILL_${envUpper}_READONLY_PASSWORD=${readOnlyPassword}`);
 }
 
 /**
  * Create Virtual Private Database (VPD) policies for multi-tenant isolation
  */
 async function createVPDPolicies(connection, environment) {
-  const projectSettings = mcpConfig.database[environment].projectSettings;
-  const tablePrefix = projectSettings.tablePrefix;
+  const tablePrefix = config.project.tablePrefix || 'skill_';
   
   console.log(`\n🏢 Creating Virtual Private Database policies for ${environment}...`);
 
   // VPD function for environment isolation
   await executeSQL(connection, `
-    CREATE OR REPLACE FUNCTION cn_${environment}_vpd_policy(
+    CREATE OR REPLACE FUNCTION skill_${environment}_vpd_policy(
       schema_name VARCHAR2,
       table_name VARCHAR2
     ) RETURN VARCHAR2
@@ -271,9 +267,9 @@ async function createVPDPolicies(connection, environment) {
       DBMS_RLS.ADD_POLICY(
         object_schema => USER,
         object_name => '${tablePrefix.toUpperCase()}AUDIT_LOG',
-        policy_name => 'CN_${environment.toUpperCase()}_VPD_POLICY',
+        policy_name => 'SKILL_${environment.toUpperCase()}_VPD_POLICY',
         function_schema => USER,
-        policy_function => 'cn_${environment}_vpd_policy',
+        policy_function => 'skill_${environment}_vpd_policy',
         statement_types => 'SELECT,INSERT,UPDATE,DELETE'
       );
     END;
@@ -293,7 +289,7 @@ async function createAccessMonitoring(connection, environment) {
 
   // Create access monitoring view
   await executeSQL(connection, `
-    CREATE OR REPLACE VIEW v_cn_${environment}_access_monitor AS
+    CREATE OR REPLACE VIEW v_skill_${environment}_access_monitor AS
     SELECT 
       al.timestamp,
       al.user_id,

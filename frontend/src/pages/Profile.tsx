@@ -2,11 +2,17 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { authStore } from '@/stores/authStore'
+import { useProfile } from '@/hooks/useProfile'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { ErrorMessage } from '@/components/common/ErrorMessage'
 import { Edit, Mail, User, Calendar, Shield } from 'lucide-react'
 
 export default function Profile() {
-  const { user } = authStore()
+  const { profile, loading, error } = useProfile()
+
+  if (loading) return <LoadingSpinner />
+  if (error) return <ErrorMessage message={error} />
+  if (!profile) return <ErrorMessage message="Profile not found" />
 
   const topSkills = [
     'React', 'TypeScript', 'Node.js', 'Python', 'AWS',
@@ -25,9 +31,9 @@ export default function Profile() {
               </div>
               <div>
                 <CardTitle className="text-2xl">
-                  {user?.firstName} {user?.lastName}
+                  {profile?.firstName} {profile?.lastName}
                 </CardTitle>
-                <CardDescription>@{user?.username}</CardDescription>
+                <CardDescription>@{profile?.username}</CardDescription>
               </div>
             </div>
             <Button variant="outline">
@@ -40,15 +46,15 @@ export default function Profile() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{user?.email}</span>
+              <span className="text-sm">{profile?.email}</span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">Member since {new Date(user?.createdAt || '').toLocaleDateString()}</span>
+              <span className="text-sm">Member since {new Date(profile?.createdAt || '').toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-2">
               <Shield className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm capitalize">Account Status: {user?.accountStatus}</span>
+              <span className="text-sm capitalize">Account Status: {profile?.accountStatus}</span>
             </div>
           </div>
         </CardContent>

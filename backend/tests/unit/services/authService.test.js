@@ -1,4 +1,3 @@
-const { jest } = require('@jest/globals');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const AuthService = require('../../../src/services/authService');
@@ -6,11 +5,25 @@ const AuthService = require('../../../src/services/authService');
 // Mock external modules
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
+jest.mock('../../../src/config', () => ({
+  security: {
+    jwtSecret: 'test-secret',
+    jwtExpiresIn: '15m',
+    refreshTokenExpiresIn: '7d'
+  }
+}));
+jest.mock('../../../src/utils/logger', () => ({
+  error: jest.fn(),
+  warn: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn()
+}));
 
 describe('AuthService', () => {
   let authService;
   let mockUserRepository;
   let mockSessionRepository;
+  let mockAuditService;
   let mockConfig;
 
   beforeEach(() => {
@@ -20,7 +33,10 @@ describe('AuthService', () => {
       findByEmail: jest.fn(),
       findById: jest.fn(),
       create: jest.fn(),
-      update: jest.fn()
+      update: jest.fn(),
+      findByUsernameOrEmail: jest.fn(),
+      updateLastLogin: jest.fn(),
+      createUserSchema: jest.fn()
     };
 
     mockSessionRepository = {
@@ -28,6 +44,12 @@ describe('AuthService', () => {
       findById: jest.fn(),
       update: jest.fn(),
       deleteByUserId: jest.fn()
+    };
+
+    // Mock audit service
+    mockAuditService = {
+      logAuth: jest.fn(),
+      logUserAction: jest.fn()
     };
 
     // Mock config
@@ -40,7 +62,7 @@ describe('AuthService', () => {
     };
 
     // Create service instance
-    authService = new AuthService(mockUserRepository, mockSessionRepository, mockConfig);
+    authService = new AuthService(mockUserRepository, mockSessionRepository, mockAuditService);
 
     // Reset mocks
     jest.clearAllMocks();
@@ -57,8 +79,7 @@ describe('AuthService', () => {
       };
 
       // Mock no existing user
-      mockUserRepository.findByUsername.mockResolvedValue(null);
-      mockUserRepository.findByEmail.mockResolvedValue(null);
+      mockUserRepository.findByUsernameOrEmail.mockResolvedValue(null);
 
       // Mock bcrypt
       bcrypt.hash.mockResolvedValue('hashed-password');
@@ -71,7 +92,8 @@ describe('AuthService', () => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         createdAt: new Date(),
-        accountStatus: 'active'
+        accountStatus: 'active',
+        schemaPrefix: 'skill_user_testuser_'
       };
       mockUserRepository.create.mockResolvedValue(createdUser);
 
@@ -91,8 +113,7 @@ describe('AuthService', () => {
 
       const result = await authService.register(userData);
 
-      expect(mockUserRepository.findByUsername).toHaveBeenCalledWith(userData.username);
-      expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(userData.email);
+      expect(mockUserRepository.findByUsernameOrEmail).toHaveBeenCalledWith(userData.username, userData.email);
       expect(bcrypt.hash).toHaveBeenCalledWith(userData.password, 10);
       expect(mockUserRepository.create).toHaveBeenCalled();
       expect(mockSessionRepository.create).toHaveBeenCalled();
