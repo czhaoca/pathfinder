@@ -382,6 +382,22 @@ npm run security:retention-cleanup
 - Any decisions or assumptions made
 - Commit hash reference
 
+### Documentation and Testing Requirements
+
+**CRITICAL**: When making code changes:
+1. **Always update documentation** when code updates
+2. **Update API documentation** to reflect any API changes
+3. **Update test suites** to cover new or modified functionality
+4. **Update design documentation** when design changes in response to new requirements
+5. Keep all documentation in sync with the actual implementation
+
+**Documentation Updates Should Include**:
+- API endpoint changes in `docs/api/`
+- Architecture changes in `docs/architecture/`
+- Feature documentation in `docs/features/`
+- Database schema changes in `docs/database-modeling/`
+- Deployment updates in `docs/deployment/`
+
 ### General Instructions
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
