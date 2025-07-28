@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a comprehensive AI-powered career navigation and experience management system that has evolved beyond its original CPA PERT reporting focus. The system now provides:
 
-1. **Career Navigator**: Interactive LLM-based chatbot for career planning and guidance
+1. **Pathfinder**: Interactive LLM-based chatbot for career planning and guidance
 2. **Experience Management**: 3-tier data structure for storing and organizing user experiences
 3. **MCP Integration**: Model Context Protocol server for contextual AI conversations
 
@@ -15,7 +15,7 @@ This is a comprehensive AI-powered career navigation and experience management s
 The system follows a multi-layered, multi-user architecture:
 
 - **Frontend**: Web-based chat interface for user interactions
-- **Application Layer**: Career Navigator and Experience Story Manager
+- **Application Layer**: Pathfinder and Experience Story Manager
 - **LLM Integration**: Authenticated Large Language Model with MCP server for context management
 - **Data Layer**: Multi-user 3-tier experience database with user-prefixed schema isolation
 - **Security Layer**: JWT authentication, encryption, and HIPAA-compliant data protection
@@ -55,7 +55,7 @@ The system implements a **user-prefixed schema architecture** for complete data 
 The project follows a clean frontend/backend separation:
 
 ```
-career-navigator/
+pathfinder/
 ├── frontend/                # React TypeScript application
 │   ├── src/
 │   │   ├── components/     # UI components
@@ -217,7 +217,7 @@ In your markdown file:
 ## Specialized Add-on Modules
 
 ### Industry-Specific Tools
-Career Navigator supports discrete add-on modules for specific professional requirements. These modules are located in `addons/` and can be installed independently.
+Pathfinder supports discrete add-on modules for specific professional requirements. These modules are located in `addons/` and can be installed independently.
 
 Available modules:
 - `docs/addons/cpa-pert-writer/` - Accounting profession experience reporting
@@ -236,7 +236,7 @@ ls docs/addons/
 
 ### Data Protection Standards
 
-Career Navigator implements **HIPAA-level security standards** for protecting personal career and experience data:
+Pathfinder implements **HIPAA-level security standards** for protecting personal career and experience data:
 
 1. **Complete Data Isolation**
    - User data stored in separate database schemas
@@ -331,8 +331,8 @@ npm run mcp:prod
 5. **Project Isolation**: Virtual Private Database (VPD) for multi-project environments
 
 **Database Structure:**
-- System tables: `cn_users`, `cn_user_sessions`, `cn_audit_log`
-- Reference tables: `cn_ref_skills_catalog`, `cn_ref_career_paths`
+- System tables: `pf_users`, `pf_user_sessions`, `pf_audit_log`
+- Reference tables: `pf_ref_skills_catalog`, `pf_ref_career_paths`
 - User schemas: `career_nav_username_experiences_detailed`
 
 ### Security Features (HIPAA-Level Compliance)
@@ -363,3 +363,27 @@ npm run compliance:gdpr-report
 # Test data retention
 npm run security:retention-cleanup
 ```
+
+## Important Instruction Reminders
+
+### Conversation Documentation Requirements
+
+**CRITICAL**: Every conversation and change must be documented:
+1. Create a changelog entry in `docs/changelog/` for EVERY conversation
+2. Document ALL changes made, even if not explicitly requested in the prompt
+3. Each conversation MUST end with a commit summarizing the changes
+4. Include both requested changes and any implicit changes made
+5. Until the project is marked as deployed, assume no versioning/compatibility work is needed
+
+**Changelog Format**:
+- Date and time of conversation
+- Summary of user request
+- List of all changes made (explicit and implicit)
+- Any decisions or assumptions made
+- Commit hash reference
+
+### General Instructions
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
