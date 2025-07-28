@@ -8,7 +8,7 @@ const BaseRepository = require('./baseRepository');
 class CPAPertRepository extends BaseRepository {
   constructor(database, config) {
     super(database, config);
-    this.tablePrefix = config.project.tablePrefix || 'skill_';
+    this.tablePrefix = config.project.tablePrefix || 'pf_';
   }
 
   // Competency operations
@@ -16,8 +16,8 @@ class CPAPertRepository extends BaseRepository {
   async getAllCompetencies() {
     const query = `
       SELECT * FROM ${this.tablePrefix}cpa_competencies 
-      WHERE is_active = 'Y'
-      ORDER BY category, competency_code
+      WHERE is_active = 1
+      ORDER BY category, area_code, sub_code
     `;
     return await this.database.executeQuery(query);
   }
@@ -34,7 +34,7 @@ class CPAPertRepository extends BaseRepository {
   async getCompetencyByCode(competencyCode) {
     const query = `
       SELECT * FROM ${this.tablePrefix}cpa_competencies 
-      WHERE competency_code = :competencyCode
+      WHERE competency_id = :competencyCode
     `;
     const results = await this.database.executeQuery(query, { competencyCode });
     return results[0];
@@ -59,7 +59,7 @@ class CPAPertRepository extends BaseRepository {
 
   async getCompetencyMapping(experienceId, competencyId) {
     const query = `
-      SELECT m.*, c.competency_code, c.competency_name, c.category
+      SELECT m.*, c.competency_id, c.area_code, c.sub_code, c.sub_name, c.category
       FROM ${this.tablePrefix}cpa_competency_mappings m
       JOIN ${this.tablePrefix}cpa_competencies c ON m.competency_id = c.competency_id
       WHERE m.experience_id = :experienceId 
@@ -72,7 +72,7 @@ class CPAPertRepository extends BaseRepository {
 
   async getExperienceMappings(experienceId) {
     const query = `
-      SELECT m.*, c.competency_code, c.competency_name, c.category
+      SELECT m.*, c.competency_id, c.area_code, c.sub_code, c.sub_name, c.category
       FROM ${this.tablePrefix}cpa_competency_mappings m
       JOIN ${this.tablePrefix}cpa_competencies c ON m.competency_id = c.competency_id
       WHERE m.experience_id = :experienceId
@@ -84,11 +84,11 @@ class CPAPertRepository extends BaseRepository {
 
   async getUserCompetencyMappings(userId) {
     const query = `
-      SELECT m.*, c.competency_code, c.competency_name, c.category
+      SELECT m.*, c.competency_id, c.area_code, c.sub_code, c.sub_name, c.category
       FROM ${this.tablePrefix}cpa_competency_mappings m
       JOIN ${this.tablePrefix}cpa_competencies c ON m.competency_id = c.competency_id
       WHERE m.user_id = :userId
-      ORDER BY c.category, c.competency_code
+      ORDER BY c.category, c.area_code, c.sub_code
     `;
     
     return await this.database.executeQuery(query, { userId });
@@ -117,7 +117,7 @@ class CPAPertRepository extends BaseRepository {
 
   async getPERTResponse(responseId) {
     const query = `
-      SELECT r.*, c.competency_code, c.competency_name, c.category
+      SELECT r.*, c.competency_id, c.area_code, c.sub_code, c.sub_name, c.category
       FROM ${this.tablePrefix}cpa_pert_responses r
       JOIN ${this.tablePrefix}cpa_competencies c ON r.competency_id = c.competency_id
       WHERE r.response_id = :responseId
@@ -129,11 +129,11 @@ class CPAPertRepository extends BaseRepository {
 
   async getUserPERTResponses(userId, limit = 50) {
     const query = `
-      SELECT r.*, c.competency_code, c.competency_name, c.category
+      SELECT r.*, c.competency_id, c.area_code, c.sub_code, c.sub_name, c.category
       FROM ${this.tablePrefix}cpa_pert_responses r
       JOIN ${this.tablePrefix}cpa_competencies c ON r.competency_id = c.competency_id
       WHERE r.user_id = :userId
-      AND r.is_current = 'Y'
+      AND r.is_current = 1
       ORDER BY r.created_at DESC
       FETCH FIRST :limit ROWS ONLY
     `;
@@ -146,7 +146,7 @@ class CPAPertRepository extends BaseRepository {
       SELECT * FROM ${this.tablePrefix}cpa_pert_responses
       WHERE user_id = :userId
       AND competency_id = :competencyId
-      AND is_current = 'Y'
+      AND is_current = 1
       ORDER BY proficiency_level DESC, created_at DESC
     `;
     
@@ -155,12 +155,12 @@ class CPAPertRepository extends BaseRepository {
 
   async getAllUserPERTResponses(userId) {
     const query = `
-      SELECT r.*, c.competency_code, c.competency_name, c.category
+      SELECT r.*, c.competency_id, c.area_code, c.sub_code, c.sub_name, c.category
       FROM ${this.tablePrefix}cpa_pert_responses r
       JOIN ${this.tablePrefix}cpa_competencies c ON r.competency_id = c.competency_id
       WHERE r.user_id = :userId
-      AND r.is_current = 'Y'
-      ORDER BY c.category, c.competency_code, r.proficiency_level DESC
+      AND r.is_current = 1
+      ORDER BY c.category, c.area_code, c.sub_code, r.proficiency_level DESC
     `;
     
     return await this.database.executeQuery(query, { userId });
@@ -263,7 +263,7 @@ class CPAPertRepository extends BaseRepository {
       FROM ${this.tablePrefix}cpa_proficiency_assessments a
       JOIN ${this.tablePrefix}cpa_competencies c ON a.competency_id = c.competency_id
       WHERE a.user_id = :userId
-      ORDER BY c.category, c.competency_code
+      ORDER BY c.category, c.area_code, c.sub_code
     `;
     
     return await this.database.executeQuery(query, { userId });
@@ -356,7 +356,7 @@ class CPAPertRepository extends BaseRepository {
         MAX(created_at) as last_response_date
       FROM ${this.tablePrefix}cpa_pert_responses
       WHERE user_id = :userId
-      AND is_current = 'Y'
+      AND is_current = 1
     `;
     
     const results = await this.database.executeQuery(query, { userId });

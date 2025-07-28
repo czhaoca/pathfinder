@@ -87,7 +87,7 @@ class CPAPertController {
     try {
       const schema = Joi.object({
         experienceId: Joi.string().uuid().required(),
-        competencyCode: Joi.string().pattern(/^[A-Z]{2}-\d+\.\d+$/).required(),
+        competencyCode: Joi.string().pattern(/^[A-Z]{2}\d+$/).required(),
         proficiencyLevel: Joi.number().integer().min(0).max(2).required()
       });
 
@@ -175,10 +175,15 @@ class CPAPertController {
         }
         acc[comp.category].push({
           competencyId: comp.competency_id,
-          competencyCode: comp.competency_code,
-          competencyName: comp.competency_name,
+          areaCode: comp.area_code,
+          areaName: comp.area_name,
+          subCode: comp.sub_code,
+          subName: comp.sub_name,
           description: comp.description,
-          proficiencyLevels: JSON.parse(comp.proficiency_levels)
+          evrRelevance: comp.evr_relevance,
+          level1Criteria: comp.level_1_criteria,
+          level2Criteria: comp.level_2_criteria,
+          guidingQuestions: comp.guiding_questions
         });
         return acc;
       }, {});
@@ -205,7 +210,7 @@ class CPAPertController {
         return res.status(400).json({ error: 'Invalid experience ID format' });
       }
 
-      if (!competencyCode || !competencyCode.match(/^[A-Z]{2}-\d+\.\d+$/)) {
+      if (!competencyCode || !competencyCode.match(/^[A-Z]{2}\d+$/)) {
         return res.status(400).json({ error: 'Valid competency code required' });
       }
 
@@ -331,7 +336,7 @@ class CPAPertController {
       // Mark as not current instead of hard delete
       await this.cpaPertService.cpaPertRepository.database.executeQuery(
         `UPDATE ${this.cpaPertService.cpaPertRepository.tablePrefix}cpa_pert_responses 
-         SET is_current = 'N' 
+         SET is_current = 0 
          WHERE response_id = :responseId`,
         { responseId }
       );

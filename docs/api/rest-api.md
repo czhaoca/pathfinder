@@ -278,6 +278,8 @@ POST /api/cpa-pert/analyze-experience
 Authorization: Bearer <token>
 ```
 
+Maps an experience to relevant CPA competencies using AI analysis.
+
 **Request Body:**
 ```json
 {
@@ -288,13 +290,46 @@ Authorization: Bearer <token>
 **Response:**
 ```json
 {
-  "competencies": [
+  "success": true,
+  "data": {
+    "experienceId": "456e7890-e89b-12d3-a456-426614174000",
+    "mappings": [
+      {
+        "mapping_id": "789e0123-e89b-12d3-a456-426614174000",
+        "competency_id": "FR1",
+        "relevance_score": 0.85,
+        "evidence_extracted": "Prepared consolidated financial statements...",
+        "competency_name": "Financial Reporting Needs and Systems",
+        "area_name": "Financial Reporting"
+      }
+    ],
+    "totalMapped": 5
+  }
+}
+```
+
+### Get Competency Mapping
+```http
+GET /api/cpa-pert/competency-mapping/:experienceId
+Authorization: Bearer <token>
+```
+
+Retrieves all competency mappings for a specific experience.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
     {
-      "code": "FR2",
-      "name": "Accounting policies and transactions",
-      "category": "technical",
-      "proficiencyLevel": 1,
-      "examples": ["Implemented new revenue recognition..."]
+      "mapping_id": "789e0123-e89b-12d3-a456-426614174000",
+      "competency_id": "FR1",
+      "area_code": "FR",
+      "sub_code": "FR1",
+      "sub_name": "Financial Reporting Needs and Systems",
+      "category": "Technical",
+      "relevance_score": 0.85,
+      "evidence_extracted": "Prepared consolidated financial statements..."
     }
   ]
 }
@@ -306,22 +341,29 @@ POST /api/cpa-pert/generate-response
 Authorization: Bearer <token>
 ```
 
+Generates a STAR-format PERT response for a competency.
+
 **Request Body:**
 ```json
 {
   "experienceId": "456e7890-e89b-12d3-a456-426614174000",
-  "competencyCode": "FR2",
-  "targetLevel": 2
+  "competencyCode": "FR1",
+  "proficiencyLevel": 2
 }
 ```
 
 **Response:**
 ```json
 {
-  "response": "During my role as Senior Accountant...",
-  "characterCount": 4875,
-  "meetsRequirements": true,
-  "suggestions": []
+  "success": true,
+  "data": {
+    "response_id": "123e4567-e89b-12d3-a456-426614174000",
+    "response_text": "SITUATION:\nAs Senior Financial Analyst...\n\nTASK:\n...",
+    "character_count": 4875,
+    "proficiency_level": 2,
+    "competency_name": "Financial Reporting Needs and Systems",
+    "area_name": "Financial Reporting"
+  }
 }
 ```
 
@@ -331,20 +373,227 @@ GET /api/cpa-pert/compliance-check
 Authorization: Bearer <token>
 ```
 
+Checks current EVR compliance status.
+
 **Response:**
 ```json
 {
-  "overallCompliance": true,
-  "monthsCompleted": 18,
-  "monthsRequired": 30,
-  "competenciesMet": {
-    "level1": ["FR1", "FR2", "MA1"],
-    "level2": ["TX2"]
-  },
-  "competenciesNeeded": {
-    "level1": ["AA1"],
-    "level2": ["FR3", "FN1"]
+  "success": true,
+  "data": {
+    "isCompliant": false,
+    "summary": {
+      "totalCompetencies": 6,
+      "level2Count": 1,
+      "level1OrHigherCount": 5,
+      "missingCompetencies": ["Need 1 more Level 2 competencies"]
+    },
+    "complianceCheck": {
+      "check_id": "456e7890-e89b-12d3-a456-426614174000",
+      "check_date": "2025-01-28T12:00:00Z",
+      "is_compliant": "N"
+    }
   }
+}
+```
+
+### Validate Requirements
+```http
+POST /api/cpa-pert/validate-requirements
+Authorization: Bearer <token>
+```
+
+Performs a full EVR validation and creates a new compliance check.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "isCompliant": false,
+    "details": {
+      "totalCompetencies": 6,
+      "level2Count": 1,
+      "level1OrHigherCount": 5
+    },
+    "recommendations": [
+      "Focus on advancing 1 competencies from Level 1 to Level 2"
+    ]
+  }
+}
+```
+
+### Get Competency Framework
+```http
+GET /api/cpa-pert/competency-framework
+Authorization: Bearer <token>
+```
+
+Retrieves the complete CPA competency framework.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "Technical": [
+      {
+        "competencyId": "FR1",
+        "areaCode": "FR",
+        "areaName": "Financial Reporting",
+        "subCode": "FR1",
+        "subName": "Financial Reporting Needs and Systems",
+        "description": "Evaluates financial reporting needs...",
+        "evrRelevance": "HIGH",
+        "level1Criteria": "- Identifies financial reporting needs...",
+        "level2Criteria": "- Evaluates complex financial reporting..."
+      }
+    ],
+    "Enabling": [...]
+  }
+}
+```
+
+### Get Proficiency Assessment
+```http
+GET /api/cpa-pert/proficiency-assessment/:experienceId?competencyCode=FR1
+Authorization: Bearer <token>
+```
+
+Assesses proficiency level for a competency based on experience.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "competency_id": "FR1",
+    "competency_name": "Financial Reporting Needs and Systems",
+    "current_level": 1,
+    "target_level": 2,
+    "gap": 1,
+    "evidence_count": 2,
+    "development_areas": "To reach Level 2, focus on...",
+    "next_steps": "Take on leadership roles..."
+  }
+}
+```
+
+### Get User PERT Responses
+```http
+GET /api/cpa-pert/responses?limit=50
+Authorization: Bearer <token>
+```
+
+Retrieves user's PERT responses.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "response_id": "123e4567-e89b-12d3-a456-426614174000",
+      "competency_id": "FR1",
+      "proficiency_level": 2,
+      "character_count": 4875,
+      "created_at": "2025-01-28T12:00:00Z"
+    }
+  ],
+  "total": 10
+}
+```
+
+### Get Competency Report
+```http
+GET /api/cpa-pert/competency-report
+Authorization: Bearer <token>
+```
+
+Generates comprehensive competency report.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "userId": "123e4567-e89b-12d3-a456-426614174000",
+    "generatedAt": "2025-01-28T12:00:00Z",
+    "summary": {
+      "totalCompetencies": 8,
+      "level2Achieved": 2,
+      "level1Achieved": 4,
+      "evrCompliant": false
+    },
+    "competencyDetails": [...],
+    "developmentPlan": {...}
+  }
+}
+```
+
+### Update PERT Response
+```http
+PUT /api/cpa-pert/response/:responseId
+Authorization: Bearer <token>
+```
+
+Updates an existing PERT response.
+
+**Request Body:**
+```json
+{
+  "responseText": "Updated STAR format response...",
+  "situationText": "In my role as...",
+  "taskText": "I was responsible for...",
+  "actionText": "I implemented...",
+  "resultText": "This resulted in...",
+  "quantifiedImpact": "Reduced processing time by 40%"
+}
+```
+
+### Delete PERT Response
+```http
+DELETE /api/cpa-pert/response/:responseId
+Authorization: Bearer <token>
+```
+
+Marks a PERT response as inactive.
+
+### Batch Analyze Experiences
+```http
+POST /api/cpa-pert/batch/analyze
+Authorization: Bearer <token>
+```
+
+Analyzes multiple experiences for competency mapping.
+
+**Request Body:**
+```json
+{
+  "experienceIds": [
+    "456e7890-e89b-12d3-a456-426614174000",
+    "567e8901-e89b-12d3-a456-426614174000"
+  ]
+}
+```
+
+### Batch Generate PERT Responses
+```http
+POST /api/cpa-pert/batch/generate
+Authorization: Bearer <token>
+```
+
+Generates multiple PERT responses.
+
+**Request Body:**
+```json
+{
+  "requests": [
+    {
+      "experienceId": "456e7890-e89b-12d3-a456-426614174000",
+      "competencyCode": "FR1",
+      "proficiencyLevel": 2
+    }
+  ]
 }
 ```
 
