@@ -2,7 +2,7 @@
 
 ## Overview
 
-Career Navigator uses Docker for containerized deployment of both frontend and backend services. This ensures consistent environments, easy scaling, and simplified deployment across development and production environments.
+Pathfinder uses Docker for containerized deployment of both frontend and backend services. This ensures consistent environments, easy scaling, and simplified deployment across development and production environments.
 
 ## Prerequisites
 
@@ -26,8 +26,8 @@ The Docker setup includes:
 
 ```bash
 # Clone the repository
-git clone https://github.com/czhaoca/career-navigator.git
-cd career-navigator
+git clone https://github.com/czhaoca/pathfinder.git
+cd pathfinder
 
 # Copy environment templates
 cp .env.example .env
@@ -48,8 +48,8 @@ mkdir -p wallets/dev-wallet
 mkdir -p wallets/prod-wallet
 
 # Extract your Oracle wallet files
-unzip career-navigator-dev-wallet.zip -d wallets/dev-wallet/
-unzip career-navigator-prod-wallet.zip -d wallets/prod-wallet/
+unzip pathfinder-dev-wallet.zip -d wallets/dev-wallet/
+unzip pathfinder-prod-wallet.zip -d wallets/prod-wallet/
 
 # Set appropriate permissions
 chmod -R 600 wallets/
@@ -124,7 +124,7 @@ openssl rand -base64 32
 
 ### Main Services
 
-#### 1. career-navigator (MCP Server)
+#### 1. pathfinder (MCP Server)
 - **Image**: Built from local Dockerfile
 - **Port**: 3000 (configurable via MCP_PORT)
 - **Volumes**: 
@@ -147,7 +147,7 @@ openssl rand -base64 32
 
 ### Development Services
 
-#### career-navigator-dev
+#### pathfinder-dev
 - **Profile**: development
 - **Port**: 3001 (configurable via MCP_DEV_PORT)
 - **Features**:
@@ -164,7 +164,7 @@ openssl rand -base64 32
 docker-compose --profile development up -d
 
 # View logs
-docker-compose logs -f career-navigator-dev
+docker-compose logs -f pathfinder-dev
 
 # Access development server
 curl http://localhost:3001/health
@@ -180,7 +180,7 @@ docker-compose up -d
 docker-compose --profile nginx up -d
 
 # View production logs
-docker-compose logs -f career-navigator
+docker-compose logs -f pathfinder
 ```
 
 ### Staging Environment
@@ -201,7 +201,7 @@ All services include comprehensive health checks:
 docker-compose ps
 
 # View health check details
-docker inspect career-navigator-mcp --format='{{.State.Health}}'
+docker inspect pathfinder-mcp --format='{{.State.Health}}'
 ```
 
 ### Health Check Endpoints
@@ -217,17 +217,17 @@ docker inspect career-navigator-mcp --format='{{.State.Health}}'
 docker-compose logs -f
 
 # View specific service logs
-docker-compose logs -f career-navigator
+docker-compose logs -f pathfinder
 
 # Follow logs with timestamps
-docker-compose logs -f -t career-navigator
+docker-compose logs -f -t pathfinder
 ```
 
 ## Volume Management
 
 ### Persistent Data
 
-- **Redis Data**: `career-navigator-redis-data` volume
+- **Redis Data**: `pathfinder-redis-data` volume
 - **Logs**: `./logs` host directory
 - **Wallets**: Read-only mount from host
 
@@ -235,7 +235,7 @@ docker-compose logs -f -t career-navigator
 
 ```bash
 # Backup Redis data
-docker run --rm -v career-navigator-redis-data:/data -v $(pwd):/backup alpine tar czf /backup/redis-backup.tar.gz -C /data .
+docker run --rm -v pathfinder-redis-data:/data -v $(pwd):/backup alpine tar czf /backup/redis-backup.tar.gz -C /data .
 
 # Backup logs
 tar czf logs-backup-$(date +%Y%m%d).tar.gz logs/
@@ -256,7 +256,7 @@ tar czf logs-backup-$(date +%Y%m%d).tar.gz logs/
 ```yaml
 # docker-compose.yml network configuration
 networks:
-  career-navigator-network:
+  pathfinder-network:
     driver: bridge
     internal: true  # For production isolation
 ```
@@ -274,7 +274,7 @@ networks:
 
 ```bash
 # Scale MCP server instances
-docker-compose up -d --scale career-navigator=3
+docker-compose up -d --scale pathfinder=3
 
 # Use nginx for load balancing
 docker-compose --profile nginx up -d
@@ -285,7 +285,7 @@ docker-compose --profile nginx up -d
 ```yaml
 # Add to docker-compose.yml
 services:
-  career-navigator:
+  pathfinder:
     deploy:
       resources:
         limits:
@@ -306,10 +306,10 @@ services:
 ls -la wallets/prod-wallet/
 
 # Verify environment variables
-docker-compose exec career-navigator env | grep OCI_DB
+docker-compose exec pathfinder env | grep OCI_DB
 
 # Test database connectivity
-docker-compose exec career-navigator node scripts/db-health-check.js
+docker-compose exec pathfinder node scripts/db-health-check.js
 ```
 
 #### 2. Redis Connection Issues
@@ -324,33 +324,33 @@ docker-compose exec redis redis-cli -a "${REDIS_PASSWORD}" ping
 #### 3. Health Check Failures
 ```bash
 # Check health check script
-docker-compose exec career-navigator node scripts/health-check.js
+docker-compose exec pathfinder node scripts/health-check.js
 
 # View detailed health status
-docker inspect career-navigator-mcp --format='{{json .State.Health}}'
+docker inspect pathfinder-mcp --format='{{json .State.Health}}'
 ```
 
 ### Log Analysis
 
 ```bash
 # Search logs for errors
-docker-compose logs career-navigator 2>&1 | grep ERROR
+docker-compose logs pathfinder 2>&1 | grep ERROR
 
 # Monitor performance
-docker-compose logs career-navigator 2>&1 | grep "execution_time"
+docker-compose logs pathfinder 2>&1 | grep "execution_time"
 
 # Check authentication issues
-docker-compose logs career-navigator 2>&1 | grep "auth"
+docker-compose logs pathfinder 2>&1 | grep "auth"
 ```
 
 ### Performance Monitoring
 
 ```bash
 # Container resource usage
-docker stats career-navigator-mcp
+docker stats pathfinder-mcp
 
 # Database connection pool status
-docker-compose exec career-navigator curl -s http://localhost:3000/metrics
+docker-compose exec pathfinder curl -s http://localhost:3000/metrics
 ```
 
 ## Maintenance and Updates
@@ -372,10 +372,10 @@ docker system prune -f
 
 ```bash
 # Run database migrations
-docker-compose exec career-navigator npm run db:migrate
+docker-compose exec pathfinder npm run db:migrate
 
 # Verify schema deployment
-docker-compose exec career-navigator npm run db:health
+docker-compose exec pathfinder npm run db:health
 ```
 
 ### Backup and Recovery
@@ -433,4 +433,4 @@ docker-compose exec career-navigator npm run db:health
 - Review environment configuration: `.env.example`
 - Consult troubleshooting guide above
 
-The Career Navigator MCP Server is now ready for secure, scalable Docker deployment with enterprise-grade features and monitoring capabilities.
+The Pathfinder MCP Server is now ready for secure, scalable Docker deployment with enterprise-grade features and monitoring capabilities.

@@ -1,8 +1,8 @@
-# Career Navigator MCP Architecture
+# Pathfinder MCP Architecture
 
 ## Overview
 
-Career Navigator MCP is a **single-user Model Context Protocol server** designed for intelligent professional experience storage and retrieval. The architecture is optimized for AI conversation performance with sub-10ms context retrieval and enterprise-grade Oracle Autonomous Database backend.
+Pathfinder MCP is a **single-user Model Context Protocol server** designed for intelligent professional experience storage and retrieval. The architecture is optimized for AI conversation performance with sub-10ms context retrieval and enterprise-grade Oracle Autonomous Database backend.
 
 ## Core Design Principles
 
@@ -18,7 +18,7 @@ Career Navigator MCP is a **single-user Model Context Protocol server** designed
 │                        AI Assistant (Claude)                    │
 │                     ↕ Model Context Protocol                    │
 ├─────────────────────────────────────────────────────────────────┤
-│                Career Navigator MCP Server                      │
+│                Pathfinder MCP Server                            │
 │  ┌─────────────────┬─────────────────┬─────────────────────────┐│
 │  │   Quick Context │ Detailed Profile│   Full Experiences      ││
 │  │     < 10ms      │     < 50ms      │      < 200ms            ││
@@ -345,7 +345,7 @@ const config = {
 
 **Development Environment:**
 ```
-career-navigator-dev (OCI Autonomous Database)
+pathfinder-dev (OCI Autonomous Database)
 ├── Development schema and test data
 ├── Debug logging and query tracing enabled
 ├── Relaxed connection timeouts
@@ -354,7 +354,7 @@ career-navigator-dev (OCI Autonomous Database)
 
 **Production Environment:**
 ```
-career-navigator-prod (OCI Autonomous Database)  
+pathfinder-prod (OCI Autonomous Database)  
 ├── Production schema with performance optimization
 ├── Info-level logging with performance monitoring
 ├── Optimized connection pooling
@@ -472,7 +472,7 @@ Enterprise: Microservices with dedicated databases per user
 ```javascript
 // Standard MCP server implementation
 const server = new Server({
-  name: 'career-navigator-mcp',
+  name: 'pathfinder-mcp',
   version: '1.0.0'
 }, {
   capabilities: {

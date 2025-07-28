@@ -25,7 +25,7 @@ describe('ChatRepository', () => {
       
       expect(conversationId).toBeTruthy();
       expect(mockDatabase.executeQuery).toHaveBeenCalledWith(
-        expect.stringContaining('INSERT INTO cn_conversations'),
+        expect.stringContaining('INSERT INTO pf_conversations'),
         expect.objectContaining({
           userId,
           title

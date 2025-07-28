@@ -1,8 +1,8 @@
-# Career Navigator Features
+# Pathfinder Features
 
 ## Overview
 
-Career Navigator provides a comprehensive suite of features designed to help professionals manage their careers, explore opportunities, and build compelling professional narratives.
+Pathfinder provides a comprehensive suite of features designed to help professionals manage their careers, explore opportunities, and build compelling professional narratives.
 
 ## Core Features
 

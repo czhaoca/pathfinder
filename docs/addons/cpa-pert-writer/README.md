@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **CPA Canada PERT Report Writer** is a specialized add-on module for the Career Navigator system, designed specifically to assist CPA candidates in writing comprehensive and compliant Practical Experience Reporting Tool (PERT) reports.
+The **CPA Canada PERT Report Writer** is a specialized add-on module for the Pathfinder system, designed specifically to assist CPA candidates in writing comprehensive and compliant Practical Experience Reporting Tool (PERT) reports.
 
 ## Module Name: `accounting-experience-reporter`
 
@@ -43,7 +43,7 @@ This add-on leverages the core experience management system to provide specializ
 
 ## Integration with Core System
 
-The PERT Writer integrates seamlessly with the main Career Navigator system:
+The PERT Writer integrates seamlessly with the main Pathfinder system:
 
 [![Integration with Core System](../../assets/mermaid/cpa-pert-writer-integration.png)](../../assets/diagrams/cpa-pert-writer-integration.mmd)
 
@@ -100,7 +100,7 @@ addons/cpa-pert-writer/
 ## Installation and Usage
 
 ### Prerequisites
-- Career Navigator core system installed
+- Pathfinder core system installed
 - Node.js 18+ for development
 - Access to user's experience database
 

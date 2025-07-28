@@ -1,6 +1,6 @@
-# Contributing to Career Navigator
+# Contributing to Pathfinder
 
-Thank you for your interest in contributing to Career Navigator! This guide will help you get started with contributing to the project.
+Thank you for your interest in contributing to Pathfinder! This guide will help you get started with contributing to the project.
 
 ## Table of Contents
 
@@ -31,20 +31,20 @@ We are committed to providing a friendly, safe, and welcoming environment for al
 1. Fork the repository on GitHub
 2. Clone your fork locally:
 ```bash
-git clone https://github.com/your-username/career-navigator.git
-cd career-navigator
+git clone https://github.com/your-username/pathfinder.git
+cd pathfinder
 ```
 
 3. Add the upstream repository:
 ```bash
-git remote add upstream https://github.com/original-org/career-navigator.git
+git remote add upstream https://github.com/original-org/pathfinder.git
 ```
 
 4. Set up your development environment following the [Development Setup Guide](./development-setup.md)
 
 ### Finding Something to Work On
 
-- Check the [GitHub Issues](https://github.com/your-org/career-navigator/issues) for open issues
+- Check the [GitHub Issues](https://github.com/your-org/pathfinder/issues) for open issues
 - Look for issues labeled `good first issue` or `help wanted`
 - Review the [Project Roadmap](../features/README.md#upcoming-features)
 - Propose new features by creating an issue first
@@ -278,4 +278,4 @@ Contributors will be:
 - Mentioned in release notes
 - Given credit in commit messages
 
-Thank you for contributing to Career Navigator! 🎉
+Thank you for contributing to Pathfinder! 🎉

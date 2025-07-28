@@ -2,15 +2,15 @@
 
 ## Overview
 
-Career Navigator is designed to coexist with other projects in shared Oracle Autonomous Database environments. This guide explains how to deploy, configure, and manage Career Navigator alongside other applications while maintaining complete data isolation and security.
+Pathfinder is designed to coexist with other projects in shared Oracle Autonomous Database environments. This guide explains how to deploy, configure, and manage Pathfinder alongside other applications while maintaining complete data isolation and security.
 
 ## Architecture Overview
 
 ### Project Isolation Strategy
 
-Career Navigator implements multiple layers of isolation for shared database environments:
+Pathfinder implements multiple layers of isolation for shared database environments:
 
-1. **Table Prefixing**: All Career Navigator tables use the prefix `cn_` (configurable)
+1. **Table Prefixing**: All Pathfinder tables use the prefix `pf_` (configurable)
 2. **Environment Separation**: Development and production use separate table prefixes and tablespaces
 3. **Schema Isolation**: User data is stored in user-prefixed schemas
 4. **Access Control**: Role-based access control with Row Level Security (RLS)
@@ -20,13 +20,13 @@ Career Navigator implements multiple layers of isolation for shared database env
 
 ```
 Oracle Autonomous Database (Shared)
-├── Career Navigator Development (cn_dev_*)
-│   ├── System Tables (cn_users, cn_user_sessions, etc.)
-│   ├── Reference Data (cn_ref_skills_catalog, etc.)
+├── Pathfinder Development (pf_dev_*)
+│   ├── System Tables (pf_users, pf_user_sessions, etc.)
+│   ├── Reference Data (pf_ref_skills_catalog, etc.)
 │   └── User Schemas (career_nav_user1_*, career_nav_user2_*, etc.)
-├── Career Navigator Production (cn_prod_*)
-│   ├── System Tables (cn_users, cn_user_sessions, etc.)
-│   ├── Reference Data (cn_ref_skills_catalog, etc.)
+├── Pathfinder Production (pf_prod_*)
+│   ├── System Tables (pf_users, pf_user_sessions, etc.)
+│   ├── Reference Data (pf_ref_skills_catalog, etc.)
 │   └── User Schemas (career_nav_user1_*, career_nav_user2_*, etc.)
 └── Other Projects
     ├── Project A Tables (pa_*)
@@ -41,7 +41,7 @@ The `.env` file must include project-specific configuration:
 
 ```bash
 # Project Configuration
-CN_TABLE_PREFIX=cn_                    # Career Navigator table prefix
+CN_TABLE_PREFIX=pf_                    # Pathfinder table prefix
 CN_SCHEMA_PREFIX=career_nav_           # User schema prefix
 
 # Development Environment
@@ -69,7 +69,7 @@ CN_PROD_APP_PASSWORD=your_prod_app_password
 // config/mcp-config.js
 const projectConfig = {
   name: 'career_navigator',
-  tablePrefix: 'cn_',                 // Tables: cn_users, cn_audit_log, etc.
+  tablePrefix: 'pf_',                 // Tables: pf_users, pf_audit_log, etc.
   schemaPrefix: 'career_nav_',        // User schemas: career_nav_john_doe_*
   version: '1.0.0',
   database: {
@@ -112,8 +112,8 @@ const projectConfig = {
    ```
    
    This creates:
-   - System tables: `cn_users`, `cn_user_sessions`, `cn_api_keys`, `cn_audit_log`
-   - Reference tables: `cn_ref_skills_catalog`, `cn_ref_career_paths`, etc.
+   - System tables: `pf_users`, `pf_user_sessions`, `pf_api_keys`, `pf_audit_log`
+   - Reference tables: `pf_ref_skills_catalog`, `pf_ref_career_paths`, etc.
    - Sample user schema: `career_nav_sample_*`
 
 2. **Deploy Production Schema**
@@ -163,12 +163,12 @@ const projectConfig = {
 
 ### Naming Conventions
 
-Career Navigator follows strict naming conventions to avoid conflicts:
+Pathfinder follows strict naming conventions to avoid conflicts:
 
 | Component | Pattern | Example |
 |-----------|---------|---------|
-| System Tables | `{prefix}{table_name}` | `cn_users`, `cn_audit_log` |
-| Reference Tables | `{prefix}ref_{table_name}` | `cn_ref_skills_catalog` |
+| System Tables | `{prefix}{table_name}` | `pf_users`, `pf_audit_log` |
+| Reference Tables | `{prefix}ref_{table_name}` | `pf_ref_skills_catalog` |
 | User Schemas | `{schema_prefix}{username}_*` | `career_nav_john_doe_experiences` |
 | Roles | `CN_{ENV}_*` | `CN_DEV_APP_ROLE` |
 | Users | `CN_{ENV}_*` | `CN_PROD_READONLY` |
@@ -191,16 +191,16 @@ CREATE TABLESPACE CN_PROD_DATA
 1. **Environment-Specific Views**
    ```sql
    -- Development monitoring
-   SELECT * FROM v_cn_dev_system_overview;
+   SELECT * FROM v_pf_dev_system_overview;
    
    -- Production monitoring
-   SELECT * FROM v_cn_prod_system_overview;
+   SELECT * FROM v_pf_prod_system_overview;
    ```
 
 2. **Project-Specific Audit Logs**
    ```sql
-   -- Career Navigator audit events only
-   SELECT * FROM cn_audit_log 
+   -- Pathfinder audit events only
+   SELECT * FROM pf_audit_log 
    WHERE project_name = 'career_navigator'
      AND environment = 'production';
    ```
@@ -209,12 +209,12 @@ CREATE TABLESPACE CN_PROD_DATA
 
 ### Row Level Security (RLS)
 
-Career Navigator implements RLS to ensure data isolation:
+Pathfinder implements RLS to ensure data isolation:
 
 ```sql
 -- Users can only access their own data
-CREATE POLICY cn_user_isolation ON cn_users
-  FOR ALL TO cn_app_role
+CREATE POLICY pf_user_isolation ON pf_users
+  FOR ALL TO pf_app_role
   USING (user_id = SYS_CONTEXT('USERENV', 'SESSION_USER'));
 ```
 
@@ -224,7 +224,7 @@ Environment and project isolation through VPD:
 
 ```sql
 -- Only show data for current environment and project
-CREATE FUNCTION cn_isolation_policy RETURN VARCHAR2
+CREATE FUNCTION pf_isolation_policy RETURN VARCHAR2
 IS
 BEGIN
   RETURN 'environment = SYS_CONTEXT(''CN_CTX'', ''ENVIRONMENT'') 
@@ -268,10 +268,10 @@ END;
 
 1. **Schema-Specific Backups**
    ```bash
-   # Export Career Navigator schema only
+   # Export Pathfinder schema only
    expdp system/password DIRECTORY=data_pump_dir 
      DUMPFILE=career_navigator_dev.dmp 
-     TABLES=cn_%
+     TABLES=pf_%
    ```
 
 2. **User Data Backup**
@@ -285,7 +285,7 @@ END;
 ### Monitoring Queries
 
 ```sql
--- Career Navigator table usage
+-- Pathfinder table usage
 SELECT table_name, num_rows, last_analyzed
 FROM user_tables 
 WHERE table_name LIKE 'CN_%'
@@ -301,7 +301,7 @@ GROUP BY schema_name;
 
 -- Environment isolation verification
 SELECT environment, COUNT(*) as record_count
-FROM cn_audit_log 
+FROM pf_audit_log 
 GROUP BY environment;
 ```
 
@@ -345,7 +345,7 @@ SQL> SELECT * FROM user_role_privs;
 SQL> SELECT table_name FROM user_tables WHERE table_name LIKE 'CN_%';
 
 # Test RLS policies
-SQL> SELECT COUNT(*) FROM cn_users; -- Should only show allowed records
+SQL> SELECT COUNT(*) FROM pf_users; -- Should only show allowed records
 ```
 
 ## Best Practices
@@ -403,14 +403,14 @@ When sharing a database with other projects:
 
 1. **Coordinate Tablespace Usage**
    ```sql
-   -- Reserve tablespace for Career Navigator
-   ALTER TABLESPACE cn_prod_data 
+   -- Reserve tablespace for Pathfinder
+   ALTER TABLESPACE pf_prod_data 
    AUTOEXTEND ON MAXSIZE 100G;
    ```
 
 2. **Monitor Resource Consumption**
    ```sql
-   -- Track Career Navigator resource usage
+   -- Track Pathfinder resource usage
    SELECT 'career_navigator' as project,
           SUM(bytes)/1024/1024/1024 as gb_used
    FROM user_segments 
@@ -424,14 +424,14 @@ When sharing a database with other projects:
 
 ### API Integration Points
 
-Career Navigator can integrate with other systems through:
+Pathfinder can integrate with other systems through:
 
 1. **Shared Reference Data**
    ```sql
    -- Export skills data for other projects
    CREATE VIEW shared_skills AS
    SELECT skill_name, category, description
-   FROM cn_ref_skills_catalog
+   FROM pf_ref_skills_catalog
    WHERE environment = 'production';
    ```
 
@@ -440,7 +440,7 @@ Career Navigator can integrate with other systems through:
    -- Unified audit view
    CREATE VIEW unified_audit AS
    SELECT 'career_navigator' as project, timestamp, action, user_id
-   FROM cn_audit_log
+   FROM pf_audit_log
    UNION ALL
    SELECT 'other_project' as project, timestamp, action, user_id  
    FROM other_project_audit;
@@ -476,4 +476,4 @@ Career Navigator can integrate with other systems through:
    npm run db:test:prod
    ```
 
-Career Navigator is designed for seamless coexistence with other projects while maintaining the highest levels of security and data isolation. Following these guidelines ensures successful deployment and operation in shared database environments.
+Pathfinder is designed for seamless coexistence with other projects while maintaining the highest levels of security and data isolation. Following these guidelines ensures successful deployment and operation in shared database environments.

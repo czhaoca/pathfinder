@@ -66,7 +66,7 @@ else
 fi
 
 # Create a wrapper script that sets the correct environment
-cat > /home/czgit/career-navigator/scripts/mermaid-wrapper.sh << 'EOF'
+cat > /home/czgit/pathfinder/scripts/mermaid-wrapper.sh << 'EOF'
 #!/bin/bash
 
 # Wrapper script for mmdc that handles ARM compatibility
@@ -82,7 +82,7 @@ fi
 mmdc "$@"
 EOF
 
-chmod +x /home/czgit/career-navigator/scripts/mermaid-wrapper.sh
+chmod +x /home/czgit/pathfinder/scripts/mermaid-wrapper.sh
 
 echo "Setup complete!"
 echo ""

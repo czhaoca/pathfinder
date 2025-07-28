@@ -48,7 +48,7 @@ export default function DashboardLayout() {
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center justify-between px-6 border-b">
-            <h2 className="text-xl font-bold text-primary">Career Navigator</h2>
+            <h2 className="text-xl font-bold text-primary">Pathfinder</h2>
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden"

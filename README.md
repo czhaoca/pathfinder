@@ -1,11 +1,11 @@
-# Career Navigator
+# Pathfinder
 
 An AI-powered career navigation and experience management system with comprehensive frontend and backend architecture.
 
 ## 🏗️ Project Structure
 
 ```
-career-navigator/
+pathfinder/
 ├── frontend/                # React TypeScript frontend application
 │   ├── src/
 │   │   ├── components/     # UI components

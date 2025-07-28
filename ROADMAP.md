@@ -1,8 +1,8 @@
-# Career Navigator Roadmap
+# Pathfinder Roadmap
 
 ## Overview
 
-This roadmap outlines the development progression for Career Navigator from its current state to a fully-featured, production-ready platform for AI-powered career guidance and experience management.
+This roadmap outlines the development progression for Pathfinder from its current state to a fully-featured, production-ready platform for AI-powered career guidance and experience management.
 
 ## Current Status (v1.0 - Foundation) ✅
 
@@ -245,7 +245,7 @@ See [Contributing Guide](./docs/guides/contributing-guide.md) for guidelines.
 
 ## Feedback & Suggestions
 
-Please submit feature requests and bug reports via [GitHub Issues](https://github.com/czhaoca/career-navigator/issues).
+Please submit feature requests and bug reports via [GitHub Issues](https://github.com/czhaoca/pathfinder/issues).
 
 ---
 

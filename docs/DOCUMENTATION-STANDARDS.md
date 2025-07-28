@@ -1,6 +1,6 @@
 # Documentation Standards
 
-This document outlines the standards and conventions for documentation in the Career Navigator project.
+This document outlines the standards and conventions for documentation in the Pathfinder project.
 
 ## Structure
 

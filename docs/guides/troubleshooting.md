@@ -1,6 +1,6 @@
-# Career Navigator MCP Troubleshooting Guide
+# Pathfinder MCP Troubleshooting Guide
 
-Complete troubleshooting guide for Career Navigator MCP server deployment, configuration, and operations.
+Complete troubleshooting guide for Pathfinder MCP server deployment, configuration, and operations.
 
 ## Table of Contents
 
@@ -75,14 +75,14 @@ npm ERR! missing script: db:health
 ```bash
 # Ensure you're in the right directory
 pwd
-# Should show: /path/to/career-navigator
+# Should show: /path/to/pathfinder
 
 # Check if package.json exists and has scripts
 ls -la package.json
 cat package.json | grep -A 20 '"scripts"'
 
 # If missing, ensure you're in the project root
-cd /path/to/career-navigator
+cd /path/to/pathfinder
 
 # Reinstall dependencies
 npm install
@@ -404,9 +404,9 @@ netstat -an | grep LISTEN | grep node
 // In Claude Desktop settings:
 {
   "mcpServers": {
-    "career-navigator": {
+    "pathfinder": {
       "command": "node",
-      "args": ["/full/path/to/career-navigator/server/mcp-server.js"],
+      "args": ["/full/path/to/pathfinder/server/mcp-server.js"],
       "env": {
         "NODE_ENV": "development"
       }
@@ -421,7 +421,7 @@ netstat -an | grep LISTEN | grep node
 pwd
 # Use this full path in Claude Desktop config
 
-# Example: "/Users/username/career-navigator/server/mcp-server.js"
+# Example: "/Users/username/pathfinder/server/mcp-server.js"
 ```
 
 **C. Test MCP Server Independently:**
@@ -430,7 +430,7 @@ pwd
 npm run mcp:dev
 
 # Should show:
-# "🚀 Career Navigator MCP Server started in development mode"
+# "🚀 Pathfinder MCP Server started in development mode"
 # "Database: connected"
 # "Tools: 8 tools registered"
 ```
@@ -719,7 +719,7 @@ grep "Tool execution failed" debug.log
    ```
 
 3. **Community Support**
-   - 🐛 [GitHub Issues](https://github.com/your-repo/career-navigator/issues)
+   - 🐛 [GitHub Issues](https://github.com/your-repo/pathfinder/issues)
    - 💬 [Discord Community](https://discord.gg/your-server)
    - 📖 [Oracle Documentation](https://docs.oracle.com/en/cloud/paas/autonomous-database/)
 

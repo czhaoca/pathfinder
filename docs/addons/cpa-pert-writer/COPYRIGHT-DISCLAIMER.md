@@ -238,4 +238,4 @@ For questions about this disclaimer or appropriate use of the tool:
 
 *This disclaimer is an integral part of the CPA Canada PERT Report Writer add-on and must be included with any distribution or use of the software.*
 
-**© 2024 Career Navigator Project. This disclaimer and the educational tool are provided under open source license, while respecting all third-party intellectual property rights.**
+**© 2024 Pathfinder Project. This disclaimer and the educational tool are provided under open source license, while respecting all third-party intellectual property rights.**

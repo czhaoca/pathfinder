@@ -15,8 +15,8 @@ Before starting, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/career-navigator.git
-cd career-navigator
+git clone https://github.com/your-org/pathfinder.git
+cd pathfinder
 ```
 
 ### 2. Install Dependencies
@@ -86,7 +86,7 @@ npm run frontend:dev  # Frontend on http://localhost:5173
 ### Project Structure
 
 ```
-career-navigator/
+pathfinder/
 ├── frontend/                # React TypeScript application
 │   ├── src/
 │   │   ├── components/     # UI components

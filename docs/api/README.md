@@ -1,8 +1,8 @@
-# Career Navigator API Documentation
+# Pathfinder API Documentation
 
 ## Overview
 
-Career Navigator provides a comprehensive RESTful API for all platform functionality. The API follows REST principles and uses JSON for request and response payloads.
+Pathfinder provides a comprehensive RESTful API for all platform functionality. The API follows REST principles and uses JSON for request and response payloads.
 
 ## API Documentation
 
@@ -16,7 +16,7 @@ Career Navigator provides a comprehensive RESTful API for all platform functiona
 ## Base URL
 
 ```
-Production: https://api.career-navigator.com/api/v1
+Production: https://api.pathfinder.com/api/v1
 Development: http://localhost:3000/api
 ```
 

@@ -1,6 +1,6 @@
-# Career Navigator MCP Tools Reference
+# Pathfinder MCP Tools Reference
 
-Complete guide to using Career Navigator MCP tools for AI-powered career conversations.
+Complete guide to using Pathfinder MCP tools for AI-powered career conversations.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ Complete guide to using Career Navigator MCP tools for AI-powered career convers
 
 ## Overview
 
-Career Navigator MCP provides 8 professional tools designed to enhance AI conversations about your career. These tools operate on a three-tier architecture optimized for different conversation needs:
+Pathfinder MCP provides 8 professional tools designed to enhance AI conversations about your career. These tools operate on a three-tier architecture optimized for different conversation needs:
 
 - **Quick Context** (< 10ms) - Instant conversation initialization
 - **Detailed Profile** (< 50ms) - Comprehensive career analysis  
@@ -28,13 +28,13 @@ Career Navigator MCP provides 8 professional tools designed to enhance AI conver
 
 Before using MCP tools, ensure:
 
-1. **MCP Server Running**: Your Career Navigator MCP server is active
+1. **MCP Server Running**: Your Pathfinder MCP server is active
 2. **AI Assistant Connected**: Claude Desktop or compatible AI assistant configured
 3. **Sample Data**: Loaded with `npm run db:seed:dev` (for testing)
 
 ### Basic Usage Pattern
 
-Most AI conversations with Career Navigator follow this pattern:
+Most AI conversations with Pathfinder follow this pattern:
 
 ```
 1. Initial Context → get_quick_context (AI understands your background)
@@ -698,4 +698,4 @@ Would you like me to help you craft specific examples for the interview process?
 
 ---
 
-This reference guide provides comprehensive coverage of Career Navigator MCP tools. For implementation details and troubleshooting, see the main [README](../README.md) and [troubleshooting documentation](troubleshooting.md).
+This reference guide provides comprehensive coverage of Pathfinder MCP tools. For implementation details and troubleshooting, see the main [README](../README.md) and [troubleshooting documentation](troubleshooting.md).

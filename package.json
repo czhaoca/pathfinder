@@ -1,7 +1,7 @@
 {
-  "name": "career-navigator",
+  "name": "pathfinder",
   "version": "1.0.0",
-  "description": "Career Navigator - AI-powered career navigation and experience management system",
+  "description": "Pathfinder - AI-powered career navigation and experience management system",
   "private": true,
   "workspaces": [
     "frontend",
@@ -49,7 +49,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/czhaoca/career-navigator.git"
+    "url": "https://github.com/czhaoca/pathfinder.git"
   },
   "keywords": [
     "career",
@@ -60,7 +60,7 @@
     "typescript",
     "docker"
   ],
-  "author": "Career Navigator Team",
+  "author": "Pathfinder Team",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^9.2.0"

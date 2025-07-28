@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Career Exploration & Mentorship Engine is the discovery heart of Career Navigator, designed to help users uncover their potential, explore career paths, and receive personalized guidance throughout their professional journey.
+The Career Exploration & Mentorship Engine is the discovery heart of Pathfinder, designed to help users uncover their potential, explore career paths, and receive personalized guidance throughout their professional journey.
 
 ## Core Components
 

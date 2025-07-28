@@ -1,4 +1,4 @@
-# Frontend Dockerfile for Career Navigator
+# Frontend Dockerfile for Pathfinder
 
 # Build stage
 FROM node:20-alpine AS builder

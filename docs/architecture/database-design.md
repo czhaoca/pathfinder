@@ -2,7 +2,7 @@
 
 ## Overview
 
-Career Navigator implements a sophisticated multi-user database architecture with complete data isolation, HIPAA-level security, and a 3-tier data model for optimal performance.
+Pathfinder implements a sophisticated multi-user database architecture with complete data isolation, HIPAA-level security, and a 3-tier data model for optimal performance.
 
 ## Core Design Principles
 
@@ -28,13 +28,13 @@ career_nav_john_doe_quick_summaries       -- Level 3: Quick access data
 ### System Tables (Shared)
 
 ```sql
-cn_users                 -- User accounts
-cn_user_sessions         -- Active sessions
-cn_audit_log            -- Comprehensive audit trail
-cn_encryption_keys      -- User-specific encryption keys
-cn_ref_skills_catalog   -- Reference skills database
-cn_ref_career_paths     -- Career progression templates
-cn_ref_industries       -- Industry classifications
+pf_users                 -- User accounts
+pf_user_sessions         -- Active sessions
+pf_audit_log            -- Comprehensive audit trail
+pf_encryption_keys      -- User-specific encryption keys
+pf_ref_skills_catalog   -- Reference skills database
+pf_ref_career_paths     -- Career progression templates
+pf_ref_industries       -- Industry classifications
 ```
 
 ## 3-Tier Data Model
@@ -143,7 +143,7 @@ CREATE TABLE {user_schema}_quick_summaries (
 
 ```sql
 -- Encrypted fields in user tables
-CREATE TABLE cn_users (
+CREATE TABLE pf_users (
     user_id         RAW(16) DEFAULT SYS_GUID() PRIMARY KEY,
     username        VARCHAR2(50) UNIQUE NOT NULL,
     email          VARCHAR2(255) UNIQUE NOT NULL,
@@ -163,7 +163,7 @@ CREATE TABLE cn_users (
 ### Audit Logging
 
 ```sql
-CREATE TABLE cn_audit_log (
+CREATE TABLE pf_audit_log (
     audit_id        RAW(16) DEFAULT SYS_GUID() PRIMARY KEY,
     user_id         RAW(16),
     action          VARCHAR2(100) NOT NULL,
@@ -200,15 +200,15 @@ CREATE INDEX idx_exp_text ON {user_schema}_experiences_detailed(title, organizat
     INDEXTYPE IS CTXSYS.CONTEXT;
 
 -- Audit log performance
-CREATE INDEX idx_audit_user_time ON cn_audit_log(user_id, timestamp DESC);
-CREATE INDEX idx_audit_action ON cn_audit_log(action, timestamp DESC);
+CREATE INDEX idx_audit_user_time ON pf_audit_log(user_id, timestamp DESC);
+CREATE INDEX idx_audit_action ON pf_audit_log(action, timestamp DESC);
 ```
 
 ### Materialized Views
 
 ```sql
 -- User activity summary (refreshed hourly)
-CREATE MATERIALIZED VIEW cn_user_activity_summary
+CREATE MATERIALIZED VIEW pf_user_activity_summary
 REFRESH COMPLETE ON DEMAND
 AS
 SELECT 
@@ -216,7 +216,7 @@ SELECT
     COUNT(*) as total_actions,
     MAX(timestamp) as last_activity,
     COUNT(DISTINCT TRUNC(timestamp)) as active_days
-FROM cn_audit_log
+FROM pf_audit_log
 WHERE timestamp >= SYSDATE - 30
 GROUP BY user_id;
 ```
@@ -234,7 +234,7 @@ GROUP BY user_id;
 
 ```sql
 -- Backup metadata tracking
-CREATE TABLE cn_backup_history (
+CREATE TABLE pf_backup_history (
     backup_id       RAW(16) DEFAULT SYS_GUID() PRIMARY KEY,
     backup_type     VARCHAR2(50), -- FULL, INCREMENTAL, USER_EXPORT
     backup_location VARCHAR2(500),
@@ -252,7 +252,7 @@ CREATE TABLE cn_backup_history (
 ### Schema Versioning
 
 ```sql
-CREATE TABLE cn_schema_versions (
+CREATE TABLE pf_schema_versions (
     version_id      NUMBER PRIMARY KEY,
     version_name    VARCHAR2(50),
     description     VARCHAR2(500),

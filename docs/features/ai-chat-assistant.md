@@ -29,11 +29,11 @@ The AI Chat Assistant is your intelligent career companion, providing personaliz
 ### Conversation View
 ```
 ┌─────────────────────────────────────────────────┐
-│ Career Navigator AI Assistant                   │
+│ Pathfinder AI Assistant                   │
 ├─────────────────────────────────────────────────┤
 │ Previous Conversations ▼                        │
 ├─────────────────────────────────────────────────┤
-│ AI: Hello! I'm your Career Navigator assistant.│
+│ AI: Hello! I'm your Pathfinder assistant.│
 │ I've reviewed your experience as a Senior      │
 │ Software Engineer at Tech Corp. How can I help │
 │ you with your career today?                    │

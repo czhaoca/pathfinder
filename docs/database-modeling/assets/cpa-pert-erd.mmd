@@ -1,0 +1,87 @@
+erDiagram
+    PF_CPA_COMPETENCIES ||--o{ PF_CPA_COMPETENCY_MAPPINGS : "mapped_to"
+    USER_EXPERIENCES ||--o{ PF_CPA_COMPETENCY_MAPPINGS : "demonstrates"
+    PF_CPA_COMPETENCIES ||--o{ PF_CPA_PERT_RESPONSES : "responds_to"
+    USER_EXPERIENCES ||--o{ PF_CPA_PERT_RESPONSES : "generates"
+    PF_CPA_COMPETENCIES ||--o{ PF_CPA_PROFICIENCY_ASSESSMENTS : "assessed_in"
+    PF_USERS ||--o{ PF_CPA_PROFICIENCY_ASSESSMENTS : "has"
+    PF_USERS ||--o{ PF_CPA_COMPLIANCE_CHECKS : "undergoes"
+    
+    PF_CPA_COMPETENCIES {
+        VARCHAR2_50 competency_id PK
+        VARCHAR2_20 competency_code UK
+        VARCHAR2_200 competency_name
+        VARCHAR2_100 category
+        VARCHAR2_100 sub_category
+        VARCHAR2_4000 description
+        CLOB proficiency_levels
+        CLOB keywords
+        CHAR_1 is_active
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    
+    PF_CPA_COMPETENCY_MAPPINGS {
+        VARCHAR2_50 mapping_id PK
+        VARCHAR2_50 experience_id FK
+        VARCHAR2_50 user_id FK
+        VARCHAR2_50 competency_id FK
+        NUMBER_3_2 relevance_score
+        CLOB evidence_extracted
+        VARCHAR2_50 mapping_method
+        CHAR_1 is_validated
+        VARCHAR2_50 validated_by
+        TIMESTAMP validated_at
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    
+    PF_CPA_PERT_RESPONSES {
+        VARCHAR2_50 response_id PK
+        VARCHAR2_50 user_id FK
+        VARCHAR2_50 experience_id FK
+        VARCHAR2_50 competency_id FK
+        NUMBER_1 proficiency_level
+        CLOB response_text
+        NUMBER_5 character_count
+        CLOB situation_text
+        CLOB task_text
+        CLOB action_text
+        CLOB result_text
+        VARCHAR2_500 quantified_impact
+        CHAR_1 is_compliant
+        VARCHAR2_1000 compliance_notes
+        NUMBER version
+        CHAR_1 is_current
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    
+    PF_CPA_PROFICIENCY_ASSESSMENTS {
+        VARCHAR2_50 assessment_id PK
+        VARCHAR2_50 user_id FK
+        VARCHAR2_50 competency_id FK
+        NUMBER_1 current_level
+        NUMBER_1 target_level
+        DATE assessment_date
+        NUMBER evidence_count
+        VARCHAR2_4000 strongest_evidence
+        VARCHAR2_4000 development_areas
+        VARCHAR2_4000 next_steps
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    
+    PF_CPA_COMPLIANCE_CHECKS {
+        VARCHAR2_50 check_id PK
+        VARCHAR2_50 user_id FK
+        VARCHAR2_50 check_type
+        DATE check_date
+        CHAR_1 is_compliant
+        NUMBER total_competencies
+        NUMBER competencies_met
+        CLOB missing_competencies
+        CLOB recommendations
+        DATE expiry_date
+        TIMESTAMP created_at
+    }

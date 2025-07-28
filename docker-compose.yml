@@ -1,4 +1,4 @@
-# Career Navigator Docker Compose Configuration
+# Pathfinder Docker Compose Configuration
 version: '3.8'
 
 services:
@@ -8,7 +8,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: production
-    container_name: career-navigator-backend
+    container_name: pathfinder-backend
     restart: unless-stopped
     ports:
       - "${API_PORT:-3000}:3000"
@@ -24,7 +24,7 @@ services:
       # Logs directory (persistent)
       - ./logs:/app/logs
     networks:
-      - career-navigator-network
+      - pathfinder-network
     depends_on:
       - redis
     healthcheck:
@@ -40,7 +40,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: development
-    container_name: career-navigator-backend-dev
+    container_name: pathfinder-backend-dev
     restart: unless-stopped
     ports:
       - "${API_PORT:-3000}:3000"
@@ -53,7 +53,7 @@ services:
       - /app/node_modules
       - ${ORACLE_WALLET_PATH}:/app/wallets:ro
     networks:
-      - career-navigator-network
+      - pathfinder-network
     depends_on:
       - redis
     profiles:
@@ -64,7 +64,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: career-navigator-frontend
+    container_name: pathfinder-frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-5173}:80"
@@ -74,14 +74,14 @@ services:
     depends_on:
       - backend
     networks:
-      - career-navigator-network
+      - pathfinder-network
     profiles:
       - production
 
   # Frontend Development Server
   frontend-dev:
     image: node:20-alpine
-    container_name: career-navigator-frontend-dev
+    container_name: pathfinder-frontend-dev
     working_dir: /app
     command: npm run dev -- --host
     ports:
@@ -95,14 +95,14 @@ services:
     depends_on:
       - backend-dev
     networks:
-      - career-navigator-network
+      - pathfinder-network
     profiles:
       - development
 
   # Redis for session management and caching
   redis:
     image: redis:7-alpine
-    container_name: career-navigator-redis
+    container_name: pathfinder-redis
     restart: unless-stopped
     ports:
       - "${REDIS_PORT:-6379}:6379"
@@ -112,7 +112,7 @@ services:
     volumes:
       - redis-data:/data
     networks:
-      - career-navigator-network
+      - pathfinder-network
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "ping"]
       interval: 10s
@@ -122,7 +122,7 @@ services:
   # Nginx Reverse Proxy (Production)
   nginx:
     image: nginx:alpine
-    container_name: career-navigator-nginx
+    container_name: pathfinder-nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -134,12 +134,12 @@ services:
       - backend
       - frontend
     networks:
-      - career-navigator-network
+      - pathfinder-network
     profiles:
       - nginx
 
 networks:
-  career-navigator-network:
+  pathfinder-network:
     driver: bridge
 
 volumes:

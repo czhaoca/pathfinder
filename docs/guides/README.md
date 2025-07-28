@@ -1,9 +1,9 @@
-# Career Navigator Guides
+# Pathfinder Guides
 
 ## User Guides
 
 ### Getting Started
-- [Getting Started Guide](./getting-started.md) - First steps with Career Navigator
+- [Getting Started Guide](./getting-started.md) - First steps with Pathfinder
 - [Troubleshooting Guide](./troubleshooting.md) - Common issues and solutions
 
 ### Using the Platform
@@ -20,12 +20,12 @@
 - [Testing Guide](./testing-guide.md) - Running and writing tests
 
 ### Contributing
-- [Contributing Guide](./contributing-guide.md) - How to contribute to Career Navigator
+- [Contributing Guide](./contributing-guide.md) - How to contribute to Pathfinder
 - [Code Style Guide](./code-style-guide.md) - Coding standards and conventions
 - [Pull Request Guide](./pull-request-guide.md) - Creating effective pull requests
 
 ### Technical Guides
-- [API Integration Guide](./api-integration-guide.md) - Integrating with the Career Navigator API
+- [API Integration Guide](./api-integration-guide.md) - Integrating with the Pathfinder API
 - [Database Migration Guide](./database-migration-guide.md) - Managing database changes
 - [Mermaid Diagrams Guide](./mermaid-diagrams.md) - Creating and maintaining diagrams
 
@@ -58,7 +58,7 @@
 
 ### FAQ
 - **Q: How do I get started?** → See [Getting Started Guide](./getting-started.md)
-- **Q: How do I deploy Career Navigator?** → See [Deployment Guide](../deployment/README.md)
+- **Q: How do I deploy Pathfinder?** → See [Deployment Guide](../deployment/README.md)
 - **Q: How do I contribute?** → See [Contributing Guide](./contributing-guide.md)
 - **Q: Where is the API documentation?** → See [API Reference](../api/README.md)
 

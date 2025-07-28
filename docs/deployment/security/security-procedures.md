@@ -15,7 +15,7 @@
 ## Security Overview
 
 ### Security Architecture
-Career Navigator implements defense-in-depth security with multiple layers:
+Pathfinder implements defense-in-depth security with multiple layers:
 
 - **Application Layer**: JWT authentication, rate limiting, input validation
 - **Data Layer**: User-prefixed schema isolation, field-level encryption
@@ -43,19 +43,19 @@ Career Navigator implements defense-in-depth security with multiple layers:
 ### Security Monitoring Tasks
 ```bash
 # Check security service status
-docker-compose exec career-navigator node -e "
+docker-compose exec pathfinder node -e "
 const audit = require('./lib/security-audit');
 audit.getAuditStatistics().then(console.log);
 "
 
 # Review rate limiting statistics
-docker-compose exec career-navigator node -e "
+docker-compose exec pathfinder node -e "
 const limiter = require('./lib/rate-limiter');
 limiter.getStatistics().then(console.log);
 "
 
 # Check encryption service health
-docker-compose exec career-navigator node -e "
+docker-compose exec pathfinder node -e "
 const encryption = require('./lib/encryption');
 console.log(encryption.encryptionService.validateConfiguration());
 "
@@ -133,12 +133,12 @@ console.log(encryption.encryptionService.validateConfiguration());
 1. **Evidence Collection**
    ```bash
    # Export audit logs for investigation
-   docker-compose exec career-navigator node scripts/export-audit-logs.js \
+   docker-compose exec pathfinder node scripts/export-audit-logs.js \
      --start-date "2024-01-01" \
      --incident-id "INC-2024-001"
    
    # Capture system state
-   docker-compose exec career-navigator node scripts/system-snapshot.js
+   docker-compose exec pathfinder node scripts/system-snapshot.js
    ```
 
 2. **Root Cause Analysis**
@@ -171,7 +171,7 @@ console.log(encryption.encryptionService.validateConfiguration());
 1. **System Restoration**
    ```bash
    # Restore from secure backup if needed
-   docker-compose exec career-navigator node scripts/restore-system.js \
+   docker-compose exec pathfinder node scripts/restore-system.js \
      --backup-file "backup-20240101.tar.gz" \
      --verify-integrity
    ```
@@ -293,13 +293,13 @@ await securityAudit.cleanupExpiredLogs();
 #### Data Deletion Procedures
 ```bash
 # Secure user data deletion
-docker-compose exec career-navigator node scripts/delete-user-data.js \
+docker-compose exec pathfinder node scripts/delete-user-data.js \
   --user-id "user-uuid" \
   --verification-code "DELETE-CONFIRM" \
   --audit-trail
 
 # Verify deletion completion
-docker-compose exec career-navigator node scripts/verify-deletion.js \
+docker-compose exec pathfinder node scripts/verify-deletion.js \
   --user-id "user-uuid"
 ```
 
@@ -386,7 +386,7 @@ echo "FIELD_ENCRYPTION_KEY=$NEW_FIELD_KEY" >> .env.new
 echo "JWT_SECRET=$NEW_JWT_KEY" >> .env.new
 
 # Deploy with zero-downtime rotation
-docker-compose exec career-navigator node scripts/rotate-keys.js \
+docker-compose exec pathfinder node scripts/rotate-keys.js \
   --field-key "$NEW_FIELD_KEY" \
   --jwt-key "$NEW_JWT_KEY" \
   --verify-migration
@@ -395,7 +395,7 @@ docker-compose exec career-navigator node scripts/rotate-keys.js \
 #### Emergency Key Rotation (Immediate)
 ```bash
 # Emergency key rotation (security incident)
-docker-compose exec career-navigator node scripts/emergency-key-rotation.js \
+docker-compose exec pathfinder node scripts/emergency-key-rotation.js \
   --reason "security-incident" \
   --incident-id "INC-2024-001"
 ```
@@ -436,7 +436,7 @@ docker-compose exec career-navigator node scripts/emergency-key-rotation.js \
 #### Account Termination
 ```bash
 # Secure account termination
-docker-compose exec career-navigator node scripts/terminate-account.js \
+docker-compose exec pathfinder node scripts/terminate-account.js \
   --user-id "user-uuid" \
   --retention-policy "immediate" \
   --audit-trail
@@ -561,9 +561,9 @@ docker-compose exec career-navigator node scripts/terminate-account.js \
 # docker-compose.yml - Production HA setup
 version: '3.8'
 services:
-  career-navigator-1:
+  pathfinder-1:
     # Primary instance
-  career-navigator-2:
+  pathfinder-2:
     # Secondary instance
   nginx-lb:
     # Load balancer
@@ -599,7 +599,7 @@ services:
 ### Training Verification
 ```bash
 # Track training completion
-docker-compose exec career-navigator node scripts/training-tracker.js \
+docker-compose exec pathfinder node scripts/training-tracker.js \
   --staff-id "emp-001" \
   --training-type "security-awareness" \
   --completion-date "2024-01-15"
@@ -621,7 +621,7 @@ docker-compose exec career-navigator node scripts/training-tracker.js \
 
 ## Conclusion
 
-This security procedures guide provides comprehensive operational security guidance for Career Navigator. Regular review and updates ensure continued effectiveness against evolving threats while maintaining HIPAA-level compliance standards.
+This security procedures guide provides comprehensive operational security guidance for Pathfinder. Regular review and updates ensure continued effectiveness against evolving threats while maintaining HIPAA-level compliance standards.
 
 **Next Review Date**: [Insert date - recommend quarterly reviews]
 **Document Owner**: Security Officer

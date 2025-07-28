@@ -261,7 +261,7 @@ class ChatService {
     const metadata = { type: 'fallback' };
 
     if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-      content = `Hello ${user.firstName || 'there'}! I'm your Career Navigator assistant. While I'm currently operating in limited mode, I can help you manage your experiences and career profile. What would you like to know about?`;
+      content = `Hello ${user.firstName || 'there'}! I'm your Pathfinder assistant. While I'm currently operating in limited mode, I can help you manage your experiences and career profile. What would you like to know about?`;
     } else if (lowerMessage.includes('experience')) {
       content = "I can help you manage your professional experiences. You can add new experiences, update existing ones, or search through your experience history. Use the Experiences section in the navigation to get started.";
     } else if (lowerMessage.includes('career') || lowerMessage.includes('job')) {

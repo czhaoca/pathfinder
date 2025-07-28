@@ -60,7 +60,7 @@ export default function Register() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Create an account</CardTitle>
           <CardDescription className="text-center">
-            Start your career journey with Career Navigator
+            Start your career journey with Pathfinder
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -2,7 +2,7 @@
 
 ## Step-by-Step OCI Autonomous Database Setup
 
-This guide provides detailed instructions to provision Oracle Autonomous Database instances for the Career Navigator MCP server, including both development and production environments.
+This guide provides detailed instructions to provision Oracle Autonomous Database instances for the Pathfinder MCP server, including both development and production environments.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ Click **"Create Autonomous Database"** and configure:
 
 **Basic Information:**
 - **Compartment**: Select your compartment (usually root)
-- **Display Name**: `career-navigator-dev`
+- **Display Name**: `pathfinder-dev`
 - **Database Name**: `CAREERDEV` (must be unique in tenancy)
 
 **Workload Type:**
@@ -80,7 +80,7 @@ Click **"Create Autonomous Database"** and configure:
 Repeat the process from Step 2.2 with these differences:
 
 **Basic Information:**
-- **Display Name**: `career-navigator-prod`
+- **Display Name**: `pathfinder-prod`
 - **Database Name**: `CAREERPROD`
 
 **Create Administrator Credentials:**
@@ -98,18 +98,18 @@ Repeat the process from Step 2.2 with these differences:
 Oracle Autonomous Database uses Oracle Wallet for secure connections. You need to download wallet files for both databases.
 
 ### 4.1 Download Development Wallet
-1. From the Autonomous Database list, click on your development database (`career-navigator-dev`)
+1. From the Autonomous Database list, click on your development database (`pathfinder-dev`)
 2. Click **"Database Connection"**
 3. Click **"Download Wallet"**
 4. Set wallet password (e.g., `DevWallet2024!`)
    - **Record this password securely**
 5. Download the wallet ZIP file
-6. Save as `career-navigator-dev-wallet.zip`
+6. Save as `pathfinder-dev-wallet.zip`
 
 ### 4.2 Download Production Wallet
-1. Repeat the process for your production database (`career-navigator-prod`)
+1. Repeat the process for your production database (`pathfinder-prod`)
 2. Set a different wallet password (e.g., `ProdWallet2024!`)
-3. Save as `career-navigator-prod-wallet.zip`
+3. Save as `pathfinder-prod-wallet.zip`
 
 ### 4.3 Extract and Organize Wallets
 Create wallet directories in your project:
@@ -120,8 +120,8 @@ mkdir -p wallets/dev-wallet
 mkdir -p wallets/prod-wallet
 
 # Extract wallets
-unzip career-navigator-dev-wallet.zip -d wallets/dev-wallet/
-unzip career-navigator-prod-wallet.zip -d wallets/prod-wallet/
+unzip pathfinder-dev-wallet.zip -d wallets/dev-wallet/
+unzip pathfinder-prod-wallet.zip -d wallets/prod-wallet/
 
 # Set appropriate permissions
 chmod 600 wallets/dev-wallet/*
@@ -561,4 +561,4 @@ After successful provisioning:
 4. **Production Deployment**: Deploy to production environment
 5. **Monitoring Setup**: Configure comprehensive monitoring and alerting
 
-Your Oracle Autonomous Database instances are now ready for the Career Navigator MCP server!
+Your Oracle Autonomous Database instances are now ready for the Pathfinder MCP server!

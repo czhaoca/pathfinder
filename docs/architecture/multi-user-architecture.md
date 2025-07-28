@@ -1,8 +1,8 @@
-# Multi-User Architecture Design for Career Navigator
+# Multi-User Architecture Design for Pathfinder
 
 ## Executive Summary
 
-This document outlines the architectural changes required to transform Career Navigator from a single-user system to a secure, multi-tenant platform with HIPAA-level data protection standards for career and personal experience data.
+This document outlines the architectural changes required to transform Pathfinder from a single-user system to a secure, multi-tenant platform with HIPAA-level data protection standards for career and personal experience data.
 
 ## Current State Analysis
 

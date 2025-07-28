@@ -1,13 +1,13 @@
-# Oracle Cloud Infrastructure Database Analysis for Career Navigator MCP
+# Oracle Cloud Infrastructure Database Analysis for Pathfinder MCP
 
 ## Executive Summary
 
-This analysis evaluates Oracle Cloud Infrastructure (OCI) Free Tier database options for the Career Navigator Model Context Protocol (MCP) server backend. After comprehensive analysis of three available database options against our system requirements, **Oracle Autonomous Database** is the recommended solution.
+This analysis evaluates Oracle Cloud Infrastructure (OCI) Free Tier database options for the Pathfinder Model Context Protocol (MCP) server backend. After comprehensive analysis of three available database options against our system requirements, **Oracle Autonomous Database** is the recommended solution.
 
 ## Table of Contents
 
 1. [OCI Free Tier Database Options](#oci-free-tier-database-options)
-2. [Career Navigator Database Requirements](#career-navigator-database-requirements)
+2. [Pathfinder Database Requirements](#pathfinder-database-requirements)
 3. [Comparative Analysis](#comparative-analysis)
 4. [Recommendation](#recommendation)
 5. [Implementation Guide](#implementation-guide)
@@ -69,11 +69,11 @@ Oracle Cloud Infrastructure provides three Always Free database options as of 20
 - ACID compliance with InnoDB storage engine
 - Performance insights and query optimization
 
-## Career Navigator Database Requirements
+## Pathfinder Database Requirements
 
 ### System Architecture Overview
 
-The Career Navigator system implements a sophisticated 3-tier data architecture designed for optimal performance, privacy, and AI integration:
+The Pathfinder system implements a sophisticated 3-tier data architecture designed for optimal performance, privacy, and AI integration:
 
 ```
 Level 1: Detailed Experiences (experiences_detailed)
@@ -187,7 +187,7 @@ Level 3: Quick Summaries (quick_summaries)
 
 ### **Primary Recommendation: Oracle Autonomous Database**
 
-Oracle Autonomous Database is the optimal choice for Career Navigator's MCP backend despite storage limitations.
+Oracle Autonomous Database is the optimal choice for Pathfinder's MCP backend despite storage limitations.
 
 **Decision Rationale:**
 
@@ -432,7 +432,7 @@ AND username = 'CAREER_APP_USER';
 **OCI Native Monitoring:**
 ```json
 {
-  "dashboard": "Career Navigator MCP Database",
+  "dashboard": "Pathfinder MCP Database",
   "metrics": [
     {
       "name": "Database Storage Used",
@@ -525,7 +525,7 @@ const mcpMetrics = {
 
 ## Conclusion
 
-Oracle Autonomous Database provides the optimal foundation for Career Navigator's MCP backend within OCI Free Tier constraints. The enterprise-grade features, advanced JSON capabilities, and seamless scaling path make it the clear choice despite storage limitations.
+Oracle Autonomous Database provides the optimal foundation for Pathfinder's MCP backend within OCI Free Tier constraints. The enterprise-grade features, advanced JSON capabilities, and seamless scaling path make it the clear choice despite storage limitations.
 
 The recommended implementation strategy focuses on:
 - Dual-database architecture for optimal resource utilization
@@ -533,12 +533,12 @@ The recommended implementation strategy focuses on:
 - Clear upgrade path when scaling beyond free tier limits
 - Comprehensive security and performance monitoring
 
-With proper implementation and monitoring, this solution will support the Career Navigator system through initial development and early production phases, providing a solid foundation for future growth.
+With proper implementation and monitoring, this solution will support the Pathfinder system through initial development and early production phases, providing a solid foundation for future growth.
 
 ## References
 
 - [Oracle Cloud Infrastructure Free Tier Documentation](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier.htm)
 - [Oracle Autonomous Database Documentation](https://docs.oracle.com/en/cloud/paas/autonomous-database/index.html)
-- [Career Navigator Architecture Documentation](../../../development/architecture.md)
+- [Pathfinder Architecture Documentation](../../../development/architecture.md)
 - [Database Security Configuration](../security/database-options.md)
 - [MCP Server Deployment Guide](./self-hosted-mcp.md)

@@ -4,7 +4,7 @@ This file provides specific guidance to Claude Code when working with the CPA PE
 
 ## Add-on Overview
 
-The CPA PERT Writer is a specialized add-on for the Career Navigator system, focused on assisting CPA candidates with Practical Experience Reporting Tool (PERT) submissions. This module has **strict requirements** for live data collection and EVR route focus.
+The CPA PERT Writer is a specialized add-on for the Pathfinder system, focused on assisting CPA candidates with Practical Experience Reporting Tool (PERT) submissions. This module has **strict requirements** for live data collection and EVR route focus.
 
 ## Core Principles - MANDATORY
 
@@ -194,7 +194,7 @@ npm run update-checksums             # Regenerate SHA-256 checksums
 
 ## Development Notes
 
-- This addon operates independently but integrates with main Career Navigator system
+- This addon operates independently but integrates with main Pathfinder system
 - All knowledge base content feeds into the MCP server for contextual AI conversations
 - Metadata schema changes require approval and version increment
 - Focus on BC requirements first, then national framework support

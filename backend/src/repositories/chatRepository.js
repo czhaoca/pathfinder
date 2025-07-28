@@ -9,7 +9,7 @@ const logger = require('../utils/logger');
 class ChatRepository {
   constructor(database) {
     this.database = database;
-    this.tablePrefix = 'cn_';
+    this.tablePrefix = 'pf_';
   }
 
   /**

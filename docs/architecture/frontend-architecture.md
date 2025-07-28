@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines the frontend architecture for Career Navigator, a comprehensive AI-powered career navigation and experience management system. The frontend will provide an intuitive, secure, and performant interface for users to interact with their career data and receive AI-powered guidance.
+This document outlines the frontend architecture for Pathfinder, a comprehensive AI-powered career navigation and experience management system. The frontend will provide an intuitive, secure, and performant interface for users to interact with their career data and receive AI-powered guidance.
 
 ## Technology Stack Selection
 
@@ -96,7 +96,7 @@ src/
 │   └── profile/         # Profile & dashboard components
 ├── features/            # Feature-based modules
 │   ├── auth/           # Authentication feature
-│   ├── chat/           # Career Navigator chat
+│   ├── chat/           # Pathfinder chat
 │   ├── experiences/    # Experience management
 │   └── profile/        # User profile & analytics
 ├── hooks/              # Custom React hooks
@@ -281,7 +281,7 @@ const LoginPage = () => {
       <Card>
         <CardHeader>
           <h1>Welcome Back</h1>
-          <p>Sign in to your Career Navigator account</p>
+          <p>Sign in to your Pathfinder account</p>
         </CardHeader>
         <CardContent>
           <Form {...form} onSubmit={onSubmit}>
@@ -606,8 +606,8 @@ const config = {
     WS_URL: 'ws://localhost:3000',
   },
   production: {
-    API_URL: 'https://api.career-navigator.com',
-    WS_URL: 'wss://api.career-navigator.com',
+    API_URL: 'https://api.pathfinder.com',
+    WS_URL: 'wss://api.pathfinder.com',
   }
 };
 

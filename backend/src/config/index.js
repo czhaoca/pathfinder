@@ -9,7 +9,7 @@ const environment = process.env.NODE_ENV || 'development';
 
 // Project configuration for shared database environments
 const projectConfig = {
-  name: 'career_navigator',
+  name: 'pathfinder',
   tablePrefix: process.env.TABLE_PREFIX || 'skill_', // Skill development prefix
   schemaPrefix: process.env.SCHEMA_PREFIX || 'skill_user_',
   version: '1.0.0',
@@ -98,7 +98,7 @@ const config = {
 
   mcp: {
     server: {
-      name: 'career-navigator-mcp',
+      name: 'pathfinder-mcp',
       version: '1.0.0',
       description: 'Career Navigator Model Context Protocol Server'
     },

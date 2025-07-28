@@ -5,7 +5,7 @@
 
 const logger = require('../../utils/logger');
 
-async function up(database, tablePrefix = 'cn_') {
+async function up(database, tablePrefix = 'pf_') {
   try {
     // Create conversations table
     await database.executeQuery(`
@@ -90,7 +90,7 @@ async function up(database, tablePrefix = 'cn_') {
   }
 }
 
-async function down(database, tablePrefix = 'cn_') {
+async function down(database, tablePrefix = 'pf_') {
   try {
     // Drop triggers
     await database.executeQuery(`DROP TRIGGER IF EXISTS trg_conv_updated`);

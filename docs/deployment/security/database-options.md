@@ -76,16 +76,16 @@ npm install -g wrangler
 wrangler login
 
 # 3. Create D1 Database
-wrangler d1 create career-navigator-db
+wrangler d1 create pathfinder-db
 
 # 4. Configure wrangler.toml
 echo '
-name = "career-navigator"
+name = "pathfinder"
 compatibility_date = "2024-01-01"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "career-navigator-db"
+database_name = "pathfinder-db"
 database_id = "<your-database-id>"
 ' > wrangler.toml
 ```

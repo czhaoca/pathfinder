@@ -30,7 +30,7 @@ Instead of using pay-per-token APIs, you can use your existing AI subscriptions 
 #### Step 1: Deploy MCP Server
 ```bash
 # Clone the career navigator MCP server
-git clone https://github.com/czhaoca/career-navigator.git
+git clone https://github.com/czhaoca/pathfinder.git
 cd mcp-server
 
 # Configure your database connection
@@ -67,7 +67,7 @@ curl http://localhost:8080/health
 
 #### Step 3: Create Custom ChatGPT
 ```markdown
-## Career Navigator GPT Instructions
+## Pathfinder GPT Instructions
 
 You are a career navigation assistant with access to the user's detailed professional experience via MCP tools. Use these tools to provide personalized career guidance.
 
@@ -117,9 +117,9 @@ All user data is stored in their own database. Never store or remember sensitive
 {
   "mcpSettings": {
     "servers": {
-      "career-navigator": {
+      "pathfinder": {
         "command": "node",
-        "args": ["/path/to/career-navigator-mcp/index.js"],
+        "args": ["/path/to/pathfinder-mcp/index.js"],
         "env": {
           "DB_CONNECTION_STRING": "your-encrypted-connection",
           "DB_ENCRYPTION_KEY": "your-encryption-key"
@@ -224,7 +224,7 @@ services:
 
 ### Core MCP Tools
 ```javascript
-// career-navigator-mcp-tools.js
+// pathfinder-mcp-tools.js
 class CareerNavigatorMCP {
   constructor(dbConnection) {
     this.db = dbConnection;
@@ -447,7 +447,7 @@ curl http://localhost:8080/health
 npm run test:db-connection
 
 # View logs
-docker logs career-navigator-mcp
+docker logs pathfinder-mcp
 ```
 
 #### Performance Optimization
@@ -468,10 +468,10 @@ const dbPool = {
 #### Memory Management
 ```bash
 # Monitor resource usage
-docker stats career-navigator-mcp
+docker stats pathfinder-mcp
 
 # Adjust memory limits if needed
-docker run --memory=2g --cpus=1.5 career-navigator-mcp
+docker run --memory=2g --cpus=1.5 pathfinder-mcp
 ```
 
 ## Cost Comparison

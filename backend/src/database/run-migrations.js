@@ -32,7 +32,7 @@ async function runMigrations() {
         const migration = require(path.join(migrationsDir, file));
         
         if (migration.up) {
-          await migration.up(DatabaseManager, 'cn_');
+          await migration.up(DatabaseManager, 'pf_');
           logger.info(`✅ Migration completed: ${file}`);
         } else {
           logger.warn(`⚠️  No 'up' method found in ${file}`);

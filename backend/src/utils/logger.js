@@ -23,7 +23,7 @@ const logger = winston.createLogger({
   level: config.logging.level,
   format: logFormat,
   defaultMeta: { 
-    service: 'career-navigator-api',
+    service: 'pathfinder-api',
     environment: config.environment 
   },
   transports: [

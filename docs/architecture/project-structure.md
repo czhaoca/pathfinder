@@ -1,11 +1,11 @@
 # Project Structure
 
-Career Navigator follows a modern monorepo architecture with clear separation between frontend and backend services.
+Pathfinder follows a modern monorepo architecture with clear separation between frontend and backend services.
 
 ## Directory Structure
 
 ```
-career-navigator/
+pathfinder/
 ├── frontend/                    # React TypeScript frontend application
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
@@ -188,9 +188,9 @@ Backend runs directly from source in production (no build step required).
 ## Deployment Artifacts
 
 ### Docker Images
-- `career-navigator-frontend`: Nginx serving built React app
-- `career-navigator-backend`: Node.js API server
-- `career-navigator-nginx`: Reverse proxy (production only)
+- `pathfinder-frontend`: Nginx serving built React app
+- `pathfinder-backend`: Node.js API server
+- `pathfinder-nginx`: Reverse proxy (production only)
 
 ### Volumes
 - `redis-data`: Redis persistence

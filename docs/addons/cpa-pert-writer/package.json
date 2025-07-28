@@ -1,7 +1,7 @@
 {
   "name": "cpa-pert-writer",
   "version": "1.0.0",
-  "description": "CPA Canada PERT Report Writer - An add-on for the Career Navigator system to assist CPA candidates in writing comprehensive and compliant PERT reports",
+  "description": "CPA Canada PERT Report Writer - An add-on for the Pathfinder system to assist CPA candidates in writing comprehensive and compliant PERT reports",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -31,7 +31,7 @@
     "experience-reporting",
     "canada"
   ],
-  "author": "Career Navigator Project",
+  "author": "Pathfinder Project",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0",
@@ -70,17 +70,17 @@
     "docsify-cli": "^4.4.4"
   },
   "peerDependencies": {
-    "career-navigator-core": "^1.0.0"
+    "pathfinder-core": "^1.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/czhaoca/career-navigator.git",
+    "url": "https://github.com/czhaoca/pathfinder.git",
     "directory": "addons/cpa-pert-writer"
   },
   "bugs": {
-    "url": "https://github.com/czhaoca/career-navigator/issues"
+    "url": "https://github.com/czhaoca/pathfinder/issues"
   },
-  "homepage": "https://github.com/czhaoca/career-navigator/tree/main/docs/addons/cpa-pert-writer#readme",
+  "homepage": "https://github.com/czhaoca/pathfinder/tree/main/docs/addons/cpa-pert-writer#readme",
   "files": [
     "src/",
     "docs/",

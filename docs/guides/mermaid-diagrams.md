@@ -1,6 +1,6 @@
 # Mermaid Diagram Guidelines
 
-This document describes the standard workflow for creating and maintaining Mermaid diagrams in the Career Navigator project.
+This document describes the standard workflow for creating and maintaining Mermaid diagrams in the Pathfinder project.
 
 ## Overview
 

@@ -1,4 +1,4 @@
-# Backend Dockerfile for Career Navigator
+# Backend Dockerfile for Pathfinder
 
 # Development stage
 FROM node:20-oracle-instantclient AS development

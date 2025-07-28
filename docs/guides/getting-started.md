@@ -1,10 +1,10 @@
-# Getting Started with Career Navigator
+# Getting Started with Pathfinder
 
-Welcome to Career Navigator! This guide will help you understand and begin using the platform for your professional development journey.
+Welcome to Pathfinder! This guide will help you understand and begin using the platform for your professional development journey.
 
-## What is Career Navigator?
+## What is Pathfinder?
 
-Career Navigator is an AI-powered professional development platform that helps you:
+Pathfinder is an AI-powered professional development platform that helps you:
 
 1. **🧭 Explore Career Paths** - Discover opportunities aligned with your interests and skills
 2. **📚 Develop Your Story** - Craft compelling professional narratives and resumes
@@ -54,7 +54,7 @@ Career Navigator is an AI-powered professional development platform that helps y
 
 ## Privacy and Security
 
-Career Navigator is built with privacy as the foundation:
+Pathfinder is built with privacy as the foundation:
 
 ### Your Data, Your Control
 - **User-Controlled Databases**: Store your data in your own cloud account
@@ -84,7 +84,7 @@ Career Navigator is built with privacy as the foundation:
 ### Common Questions
 
 **Q: How is this different from other career tools?**
-A: Career Navigator focuses on privacy, AI-powered insights, and comprehensive career development rather than just job searching.
+A: Pathfinder focuses on privacy, AI-powered insights, and comprehensive career development rather than just job searching.
 
 **Q: Do I need technical skills to use this?**
 A: No! The platform is designed for professionals of all technical backgrounds. Self-hosting options are available for those who want more control.
@@ -96,7 +96,7 @@ A: The core platform is open source. You only pay for your chosen database and A
 A: Yes. Your data is encrypted and stored in your own database. We follow a zero-knowledge architecture where we can't access your personal information.
 
 **Q: Can I use this for specific industries?**
-A: Yes! Career Navigator supports add-on modules for specific industries and professional requirements.
+A: Yes! Pathfinder supports add-on modules for specific industries and professional requirements.
 
 ## Next Steps
 
@@ -117,4 +117,4 @@ A: Yes! Career Navigator supports add-on modules for specific industries and pro
 
 ---
 
-*Career Navigator is designed to grow with you throughout your career journey. Whether you're just starting out, making a career change, or advancing in your field, the platform provides the tools and insights you need to succeed.*
+*Pathfinder is designed to grow with you throughout your career journey. Whether you're just starting out, making a career change, or advancing in your field, the platform provides the tools and insights you need to succeed.*

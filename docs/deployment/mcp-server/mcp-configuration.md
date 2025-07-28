@@ -47,7 +47,7 @@ const config = {
 
   mcp: {
     server: {
-      name: 'career-navigator-mcp',
+      name: 'pathfinder-mcp',
       version: '1.0.0'
     },
     tools: [
@@ -425,7 +425,7 @@ class CareerNavigatorMCP {
       const transport = new StdioServerTransport();
       await this.server.connect(transport);
       
-      console.log(`🚀 Career Navigator MCP Server started in ${config.environment} mode`);
+      console.log(`🚀 Pathfinder MCP Server started in ${config.environment} mode`);
       console.log(`   Database: ${config.database[config.environment].host}`);
       console.log(`   Tools: ${config.mcp.tools.join(', ')}`);
       

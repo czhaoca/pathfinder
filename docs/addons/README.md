@@ -1,6 +1,6 @@
-# Career Navigator Add-on Modules
+# Pathfinder Add-on Modules
 
-Career Navigator supports specialized add-on modules for industry-specific requirements and professional development needs.
+Pathfinder supports specialized add-on modules for industry-specific requirements and professional development needs.
 
 ## Available Add-ons
 
@@ -120,4 +120,4 @@ addons/your-addon-name/
 
 ---
 
-*Add-on modules extend Career Navigator's core capabilities to serve specific professional communities while maintaining the platform's privacy-first approach and user-controlled data philosophy.*
+*Add-on modules extend Pathfinder's core capabilities to serve specific professional communities while maintaining the platform's privacy-first approach and user-controlled data philosophy.*

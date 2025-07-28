@@ -2,13 +2,13 @@
 
 ## Overview
 
-Career Navigator implements enterprise-grade security measures to protect sensitive career and personal experience data. This document outlines the security architecture, compliance standards, and operational procedures for maintaining HIPAA-level data protection.
+Pathfinder implements enterprise-grade security measures to protect sensitive career and personal experience data. This document outlines the security architecture, compliance standards, and operational procedures for maintaining HIPAA-level data protection.
 
 ## Security Architecture
 
 ### 1. Data Isolation Architecture
 
-Career Navigator uses a **schema-based multi-tenancy** approach for complete data isolation:
+Pathfinder uses a **schema-based multi-tenancy** approach for complete data isolation:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -130,7 +130,7 @@ CREATE TABLE audit_log (
 
 ### HIPAA Compliance Mapping
 
-While Career Navigator handles career data rather than health data, we implement HIPAA-equivalent standards:
+While Pathfinder handles career data rather than health data, we implement HIPAA-equivalent standards:
 
 | HIPAA Requirement | Implementation |
 |-------------------|----------------|
@@ -383,10 +383,10 @@ Development: Local only, synthetic data
 
 | Role | Responsibility | Contact |
 |------|----------------|---------|
-| Security Officer | Overall security posture | security@career-navigator.com |
-| Privacy Officer | Data privacy compliance | privacy@career-navigator.com |
-| Incident Response | Security incidents | incident@career-navigator.com |
-| Compliance Team | Audit and compliance | compliance@career-navigator.com |
+| Security Officer | Overall security posture | security@pathfinder.com |
+| Privacy Officer | Data privacy compliance | privacy@pathfinder.com |
+| Incident Response | Security incidents | incident@pathfinder.com |
+| Compliance Team | Audit and compliance | compliance@pathfinder.com |
 
 ## Appendix
 

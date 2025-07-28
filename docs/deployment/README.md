@@ -2,7 +2,7 @@
 
 ## Overview
 
-Career Navigator can be deployed in multiple environments, from local development to enterprise-scale production. This guide covers all deployment options and best practices.
+Pathfinder can be deployed in multiple environments, from local development to enterprise-scale production. This guide covers all deployment options and best practices.
 
 ## Deployment Options
 
@@ -36,8 +36,8 @@ Direct server installation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-org/career-navigator.git
-cd career-navigator
+git clone https://github.com/your-org/pathfinder.git
+cd pathfinder
 ```
 
 2. **Configure environment**
@@ -112,7 +112,7 @@ LOG_LEVEL=debug
 NODE_ENV=staging
 DATABASE_ENV=staging
 API_PORT=3000
-FRONTEND_URL=https://staging.career-navigator.com
+FRONTEND_URL=https://staging.pathfinder.com
 LOG_LEVEL=info
 ```
 
@@ -121,7 +121,7 @@ LOG_LEVEL=info
 NODE_ENV=production
 DATABASE_ENV=production
 API_PORT=3000
-FRONTEND_URL=https://career-navigator.com
+FRONTEND_URL=https://pathfinder.com
 LOG_LEVEL=warn
 ENABLE_MONITORING=true
 ```

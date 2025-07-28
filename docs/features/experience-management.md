@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Experience Management system is the core of Career Navigator, providing a comprehensive platform for capturing, organizing, and leveraging professional experiences. It uses a sophisticated 3-tier data model optimized for different use cases while maintaining complete data isolation between users.
+The Experience Management system is the core of Pathfinder, providing a comprehensive platform for capturing, organizing, and leveraging professional experiences. It uses a sophisticated 3-tier data model optimized for different use cases while maintaining complete data isolation between users.
 
 ## Key Features
 

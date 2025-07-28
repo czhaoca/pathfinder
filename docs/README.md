@@ -1,10 +1,10 @@
-# Career Navigator Documentation
+# Pathfinder Documentation
 
-Welcome to the Career Navigator documentation. This comprehensive guide covers everything from getting started to advanced development and deployment.
+Welcome to the Pathfinder documentation. This comprehensive guide covers everything from getting started to advanced development and deployment.
 
 ## 📖 Documentation Overview
 
-Career Navigator is an AI-powered career development platform that helps professionals:
+Pathfinder is an AI-powered career development platform that helps professionals:
 - 🧭 Explore career paths with AI guidance
 - 📝 Build compelling professional narratives
 - 🎯 Track and manage career experiences
@@ -13,7 +13,7 @@ Career Navigator is an AI-powered career development platform that helps profess
 ## 🚀 Quick Start
 
 ### For Users
-- [**Getting Started Guide**](./guides/getting-started.md) - Start using Career Navigator in minutes
+- [**Getting Started Guide**](./guides/getting-started.md) - Start using Pathfinder in minutes
 - [**User Manual**](./guides/user-manual.md) - Complete user documentation
 - [**FAQ**](./guides/faq.md) - Frequently asked questions
 
@@ -69,7 +69,7 @@ Career Navigator is an AI-powered career development platform that helps profess
 - [**Monitoring & Logging**](./deployment/monitoring.md) - Observability setup
 
 ### 6. User Guides
-- [**Getting Started**](./guides/getting-started.md) - First steps with Career Navigator
+- [**Getting Started**](./guides/getting-started.md) - First steps with Pathfinder
 - [**User Manual**](./guides/user-manual.md) - Detailed feature documentation
 - [**Career Planning Guide**](./guides/career-planning.md) - Using AI for career decisions
 - [**Experience Writing**](./guides/experience-writing.md) - Crafting compelling experiences
@@ -92,7 +92,7 @@ Career Navigator is an AI-powered career development platform that helps profess
 ## 🏗️ Project Structure
 
 ```
-career-navigator/
+pathfinder/
 ├── frontend/          # React TypeScript application
 ├── backend/           # Node.js Express API
 ├── docs/              # This documentation
@@ -127,7 +127,7 @@ career-navigator/
 
 ## 🛡️ Security & Privacy
 
-Career Navigator prioritizes data security and user privacy:
+Pathfinder prioritizes data security and user privacy:
 - **Data Isolation**: Complete user data separation
 - **Encryption**: AES-256 for sensitive data
 - **Authentication**: JWT with short-lived tokens
@@ -149,7 +149,7 @@ We welcome contributions! See our [Contributing Guide](./guides/contributing-gui
 - **Documentation Issues**: Submit a GitHub issue
 - **Bug Reports**: Use the bug report template
 - **Feature Requests**: Use the feature request template
-- **Security Issues**: Email security@career-navigator.com
+- **Security Issues**: Email security@pathfinder.com
 
 ## 🔄 Version History
 

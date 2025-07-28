@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the comprehensive encryption strategy for the Career Navigator system, ensuring that user data is protected at all stages: in transit, at rest, and during processing. The encryption strategy follows a defense-in-depth approach with multiple layers of protection.
+This document defines the comprehensive encryption strategy for the Pathfinder system, ensuring that user data is protected at all stages: in transit, at rest, and during processing. The encryption strategy follows a defense-in-depth approach with multiple layers of protection.
 
 ## Encryption Architecture
 

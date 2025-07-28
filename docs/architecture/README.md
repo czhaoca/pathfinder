@@ -1,10 +1,10 @@
 # Technical Stack Documentation
 
-This section covers the technology choices, implementation decisions, and technical architecture that powers Career Navigator.
+This section covers the technology choices, implementation decisions, and technical architecture that powers Pathfinder.
 
 ## Technology Philosophy
 
-Career Navigator is built on four core technical principles:
+Pathfinder is built on four core technical principles:
 
 1. **Privacy First** - User data sovereignty and complete control
 2. **Flexibility** - Support for multiple deployment and integration options  
@@ -113,7 +113,7 @@ export const CareerExplorer: React.FC = () => {
 **Component Library**
 - **Headless UI**: Accessible, unstyled UI components
 - **Radix UI**: Low-level UI primitives
-- **Custom Components**: Career Navigator-specific components
+- **Custom Components**: Pathfinder-specific components
 
 ### AI Integration
 
@@ -298,7 +298,7 @@ class CacheManager {
 **Dev Container Support**
 ```json
 {
-  "name": "Career Navigator Dev",
+  "name": "Pathfinder Dev",
   "dockerComposeFile": "docker-compose.dev.yml",
   "service": "app",
   "workspaceFolder": "/workspace",
@@ -418,4 +418,4 @@ const logger = winston.createLogger({
 
 ---
 
-*The Career Navigator technical stack is designed for scalability, maintainability, and user privacy while providing the performance needed for responsive AI-powered career guidance.*
+*The Pathfinder technical stack is designed for scalability, maintainability, and user privacy while providing the performance needed for responsive AI-powered career guidance.*

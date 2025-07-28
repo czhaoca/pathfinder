@@ -1,6 +1,6 @@
-# Gemini Agent Guidelines for Career Navigator Project
+# Gemini Agent Guidelines for Pathfinder Project
 
-This document outlines specific guidelines for the Gemini agent when interacting with the `career-navigator` codebase. Adhering to these principles will ensure consistency, maintainability, and alignment with the project's core values.
+This document outlines specific guidelines for the Gemini agent when interacting with the `pathfinder` codebase. Adhering to these principles will ensure consistency, maintainability, and alignment with the project's core values.
 
 ## General Principles
 
@@ -35,7 +35,7 @@ The project is currently in the **work/business requirement exploration phase**.
 *   **Commit Messages**: When preparing commits, follow the project's existing commit message style (check `git log`). Focus on "why" the change was made.
 *   **Documentation**: If changes impact user-facing features or developer workflows, consider if updates to the `docs/` directory are necessary. This includes documenting the rationale behind technology choices and recording any significant debates or alternative options that were considered.
 
-By following these guidelines, the Gemini agent will contribute effectively and safely to the `career-navigator` project.
+By following these guidelines, the Gemini agent will contribute effectively and safely to the `pathfinder` project.
 
 ## Handling Mermaid Diagrams
 

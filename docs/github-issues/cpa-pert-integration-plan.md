@@ -1,13 +1,13 @@
 # CPA PERT Integration - GitHub Issues Plan
 
-## Epic: Integrate CPA PERT Writer Add-on into Career Navigator
+## Epic: Integrate CPA PERT Writer Add-on into Pathfinder
 
 ### Issue #1: CPA PERT Backend Service Integration
 
 **Title:** Implement CPA PERT Service Layer and API Endpoints
 
 **Description:**
-Create backend services to integrate the CPA PERT Writer add-on functionality into the main Career Navigator application. This service will handle competency mapping, PERT report generation, and compliance checking for CPA candidates on the EVR route.
+Create backend services to integrate the CPA PERT Writer add-on functionality into the main Pathfinder application. This service will handle competency mapping, PERT report generation, and compliance checking for CPA candidates on the EVR route.
 
 **Acceptance Criteria:**
 - [ ] Create `CPAPertService` class in `/backend/src/services/`
@@ -88,11 +88,11 @@ Create database tables to store the CPA competency framework, user competency as
 
 **Acceptance Criteria:**
 - [ ] Create migration scripts for new tables:
-  - `cn_cpa_competencies` - Master competency framework
-  - `cn_cpa_competency_mappings` - Experience to competency mappings
-  - `cn_cpa_pert_responses` - Generated PERT responses
-  - `cn_cpa_proficiency_assessments` - User proficiency level tracking
-  - `cn_cpa_compliance_checks` - EVR requirement validation history
+  - `pf_cpa_competencies` - Master competency framework
+  - `pf_cpa_competency_mappings` - Experience to competency mappings
+  - `pf_cpa_pert_responses` - Generated PERT responses
+  - `pf_cpa_proficiency_assessments` - User proficiency level tracking
+  - `pf_cpa_compliance_checks` - EVR requirement validation history
 - [ ] Add proper indexes for performance
 - [ ] Include foreign key constraints
 - [ ] Add audit columns (created_at, updated_at)
@@ -101,7 +101,7 @@ Create database tables to store the CPA competency framework, user competency as
 **Schema Details:**
 ```sql
 -- Example structure for competency table
-CREATE TABLE cn_cpa_competencies (
+CREATE TABLE pf_cpa_competencies (
   competency_id VARCHAR2(10) PRIMARY KEY,
   category VARCHAR2(50) NOT NULL, -- Technical/Enabling
   area_code VARCHAR2(5) NOT NULL, -- FR, MA, AA, TX, FN, SG

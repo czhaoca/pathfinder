@@ -1,10 +1,10 @@
 # MCP Server Documentation
 
-The Model Context Protocol (MCP) server enables seamless integration between Career Navigator and various AI language models, providing contextual access to user career data while maintaining privacy and security.
+The Model Context Protocol (MCP) server enables seamless integration between Pathfinder and various AI language models, providing contextual access to user career data while maintaining privacy and security.
 
 ## Overview
 
-The MCP server acts as a bridge between AI language models and the Career Navigator database, allowing for:
+The MCP server acts as a bridge between AI language models and the Pathfinder database, allowing for:
 
 - **Contextual AI Conversations** with access to user career data
 - **Privacy-Preserving** interactions through user-controlled infrastructure  
@@ -144,7 +144,7 @@ Complete guide for setting up your own MCP server with personal AI subscriptions
 #### Quick Start
 ```bash
 # Clone and setup MCP server
-git clone https://github.com/czhaoca/career-navigator.git
+git clone https://github.com/czhaoca/pathfinder.git
 cd mcp-server
 
 # Configure environment
@@ -202,7 +202,7 @@ For organizations requiring advanced features:
 ```javascript
 // Custom GPT configuration
 {
-  "name": "Career Navigator Assistant",
+  "name": "Pathfinder Assistant",
   "description": "AI career coach with access to your professional experience",
   "instructions": "You are a career development assistant...",
   "mcp_server_url": "http://localhost:8080",
@@ -220,9 +220,9 @@ For organizations requiring advanced features:
 {
   "mcpSettings": {
     "servers": {
-      "career-navigator": {
+      "pathfinder": {
         "command": "node",
-        "args": ["/path/to/career-navigator-mcp/index.js"],
+        "args": ["/path/to/pathfinder-mcp/index.js"],
         "env": {
           "DATABASE_URL": "postgresql://user:pass@localhost/career_nav",
           "ENCRYPTION_KEY": "user-provided-key"
