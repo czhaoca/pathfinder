@@ -7,7 +7,7 @@
 
 const oracledb = require('oracledb');
 const config = require('../config');
-const { up: createCPASchema } = require('./migrations/create-cpa-pert-schema');
+const { up: createCPASchema } = require('./migrations/create-cpa-pert-tables');
 const { seedCPACompetencies } = require('./seeds/seed-cpa-competencies');
 
 async function runMigration() {
