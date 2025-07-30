@@ -5,81 +5,86 @@ import {
   CompetencyFramework,
   ProficiencyAssessment,
   ComplianceCheck,
+  ComplianceResult,
   ValidationResult,
-  CompetencyReport
+  CompetencyReport,
+  AnalyzeExperienceRequest,
+  AnalyzeExperienceResponse,
+  GeneratePERTRequest,
+  BatchAnalyzeRequest,
+  BatchAnalyzeResponse,
+  BatchGenerateRequest,
+  BatchGenerateResponse
 } from '@/types/cpaPert';
 
 class CpaPertService {
-  async analyzeExperience(experienceData: any): Promise<CompetencyMapping> {
-    return api.post<CompetencyMapping>('/cpa-pert/analyze-experience', experienceData);
+  async analyzeExperience(experienceId: string): Promise<AnalyzeExperienceResponse> {
+    const request: AnalyzeExperienceRequest = { experienceId };
+    return api.post<AnalyzeExperienceResponse>('/cpa-pert/analyze-experience', request);
   }
 
-  async getCompetencyMapping(experienceId: string): Promise<CompetencyMapping> {
-    return api.get<CompetencyMapping>(`/cpa-pert/competency-mapping/${experienceId}`);
+  async getCompetencyMapping(experienceId: string): Promise<{ success: boolean; data: CompetencyMapping[] }> {
+    return api.get<{ success: boolean; data: CompetencyMapping[] }>(`/cpa-pert/competency-mapping/${experienceId}`);
   }
 
-  async generateResponse(data: {
-    experienceId: string;
-    competencies: string[];
-    template?: string;
-  }): Promise<PertResponse> {
-    return api.post<PertResponse>('/cpa-pert/generate-response', data);
+  async generateResponse(data: GeneratePERTRequest): Promise<{ success: boolean; data: PertResponse }> {
+    return api.post<{ success: boolean; data: PertResponse }>('/cpa-pert/generate-response', data);
   }
 
-  async getComplianceCheck(): Promise<ComplianceCheck> {
-    return api.get<ComplianceCheck>('/cpa-pert/compliance-check');
+  async getComplianceCheck(): Promise<{ success: boolean; data: ComplianceResult }> {
+    return api.get<{ success: boolean; data: ComplianceResult }>('/cpa-pert/compliance-check');
   }
 
-  async validateRequirements(data: any): Promise<ValidationResult> {
-    return api.post<ValidationResult>('/cpa-pert/validate-requirements', data);
+  async validateRequirements(): Promise<{ success: boolean; data: ValidationResult }> {
+    return api.post<{ success: boolean; data: ValidationResult }>('/cpa-pert/validate-requirements', {});
   }
 
-  async getCompetencyFramework(): Promise<CompetencyFramework> {
-    return api.get<CompetencyFramework>('/cpa-pert/competency-framework');
+  async getCompetencyFramework(): Promise<{ success: boolean; data: CompetencyFramework }> {
+    return api.get<{ success: boolean; data: CompetencyFramework }>('/cpa-pert/competency-framework');
   }
 
-  async getProficiencyAssessment(experienceId: string): Promise<ProficiencyAssessment> {
-    return api.get<ProficiencyAssessment>(`/cpa-pert/proficiency-assessment/${experienceId}`);
+  async getProficiencyAssessment(experienceId: string, competencyCode: string): Promise<{ success: boolean; data: ProficiencyAssessment }> {
+    return api.get<{ success: boolean; data: ProficiencyAssessment }>(
+      `/cpa-pert/proficiency-assessment/${experienceId}?competencyCode=${competencyCode}`
+    );
   }
 
-  async getResponses(params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-  }): Promise<{ responses: PertResponse[]; total: number }> {
-    return api.get('/cpa-pert/responses', { params });
+  async getResponses(limit?: number): Promise<{ success: boolean; data: PertResponse[]; total: number }> {
+    const params = limit ? { limit } : undefined;
+    return api.get<{ success: boolean; data: PertResponse[]; total: number }>('/cpa-pert/responses', { params });
   }
 
-  async getCompetencyReport(): Promise<CompetencyReport> {
-    return api.get<CompetencyReport>('/cpa-pert/competency-report');
+  async getCompetencyReport(): Promise<{ success: boolean; data: CompetencyReport }> {
+    return api.get<{ success: boolean; data: CompetencyReport }>('/cpa-pert/competency-report');
   }
 
-  async updateResponse(responseId: string, data: Partial<PertResponse>): Promise<PertResponse> {
-    return api.put<PertResponse>(`/cpa-pert/response/${responseId}`, data);
+  async updateResponse(responseId: string, data: {
+    responseText: string;
+    situationText?: string;
+    taskText?: string;
+    actionText?: string;
+    resultText?: string;
+    quantifiedImpact?: string;
+  }): Promise<{ success: boolean; data: PertResponse }> {
+    return api.put<{ success: boolean; data: PertResponse }>(`/cpa-pert/response/${responseId}`, data);
   }
 
-  async deleteResponse(responseId: string): Promise<void> {
-    return api.delete(`/cpa-pert/response/${responseId}`);
+  async deleteResponse(responseId: string): Promise<{ success: boolean; message: string }> {
+    return api.delete<{ success: boolean; message: string }>(`/cpa-pert/response/${responseId}`);
   }
 
-  async batchAnalyzeExperiences(experienceIds: string[]): Promise<{
-    successful: Array<{ experienceId: string; competenciesFound: number }>;
-    failed: Array<{ experienceId: string; error: string }>;
-    summary: { total: number; processed: number; competenciesFound: number };
-  }> {
-    return api.post('/cpa-pert/batch/analyze', { experienceIds });
+  async batchAnalyzeExperiences(experienceIds: string[]): Promise<BatchAnalyzeResponse> {
+    const request: BatchAnalyzeRequest = { experienceIds };
+    return api.post<BatchAnalyzeResponse>('/cpa-pert/batch/analyze', request);
   }
 
   async batchGeneratePERTResponses(requests: Array<{
     experienceId: string;
     competencyCode: string;
-    proficiencyLevel: number;
-  }>): Promise<{
-    successful: Array<{ responseId: string; experienceId: string; competencyCode: string; characterCount: number }>;
-    failed: Array<{ request: any; error: string }>;
-    summary: { total: number; generated: number; totalCharacters: number };
-  }> {
-    return api.post('/cpa-pert/batch/generate', { requests });
+    proficiencyLevel: 0 | 1 | 2;
+  }>): Promise<BatchGenerateResponse> {
+    const request: BatchGenerateRequest = { requests };
+    return api.post<BatchGenerateResponse>('/cpa-pert/batch/generate', request);
   }
 }
 

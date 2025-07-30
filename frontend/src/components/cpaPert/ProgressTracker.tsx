@@ -1,288 +1,270 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCPAPert } from '@/hooks/useCPAPert';
+import { CompetencyReport } from '@/types/cpaPert';
 import { 
-  CheckCircle2, 
-  Circle, 
-  AlertCircle,
-  TrendingUp,
+  TrendingUp, 
+  Award, 
   Target,
-  Award,
+  BookOpen,
   BarChart3,
-  Calendar,
-  Clock
+  CheckCircle2,
+  Circle,
+  AlertCircle
 } from 'lucide-react';
 
-interface CompetencyProgress {
-  competencyId: string;
-  competencyCode: string;
-  competencyName: string;
-  currentLevel: number;
-  targetLevel: number;
-  experienceCount: number;
-  pertResponseCount: number;
-  lastUpdated: string;
-  nextSteps: string[];
-}
-
 interface ProgressTrackerProps {
-  competencies: CompetencyProgress[];
-  evrCompliant: boolean;
-  totalRequired: number;
-  level2Required: number;
-  onViewDetails?: (competencyId: string) => void;
+  onSelectCompetency?: (competencyId: string) => void;
 }
 
-export function ProgressTracker({ 
-  competencies, 
-  evrCompliant, 
-  totalRequired = 8,
-  level2Required = 2,
-  onViewDetails 
-}: ProgressTrackerProps) {
-  const completedCount = competencies.filter(c => c.currentLevel >= 1).length;
-  const level2Count = competencies.filter(c => c.currentLevel === 2).length;
-  const overallProgress = (completedCount / totalRequired) * 100;
+export function ProgressTracker({ onSelectCompetency }: ProgressTrackerProps) {
+  const { getCompetencyReport, competencyFramework, loading } = useCPAPert();
+  const [report, setReport] = useState<CompetencyReport | null>(null);
 
-  const getProgressColor = (current: number, target: number) => {
-    const progress = (current / target) * 100;
-    if (progress >= 100) return 'text-green-600';
-    if (progress >= 75) return 'text-blue-600';
-    if (progress >= 50) return 'text-orange-600';
-    return 'text-gray-600';
+  useEffect(() => {
+    loadReport();
+  }, []);
+
+  const loadReport = async () => {
+    try {
+      const competencyReport = await getCompetencyReport();
+      setReport(competencyReport);
+    } catch (error) {
+      console.error('Failed to load competency report:', error);
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    return category === 'Technical' ? <BookOpen className="h-4 w-4" /> : <Target className="h-4 w-4" />;
   };
 
   const getLevelBadge = (level: number) => {
-    const variants = {
-      0: { variant: 'outline' as const, label: 'Not Started' },
-      1: { variant: 'secondary' as const, label: 'Level 1' },
-      2: { variant: 'default' as const, label: 'Level 2' }
+    const variants: Record<number, { variant: 'default' | 'secondary' | 'outline'; label: string }> = {
+      2: { variant: 'default', label: 'Level 2' },
+      1: { variant: 'secondary', label: 'Level 1' },
+      0: { variant: 'outline', label: 'Level 0' }
     };
-    const config = variants[level as keyof typeof variants] || variants[0];
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    
+    const config = variants[level] || variants[0];
+    return <Badge variant={config.variant} className="text-xs">{config.label}</Badge>;
   };
 
-  const getMilestoneStatus = (achieved: boolean) => {
-    return achieved ? (
-      <CheckCircle2 className="h-5 w-5 text-green-600" />
-    ) : (
-      <Circle className="h-5 w-5 text-gray-400" />
-    );
+  const getProgressIcon = (level: number) => {
+    if (level === 2) return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+    if (level === 1) return <AlertCircle className="h-4 w-4 text-blue-600" />;
+    return <Circle className="h-4 w-4 text-gray-400" />;
   };
+
+  if (loading && !report) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center text-muted-foreground">
+            Loading progress data...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!report) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center text-muted-foreground">
+            No progress data available
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { summary, competencyDetails, developmentPlan } = report;
+
+  // Group competencies by category
+  const groupedCompetencies = competencyDetails.reduce((acc, comp) => {
+    const category = comp.category || 'Other';
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(comp);
+    return acc;
+  }, {} as Record<string, typeof competencyDetails>);
 
   return (
-    <div className="space-y-6">
-      {/* Overall Progress Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Overall Progress
-              </CardTitle>
-              <CardDescription>
-                Your journey to EVR compliance
-              </CardDescription>
-            </div>
-            <Badge variant={evrCompliant ? 'default' : 'secondary'} className="text-lg px-3 py-1">
-              {evrCompliant ? 'EVR Ready' : 'In Progress'}
-            </Badge>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Competency Progress Tracker
+            </CardTitle>
+            <CardDescription>
+              Track your progress across all CPA competency areas
+            </CardDescription>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Overall Completion</span>
-              <span className="text-sm font-medium">{Math.round(overallProgress)}%</span>
-            </div>
-            <Progress value={overallProgress} className="h-3" />
-            <p className="text-xs text-muted-foreground">
-              {completedCount} of {totalRequired} competencies demonstrated
-            </p>
+          <Badge variant="outline" className="gap-1">
+            <BarChart3 className="h-3 w-3" />
+            {summary.totalCompetencies} Competencies
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+            <p className="text-2xl font-bold text-green-600">{summary.level2Achieved}</p>
+            <p className="text-xs text-muted-foreground">Level 2</p>
           </div>
-
-          {/* Key Milestones */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-medium">Key Milestones</h4>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  {getMilestoneStatus(completedCount >= totalRequired)}
-                  <div>
-                    <p className="text-sm font-medium">Demonstrate {totalRequired} Competencies</p>
-                    <p className="text-xs text-muted-foreground">
-                      {completedCount} / {totalRequired} completed
-                    </p>
-                  </div>
-                </div>
-                <span className={`text-sm font-medium ${getProgressColor(completedCount, totalRequired)}`}>
-                  {Math.round((completedCount / totalRequired) * 100)}%
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center gap-3">
-                  {getMilestoneStatus(level2Count >= level2Required)}
-                  <div>
-                    <p className="text-sm font-medium">Achieve Level 2 in {level2Required} Areas</p>
-                    <p className="text-xs text-muted-foreground">
-                      {level2Count} / {level2Required} achieved
-                    </p>
-                  </div>
-                </div>
-                <span className={`text-sm font-medium ${getProgressColor(level2Count, level2Required)}`}>
-                  {Math.round((level2Count / level2Required) * 100)}%
-                </span>
-              </div>
-            </div>
+          <div className="text-center p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+            <p className="text-2xl font-bold text-blue-600">{summary.level1Achieved}</p>
+            <p className="text-xs text-muted-foreground">Level 1</p>
           </div>
-
-          {/* Time Estimate */}
-          <div className="flex items-center gap-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-            <Clock className="h-5 w-5 text-blue-600" />
-            <div>
-              <p className="text-sm font-medium">Estimated Time to Completion</p>
-              <p className="text-xs text-muted-foreground">
-                {evrCompliant ? 'Congratulations! You\'re EVR ready!' : 
-                 `Approximately ${(totalRequired - completedCount) * 2} weeks at current pace`}
-              </p>
-            </div>
+          <div className="text-center p-3 bg-gray-50 dark:bg-gray-950 rounded-lg">
+            <p className="text-2xl font-bold text-gray-600">{summary.level0Only}</p>
+            <p className="text-xs text-muted-foreground">Level 0</p>
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-center p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
+            <p className="text-2xl font-bold text-purple-600">{summary.totalPERTResponses}</p>
+            <p className="text-xs text-muted-foreground">Responses</p>
+          </div>
+        </div>
 
-      {/* Competency Progress Grid */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Competency Progress Details
-          </CardTitle>
-          <CardDescription>
-            Track your progress for each competency area
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {competencies.map((competency) => (
-              <div 
-                key={competency.competencyId}
-                className="p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                onClick={() => onViewDetails?.(competency.competencyId)}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium">{competency.competencyCode}</p>
-                      {getLevelBadge(competency.currentLevel)}
+        {/* Progress Tabs */}
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="byCategory">By Category</TabsTrigger>
+            <TabsTrigger value="development">Development Plan</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-3">
+            <ScrollArea className="h-[400px] pr-4">
+              <div className="space-y-2">
+                {competencyDetails
+                  .sort((a, b) => b.current_level - a.current_level)
+                  .map((comp) => (
+                    <div 
+                      key={comp.assessment_id}
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => onSelectCompetency?.(comp.competency_id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        {getProgressIcon(comp.current_level)}
+                        <div>
+                          <p className="font-medium text-sm">
+                            {comp.competency_code} - {comp.competency_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {comp.category} • {comp.evidence_count} evidence{comp.evidence_count !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {getLevelBadge(comp.current_level)}
+                        {comp.current_level < comp.target_level && (
+                          <span className="text-xs text-muted-foreground">
+                            → Level {comp.target_level}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">{competency.competencyName}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{competency.pertResponseCount} PERT Response{competency.pertResponseCount !== 1 ? 's' : ''}</p>
-                    <p className="text-xs text-muted-foreground">
-                      From {competency.experienceCount} experience{competency.experienceCount !== 1 ? 's' : ''}
-                    </p>
-                  </div>
-                </div>
+                  ))}
+              </div>
+            </ScrollArea>
+          </TabsContent>
 
-                {/* Progress to Next Level */}
-                {competency.currentLevel < 2 && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span>Progress to Level {competency.currentLevel + 1}</span>
-                      <span>{competency.currentLevel === 0 ? '0%' : '50%'}</span>
+          <TabsContent value="byCategory" className="space-y-4">
+            {Object.entries(groupedCompetencies).map(([category, competencies]) => (
+              <div key={category} className="space-y-2">
+                <div className="flex items-center gap-2 font-medium">
+                  {getCategoryIcon(category)}
+                  <span>{category} Competencies</span>
+                  <Badge variant="outline" className="ml-auto">
+                    {competencies.length}
+                  </Badge>
+                </div>
+                <div className="grid gap-2">
+                  {competencies.map((comp) => (
+                    <div 
+                      key={comp.assessment_id}
+                      className="flex items-center justify-between p-2 pl-6 border rounded hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => onSelectCompetency?.(comp.competency_id)}
+                    >
+                      <span className="text-sm">
+                        {comp.competency_code} - {comp.competency_name}
+                      </span>
+                      {getLevelBadge(comp.current_level)}
                     </div>
-                    <Progress 
-                      value={competency.currentLevel === 0 ? 0 : 50} 
-                      className="h-2"
-                    />
-                  </div>
-                )}
-
-                {/* Last Updated */}
-                <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
-                  <Calendar className="h-3 w-3" />
-                  <span>Last updated {new Date(competency.lastUpdated).toLocaleDateString()}</span>
+                  ))}
                 </div>
-
-                {/* Next Steps (collapsed by default) */}
-                {competency.nextSteps && competency.nextSteps.length > 0 && (
-                  <div className="mt-3 text-xs">
-                    <p className="font-medium mb-1">Next Step:</p>
-                    <p className="text-muted-foreground">{competency.nextSteps[0]}</p>
-                  </div>
-                )}
               </div>
             ))}
-          </div>
+          </TabsContent>
 
-          {competencies.length === 0 && (
-            <div className="text-center py-8">
-              <Target className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">
-                No competency progress tracked yet. Start by analyzing your experiences.
-              </p>
-              <Button className="mt-4" variant="outline">
-                Analyze Experiences
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          <TabsContent value="development" className="space-y-4">
+            {/* Immediate Actions */}
+            {developmentPlan.immediate.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm text-red-600">Immediate Priority</h4>
+                {developmentPlan.immediate.map((action, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-2 bg-red-50 dark:bg-red-950 rounded">
+                    <Award className="h-4 w-4 text-red-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm">{action.action}</p>
+                      <p className="text-xs text-muted-foreground">Target: {action.target}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
-      {/* Achievement Badges */}
-      {(level2Count > 0 || completedCount >= 4) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5" />
-              Achievements
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-3 md:grid-cols-3">
-              {completedCount >= 4 && (
-                <div className="flex items-center gap-3 p-3 border rounded-lg">
-                  <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                    <Target className="h-5 w-5 text-blue-600" />
+            {/* Short Term Actions */}
+            {developmentPlan.shortTerm.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm text-orange-600">Short Term Goals</h4>
+                {developmentPlan.shortTerm.map((action, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-2 bg-orange-50 dark:bg-orange-950 rounded">
+                    <Target className="h-4 w-4 text-orange-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm">{action.action}</p>
+                      <p className="text-xs text-muted-foreground">Target: {action.target}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">Halfway There</p>
-                    <p className="text-xs text-muted-foreground">4+ competencies</p>
+                ))}
+              </div>
+            )}
+
+            {/* Long Term Actions */}
+            {developmentPlan.longTerm.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm text-blue-600">Long Term Development</h4>
+                {developmentPlan.longTerm.map((action, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded">
+                    <TrendingUp className="h-4 w-4 text-blue-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm">{action.action}</p>
+                      <p className="text-xs text-muted-foreground">Target: {action.target}</p>
+                    </div>
                   </div>
-                </div>
-              )}
-              {level2Count >= 1 && (
-                <div className="flex items-center gap-3 p-3 border rounded-lg">
-                  <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Advanced Proficiency</p>
-                    <p className="text-xs text-muted-foreground">Level 2 achieved</p>
-                  </div>
-                </div>
-              )}
-              {evrCompliant && (
-                <div className="flex items-center gap-3 p-3 border rounded-lg">
-                  <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                    <Award className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">EVR Ready</p>
-                    <p className="text-xs text-muted-foreground">All requirements met</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+                ))}
+              </div>
+            )}
+
+            {developmentPlan.immediate.length === 0 && 
+             developmentPlan.shortTerm.length === 0 && 
+             developmentPlan.longTerm.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <CheckCircle2 className="h-12 w-12 mx-auto mb-2 text-green-600" />
+                <p>Excellent progress! Keep maintaining your competency levels.</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 }

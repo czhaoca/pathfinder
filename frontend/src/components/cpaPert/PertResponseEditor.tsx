@@ -7,8 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { PertResponse } from '@/types/cpaPert';
+import { PertResponse, CompetencyMapping } from '@/types/cpaPert';
+import { Experience } from '@/types/experience';
+import { useCPAPert } from '@/hooks/useCPAPert';
 import { 
   Save, 
   Copy, 
@@ -18,33 +21,48 @@ import {
   FileText,
   Target,
   Sparkles,
-  RotateCcw
+  RotateCcw,
+  Award
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface PertResponseEditorProps {
-  response: PertResponse;
-  onSave: (updates: Partial<PertResponse>) => Promise<void>;
-  onGenerate?: () => void;
+  experience: Experience;
+  competencyMapping?: CompetencyMapping;
+  existingResponse?: PertResponse;
+  onResponseSaved?: (response: PertResponse) => void;
   readOnly?: boolean;
 }
 
 export function PertResponseEditor({ 
-  response, 
-  onSave, 
-  onGenerate,
+  experience,
+  competencyMapping,
+  existingResponse, 
+  onResponseSaved,
   readOnly = false 
 }: PertResponseEditorProps) {
-  const [editedContent, setEditedContent] = useState(response.content);
+  const { generatePERTResponse, updatePERTResponse, loading } = useCPAPert();
+  
+  const [selectedCompetency, setSelectedCompetency] = useState<string>(
+    competencyMapping?.competency_id || ''
+  );
+  const [proficiencyLevel, setProficiencyLevel] = useState<0 | 1 | 2>(
+    existingResponse?.proficiency_level || 1
+  );
+  
   const [sections, setSections] = useState({
-    situation: '',
-    task: '',
-    action: '',
-    result: ''
+    situation: existingResponse?.situation_text || '',
+    task: existingResponse?.task_text || '',
+    action: existingResponse?.action_text || '',
+    result: existingResponse?.result_text || ''
   });
+  
+  const [fullResponse, setFullResponse] = useState(existingResponse?.response_text || '');
+  const [quantifiedImpact, setQuantifiedImpact] = useState(existingResponse?.quantified_impact || '');
   const [characterCount, setCharacterCount] = useState(0);
   const [saving, setSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  const [viewMode, setViewMode] = useState<'structured' | 'full'>('structured');
 
   const MAX_CHARACTERS = 5000;
   const SECTION_LIMITS = {
@@ -55,65 +73,89 @@ export function PertResponseEditor({
   };
 
   useEffect(() => {
-    // Parse sections from response content
-    const parseSections = () => {
-      const content = response.content || '';
-      const situationMatch = content.match(/SITUATION:\s*([\s\S]*?)(?=TASK:|$)/i);
-      const taskMatch = content.match(/TASK:\s*([\s\S]*?)(?=ACTION:|$)/i);
-      const actionMatch = content.match(/ACTION:\s*([\s\S]*?)(?=RESULT:|$)/i);
-      const resultMatch = content.match(/RESULT:\s*([\s\S]*?)$/i);
-
+    if (existingResponse) {
       setSections({
-        situation: situationMatch?.[1]?.trim() || '',
-        task: taskMatch?.[1]?.trim() || '',
-        action: actionMatch?.[1]?.trim() || '',
-        result: resultMatch?.[1]?.trim() || ''
+        situation: existingResponse.situation_text || '',
+        task: existingResponse.task_text || '',
+        action: existingResponse.action_text || '',
+        result: existingResponse.result_text || ''
       });
-    };
-
-    parseSections();
-    setEditedContent(response.content);
-    setCharacterCount(response.content.length);
-  }, [response]);
+      setFullResponse(existingResponse.response_text || '');
+      setQuantifiedImpact(existingResponse.quantified_impact || '');
+      setCharacterCount(existingResponse.character_count || 0);
+      setSelectedCompetency(existingResponse.competency_id);
+      setProficiencyLevel(existingResponse.proficiency_level);
+    }
+  }, [existingResponse]);
 
   const updateSection = (section: keyof typeof sections, value: string) => {
     const newSections = { ...sections, [section]: value };
     setSections(newSections);
     
     // Rebuild full content
-    const fullContent = `SITUATION:\n${newSections.situation}\n\nTASK:\n${newSections.task}\n\nACTION:\n${newSections.action}\n\nRESULT:\n${newSections.result}`;
-    setEditedContent(fullContent);
-    setCharacterCount(fullContent.length);
+    const newFullResponse = `SITUATION:\n${newSections.situation}\n\nTASK:\n${newSections.task}\n\nACTION:\n${newSections.action}\n\nRESULT:\n${newSections.result}`;
+    setFullResponse(newFullResponse);
+    setCharacterCount(newFullResponse.length);
     setIsDirty(true);
   };
 
-  const handleSave = async () => {
-    if (characterCount > MAX_CHARACTERS) {
-      toast.error(`Response exceeds ${MAX_CHARACTERS} character limit`);
+  const updateFullResponse = (value: string) => {
+    setFullResponse(value);
+    setCharacterCount(value.length);
+    setIsDirty(true);
+    
+    // Try to parse sections from full text
+    const situationMatch = value.match(/SITUATION:\s*([\s\S]*?)(?=TASK:|$)/i);
+    const taskMatch = value.match(/TASK:\s*([\s\S]*?)(?=ACTION:|$)/i);
+    const actionMatch = value.match(/ACTION:\s*([\s\S]*?)(?=RESULT:|$)/i);
+    const resultMatch = value.match(/RESULT:\s*([\s\S]*?)$/i);
+    
+    setSections({
+      situation: situationMatch?.[1]?.trim() || '',
+      task: taskMatch?.[1]?.trim() || '',
+      action: actionMatch?.[1]?.trim() || '',
+      result: resultMatch?.[1]?.trim() || ''
+    });
+  };
+
+  const handleGenerate = async () => {
+    if (!experience.experienceId || !selectedCompetency) {
+      toast.error('Please select a competency');
       return;
     }
 
     try {
-      setSaving(true);
-      await onSave({
-        content: editedContent,
-        wordCount: characterCount,
-        situation: sections.situation,
-        task: sections.task,
-        action: sections.action,
-        result: sections.result,
-        status: 'draft'
+      const response = await generatePERTResponse(
+        experience.experienceId,
+        selectedCompetency,
+        proficiencyLevel
+      );
+      
+      setSections({
+        situation: response.situation_text || '',
+        task: response.task_text || '',
+        action: response.action_text || '',
+        result: response.result_text || ''
       });
+      setFullResponse(response.response_text);
+      setQuantifiedImpact(response.quantified_impact || '');
+      setCharacterCount(response.character_count);
       setIsDirty(false);
-      toast.success('PERT response saved successfully');
+      
+      if (onResponseSaved) {
+        onResponseSaved(response);
+      }
     } catch (error) {
-      toast.error('Failed to save PERT response');
-    } finally {
-      setSaving(false);
+      console.error('Failed to generate PERT response:', error);
     }
   };
 
-  const handleFinalize = async () => {
+  const handleSave = async () => {
+    if (!existingResponse?.response_id) {
+      toast.error('No response to update');
+      return;
+    }
+    
     if (characterCount > MAX_CHARACTERS) {
       toast.error(`Response exceeds ${MAX_CHARACTERS} character limit`);
       return;
@@ -121,35 +163,38 @@ export function PertResponseEditor({
 
     try {
       setSaving(true);
-      await onSave({
-        content: editedContent,
-        wordCount: characterCount,
-        situation: sections.situation,
-        task: sections.task,
-        action: sections.action,
-        result: sections.result,
-        status: 'final'
+      const updatedResponse = await updatePERTResponse(existingResponse.response_id, {
+        responseText: fullResponse,
+        situationText: sections.situation,
+        taskText: sections.task,
+        actionText: sections.action,
+        resultText: sections.result,
+        quantifiedImpact: quantifiedImpact
       });
+      
       setIsDirty(false);
-      toast.success('PERT response finalized successfully');
+      if (onResponseSaved) {
+        onResponseSaved(updatedResponse);
+      }
     } catch (error) {
-      toast.error('Failed to finalize PERT response');
+      console.error('Failed to save PERT response:', error);
     } finally {
       setSaving(false);
     }
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(editedContent);
+    navigator.clipboard.writeText(fullResponse);
     toast.success('Copied to clipboard');
   };
 
   const downloadAsText = () => {
-    const blob = new Blob([editedContent], { type: 'text/plain' });
+    const competencyCode = competencyMapping?.sub_code || selectedCompetency;
+    const blob = new Blob([fullResponse], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `PERT_Response_${response.id || 'draft'}.txt`;
+    a.download = `PERT_Response_${competencyCode}_Level${proficiencyLevel}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -181,22 +226,71 @@ export function PertResponseEditor({
               PERT Response Editor
             </CardTitle>
             <CardDescription>
-              Edit and refine your PERT response using the STAR method
+              Generate and edit your PERT response using the STAR method
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={response.status === 'final' ? 'default' : 'secondary'}>
-              {response.status || 'draft'}
-            </Badge>
-            {response.competencies && response.competencies.length > 0 && (
+            {competencyMapping && (
               <Badge variant="outline">
-                {response.competencies[0]}
+                {competencyMapping.sub_code} - {competencyMapping.sub_name}
               </Badge>
             )}
+            <Badge variant="secondary">
+              Level {proficiencyLevel}
+            </Badge>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Generation Controls */}
+        {!existingResponse && (
+          <div className="flex items-end gap-4 p-4 bg-muted rounded-lg">
+            <div className="flex-1">
+              <Label htmlFor="competency">Competency</Label>
+              <Input
+                id="competency"
+                value={selectedCompetency}
+                onChange={(e) => setSelectedCompetency(e.target.value)}
+                placeholder="Enter competency code (e.g., FR1)"
+                disabled={!!competencyMapping}
+              />
+            </div>
+            <div className="w-32">
+              <Label htmlFor="level">Proficiency Level</Label>
+              <Select
+                value={proficiencyLevel.toString()}
+                onValueChange={(value) => setProficiencyLevel(parseInt(value) as 0 | 1 | 2)}
+              >
+                <SelectTrigger id="level">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">Level 0</SelectItem>
+                  <SelectItem value="1">Level 1</SelectItem>
+                  <SelectItem value="2">Level 2</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button 
+              onClick={handleGenerate}
+              disabled={loading || !selectedCompetency}
+              className="gap-2"
+            >
+              {loading ? (
+                <>
+                  <LoadingSpinner className="h-4 w-4" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Generate
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
         {/* Character Count Progress */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -220,193 +314,214 @@ export function PertResponseEditor({
         </div>
 
         {/* Editor Tabs */}
-        <Tabs defaultValue="structured" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="structured">Structured Editor</TabsTrigger>
-            <TabsTrigger value="full">Full Text</TabsTrigger>
-          </TabsList>
+        {(fullResponse || existingResponse) && (
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'structured' | 'full')} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="structured">Structured Editor</TabsTrigger>
+              <TabsTrigger value="full">Full Text</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="structured" className="space-y-4">
-            {/* Situation Section */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="situation">
-                  Situation <span className="text-xs text-muted-foreground">(Context & Challenges)</span>
-                </Label>
-                <span className={`text-xs ${getSectionCharacterCountColor('situation')}`}>
-                  {sections.situation.length} / {SECTION_LIMITS.situation}
-                </span>
+            <TabsContent value="structured" className="space-y-4">
+              {/* Situation Section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="situation">
+                    Situation <span className="text-xs text-muted-foreground">(Context & Challenges)</span>
+                  </Label>
+                  <span className={`text-xs ${getSectionCharacterCountColor('situation')}`}>
+                    {sections.situation.length} / {SECTION_LIMITS.situation}
+                  </span>
+                </div>
+                <Textarea
+                  id="situation"
+                  value={sections.situation}
+                  onChange={(e) => updateSection('situation', e.target.value)}
+                  placeholder="Describe the business context, environment, and specific challenges..."
+                  className="min-h-[120px]"
+                  disabled={readOnly}
+                />
               </div>
+
+              {/* Task Section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="task">
+                    Task <span className="text-xs text-muted-foreground">(Responsibilities & Objectives)</span>
+                  </Label>
+                  <span className={`text-xs ${getSectionCharacterCountColor('task')}`}>
+                    {sections.task.length} / {SECTION_LIMITS.task}
+                  </span>
+                </div>
+                <Textarea
+                  id="task"
+                  value={sections.task}
+                  onChange={(e) => updateSection('task', e.target.value)}
+                  placeholder="Explain your specific responsibilities and what needed to be accomplished..."
+                  className="min-h-[100px]"
+                  disabled={readOnly}
+                />
+              </div>
+
+              {/* Action Section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="action">
+                    Action <span className="text-xs text-muted-foreground">(Your Specific Actions)</span>
+                  </Label>
+                  <span className={`text-xs ${getSectionCharacterCountColor('action')}`}>
+                    {sections.action.length} / {SECTION_LIMITS.action}
+                  </span>
+                </div>
+                <Textarea
+                  id="action"
+                  value={sections.action}
+                  onChange={(e) => updateSection('action', e.target.value)}
+                  placeholder="Detail the specific actions YOU took to demonstrate this competency..."
+                  className="min-h-[200px]"
+                  disabled={readOnly}
+                />
+              </div>
+
+              {/* Result Section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="result">
+                    Result <span className="text-xs text-muted-foreground">(Quantified Outcomes)</span>
+                  </Label>
+                  <span className={`text-xs ${getSectionCharacterCountColor('result')}`}>
+                    {sections.result.length} / {SECTION_LIMITS.result}
+                  </span>
+                </div>
+                <Textarea
+                  id="result"
+                  value={sections.result}
+                  onChange={(e) => updateSection('result', e.target.value)}
+                  placeholder="Quantify the outcomes and business impact of your actions..."
+                  className="min-h-[120px]"
+                  disabled={readOnly}
+                />
+              </div>
+
+              {/* Quantified Impact */}
+              <div className="space-y-2">
+                <Label htmlFor="impact">
+                  Quantified Impact <span className="text-xs text-muted-foreground">(Key Metrics)</span>
+                </Label>
+                <Textarea
+                  id="impact"
+                  value={quantifiedImpact}
+                  onChange={(e) => {
+                    setQuantifiedImpact(e.target.value);
+                    setIsDirty(true);
+                  }}
+                  placeholder="List 2-3 specific quantified achievements (e.g., Reduced costs by 25%, Saved 120 hours monthly)"
+                  className="min-h-[60px]"
+                  disabled={readOnly}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="full">
               <Textarea
-                id="situation"
-                value={sections.situation}
-                onChange={(e) => updateSection('situation', e.target.value)}
-                placeholder="Describe the business context, environment, and specific challenges..."
-                className="min-h-[120px]"
+                value={fullResponse}
+                onChange={(e) => updateFullResponse(e.target.value)}
+                placeholder="Edit the full PERT response..."
+                className="min-h-[500px] font-mono text-sm"
                 disabled={readOnly}
               />
-            </div>
-
-            {/* Task Section */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="task">
-                  Task <span className="text-xs text-muted-foreground">(Responsibilities & Objectives)</span>
-                </Label>
-                <span className={`text-xs ${getSectionCharacterCountColor('task')}`}>
-                  {sections.task.length} / {SECTION_LIMITS.task}
-                </span>
-              </div>
-              <Textarea
-                id="task"
-                value={sections.task}
-                onChange={(e) => updateSection('task', e.target.value)}
-                placeholder="Explain your specific responsibilities and what needed to be accomplished..."
-                className="min-h-[100px]"
-                disabled={readOnly}
-              />
-            </div>
-
-            {/* Action Section */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="action">
-                  Action <span className="text-xs text-muted-foreground">(Your Specific Actions)</span>
-                </Label>
-                <span className={`text-xs ${getSectionCharacterCountColor('action')}`}>
-                  {sections.action.length} / {SECTION_LIMITS.action}
-                </span>
-              </div>
-              <Textarea
-                id="action"
-                value={sections.action}
-                onChange={(e) => updateSection('action', e.target.value)}
-                placeholder="Detail the specific actions YOU took to demonstrate this competency..."
-                className="min-h-[200px]"
-                disabled={readOnly}
-              />
-            </div>
-
-            {/* Result Section */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="result">
-                  Result <span className="text-xs text-muted-foreground">(Quantified Outcomes)</span>
-                </Label>
-                <span className={`text-xs ${getSectionCharacterCountColor('result')}`}>
-                  {sections.result.length} / {SECTION_LIMITS.result}
-                </span>
-              </div>
-              <Textarea
-                id="result"
-                value={sections.result}
-                onChange={(e) => updateSection('result', e.target.value)}
-                placeholder="Quantify the outcomes and business impact of your actions..."
-                className="min-h-[120px]"
-                disabled={readOnly}
-              />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="full">
-            <Textarea
-              value={editedContent}
-              onChange={(e) => {
-                setEditedContent(e.target.value);
-                setCharacterCount(e.target.value.length);
-                setIsDirty(true);
-              }}
-              placeholder="Edit the full PERT response..."
-              className="min-h-[500px] font-mono text-sm"
-              disabled={readOnly}
-            />
-          </TabsContent>
-        </Tabs>
-
-        {/* Quantified Impact */}
-        {response.quantifiedImpact && (
-          <Alert>
-            <Target className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Quantified Impact:</strong> {response.quantifiedImpact}
-            </AlertDescription>
-          </Alert>
+            </TabsContent>
+          </Tabs>
         )}
 
+        {/* Proficiency Level Guide */}
+        <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950">
+          <Award className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Level {proficiencyLevel} Expectations:</strong>{' '}
+            {proficiencyLevel === 0 && 'Basic understanding and application under supervision'}
+            {proficiencyLevel === 1 && 'Independent application with moderate complexity'}
+            {proficiencyLevel === 2 && 'Advanced application with leadership and strategic impact'}
+          </AlertDescription>
+        </Alert>
+
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-4">
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={copyToClipboard}
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              Copy
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={downloadAsText}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Download
-            </Button>
-            {onGenerate && (
+        {(fullResponse || existingResponse) && (
+          <div className="flex items-center justify-between pt-4">
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={onGenerate}
+                onClick={copyToClipboard}
+                disabled={!fullResponse}
               >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Regenerate
+                <Copy className="h-4 w-4 mr-2" />
+                Copy
               </Button>
-            )}
-          </div>
-          
-          {!readOnly && (
-            <div className="flex gap-2">
-              {isDirty && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={downloadAsText}
+                disabled={!fullResponse}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+              {existingResponse && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    setEditedContent(response.content);
-                    setCharacterCount(response.content.length);
-                    setIsDirty(false);
-                  }}
+                  onClick={handleGenerate}
+                  disabled={loading}
                 >
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Reset
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Regenerate
                 </Button>
               )}
-              <Button
-                variant="outline"
-                onClick={handleSave}
-                disabled={saving || !isDirty}
-              >
-                {saving ? (
-                  <LoadingSpinner className="h-4 w-4 mr-2" />
-                ) : (
-                  <Save className="h-4 w-4 mr-2" />
-                )}
-                Save Draft
-              </Button>
-              <Button
-                onClick={handleFinalize}
-                disabled={saving || characterCount > MAX_CHARACTERS}
-              >
-                {saving ? (
-                  <LoadingSpinner className="h-4 w-4 mr-2" />
-                ) : (
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                )}
-                Finalize
-              </Button>
             </div>
-          )}
-        </div>
+            
+            {!readOnly && existingResponse && (
+              <div className="flex gap-2">
+                {isDirty && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSections({
+                        situation: existingResponse.situation_text || '',
+                        task: existingResponse.task_text || '',
+                        action: existingResponse.action_text || '',
+                        result: existingResponse.result_text || ''
+                      });
+                      setFullResponse(existingResponse.response_text || '');
+                      setQuantifiedImpact(existingResponse.quantified_impact || '');
+                      setCharacterCount(existingResponse.character_count || 0);
+                      setIsDirty(false);
+                    }}
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  onClick={handleSave}
+                  disabled={saving || !isDirty || loading}
+                >
+                  {saving ? (
+                    <LoadingSpinner className="h-4 w-4 mr-2" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  Save Changes
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
+
+// Add missing Input import
+import { Input } from '@/components/ui/input';

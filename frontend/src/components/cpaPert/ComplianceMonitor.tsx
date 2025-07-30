@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
+import { useCPAPert } from '@/hooks/useCPAPert';
+import { ComplianceResult } from '@/types/cpaPert';
 import { 
   Shield, 
   AlertTriangle, 
@@ -12,69 +15,115 @@ import {
   FileText,
   TrendingUp,
   Clock,
-  Download
+  Download,
+  Target,
+  Award
 } from 'lucide-react';
-import { ComplianceCheck } from '@/types/cpaPert';
 import { format } from 'date-fns';
 
 interface ComplianceMonitorProps {
-  complianceCheck: ComplianceCheck;
-  onRefreshCheck: () => Promise<void>;
+  onComplianceUpdate?: (compliance: ComplianceResult) => void;
   onGenerateReport?: () => void;
 }
 
 export function ComplianceMonitor({ 
-  complianceCheck, 
-  onRefreshCheck,
+  onComplianceUpdate,
   onGenerateReport 
 }: ComplianceMonitorProps) {
+  const { checkCompliance, validateRequirements, loading } = useCPAPert();
+  const [compliance, setCompliance] = useState<ComplianceResult | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    loadCompliance();
+  }, []);
+
+  const loadCompliance = async () => {
+    try {
+      const result = await checkCompliance();
+      setCompliance(result);
+      if (onComplianceUpdate) {
+        onComplianceUpdate(result);
+      }
+    } catch (error) {
+      console.error('Failed to load compliance:', error);
+    }
+  };
 
   const handleRefresh = async () => {
     try {
       setRefreshing(true);
-      await onRefreshCheck();
+      const result = await validateRequirements();
+      const complianceResult = await checkCompliance();
+      setCompliance(complianceResult);
+      if (onComplianceUpdate) {
+        onComplianceUpdate(complianceResult);
+      }
     } finally {
       setRefreshing(false);
     }
   };
 
-  const getSeverityIcon = (severity: string) => {
-    switch (severity) {
-      case 'high':
-        return <AlertTriangle className="h-4 w-4 text-red-600" />;
-      case 'medium':
-        return <AlertTriangle className="h-4 w-4 text-orange-600" />;
-      case 'low':
-        return <Info className="h-4 w-4 text-yellow-600" />;
-      default:
-        return <Info className="h-4 w-4 text-blue-600" />;
-    }
-  };
-
-  const getComplianceStatusBadge = (status: string) => {
-    switch (status) {
-      case 'compliant':
-        return <Badge variant="default" className="gap-1">
+  const getComplianceStatusBadge = (isCompliant: boolean) => {
+    if (isCompliant) {
+      return (
+        <Badge variant="default" className="gap-1">
           <CheckCircle2 className="h-3 w-3" />
-          Compliant
-        </Badge>;
-      case 'non-compliant':
-        return <Badge variant="destructive" className="gap-1">
-          <AlertTriangle className="h-3 w-3" />
-          Non-Compliant
-        </Badge>;
-      case 'partial':
-        return <Badge variant="secondary" className="gap-1">
-          <Info className="h-3 w-3" />
-          Partially Compliant
-        </Badge>;
-      default:
-        return <Badge variant="outline">Unknown</Badge>;
+          EVR Ready
+        </Badge>
+      );
     }
+    return (
+      <Badge variant="destructive" className="gap-1">
+        <AlertTriangle className="h-3 w-3" />
+        Not Ready
+      </Badge>
+    );
   };
 
-  const isCompliant = complianceCheck.status === 'compliant';
+  const getProgressPercentage = () => {
+    if (!compliance) return 0;
+    const { totalCompetencies } = compliance.summary;
+    // EVR requires at least 8 competencies
+    return Math.min((totalCompetencies / 8) * 100, 100);
+  };
+
+  const getLevel2Progress = () => {
+    if (!compliance) return 0;
+    const { level2Count } = compliance.summary;
+    // EVR requires at least 2 level 2 competencies
+    return Math.min((level2Count / 2) * 100, 100);
+  };
+
+  if (loading && !compliance) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+            <span className="ml-2 text-muted-foreground">Loading compliance status...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!compliance) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <Alert>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              Unable to load compliance status. Please try again.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { isCompliant, summary, complianceCheck } = compliance;
 
   return (
     <div className="space-y-6">
@@ -87,17 +136,17 @@ export function ComplianceMonitor({
               <div>
                 <CardTitle>EVR Compliance Status</CardTitle>
                 <CardDescription>
-                  Last checked: {format(new Date(complianceCheck.lastChecked), 'PPp')}
+                  Last checked: {format(new Date(complianceCheck.created_at), 'PPp')}
                 </CardDescription>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {getComplianceStatusBadge(complianceCheck.status)}
+              {getComplianceStatusBadge(isCompliant)}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleRefresh}
-                disabled={refreshing}
+                disabled={refreshing || loading}
               >
                 {refreshing ? (
                   <RefreshCw className="h-4 w-4 animate-spin" />
@@ -108,219 +157,174 @@ export function ComplianceMonitor({
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          {isCompliant ? (
-            <Alert className="border-green-500">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-              <AlertTitle>Congratulations!</AlertTitle>
-              <AlertDescription>
-                You have met all EVR requirements and are ready to submit your application.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                The following requirements need to be addressed before you can submit your EVR application:
-              </p>
-              
-              {/* Issues List */}
-              <div className="space-y-3">
-                {complianceCheck.issues.map((issue, index) => (
-                  <div 
-                    key={index}
-                    className="flex items-start gap-3 p-3 border rounded-lg"
-                  >
-                    {getSeverityIcon(issue.severity)}
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{issue.type}</p>
-                      <p className="text-sm text-muted-foreground">{issue.description}</p>
-                      <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                        <strong>Recommendation:</strong> {issue.recommendation}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+        <CardContent className="space-y-4">
+          {/* Progress Overview */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Total Competencies</span>
+                <span className="text-sm text-muted-foreground">
+                  {summary.totalCompetencies} / 8 required
+                </span>
               </div>
+              <Progress value={getProgressPercentage()} className="h-2" />
             </div>
-          )}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Level 2 Competencies</span>
+                <span className="text-sm text-muted-foreground">
+                  {summary.level2Count} / 2 required
+                </span>
+              </div>
+              <Progress value={getLevel2Progress()} className="h-2" />
+            </div>
+          </div>
+
+          {/* Detailed Statistics */}
+          <div className="grid grid-cols-4 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold">{summary.totalCompetencies}</p>
+              <p className="text-xs text-muted-foreground">Total</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-600">{summary.level2Count}</p>
+              <p className="text-xs text-muted-foreground">Level 2</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-blue-600">{summary.level1OrHigherCount}</p>
+              <p className="text-xs text-muted-foreground">Level 1+</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-orange-600">
+                {summary.totalCompetencies - summary.level1OrHigherCount}
+              </p>
+              <p className="text-xs text-muted-foreground">Level 0</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Compliance Requirements Checklist */}
+      {/* Requirements Checklist */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <Target className="h-5 w-5" />
             EVR Requirements Checklist
           </CardTitle>
-          <CardDescription>
-            Track your progress against all EVR requirements
-          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <RequirementItem
-              met={true}
-              title="CPA PEP Core Modules"
-              description="Complete all required CPA PEP core modules"
-            />
-            <RequirementItem
-              met={true}
-              title="30 Months Experience"
-              description="Accumulate 30 months of relevant professional experience"
-            />
-            <RequirementItem
-              met={complianceCheck.issues.filter(i => i.type === 'COMPETENCY_COUNT').length === 0}
-              title="8 Competency Areas"
-              description="Demonstrate proficiency in at least 8 different competency areas"
-            />
-            <RequirementItem
-              met={complianceCheck.issues.filter(i => i.type === 'LEVEL_2_COUNT').length === 0}
-              title="2 Level 2 Competencies"
-              description="Achieve Level 2 proficiency in at least 2 competency areas"
-            />
-            <RequirementItem
-              met={complianceCheck.issues.filter(i => i.type === 'PERT_RESPONSES').length === 0}
-              title="PERT Documentation"
-              description="Complete PERT responses for all demonstrated competencies"
-            />
-            <RequirementItem
-              met={true}
-              title="Mentor Approval"
-              description="Obtain approval from your designated CPA mentor"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Compliance Timeline */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Compliance Timeline
-          </CardTitle>
-          <CardDescription>
-            Important dates and deadlines for your EVR application
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <TimelineItem
-              date="Experience Start Date"
-              value="January 2023"
-              status="completed"
-            />
-            <TimelineItem
-              date="30 Months Completion"
-              value="July 2025"
-              status="in-progress"
-            />
-            <TimelineItem
-              date="Target EVR Submission"
-              value="September 2025"
-              status="upcoming"
-            />
-            <TimelineItem
-              date="Expected CFE Eligibility"
-              value="November 2025"
-              status="upcoming"
-            />
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-6 p-4 bg-muted rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Experience Progress</span>
-              <span className="text-sm font-medium">24 / 30 months</span>
+        <CardContent className="space-y-3">
+          <div className="flex items-start gap-3">
+            {summary.totalCompetencies >= 8 ? (
+              <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+            ) : (
+              <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+            )}
+            <div className="flex-1">
+              <p className="font-medium text-sm">Minimum 8 Competency Areas</p>
+              <p className="text-xs text-muted-foreground">
+                Currently demonstrating {summary.totalCompetencies} competency areas
+              </p>
             </div>
-            <Progress value={80} className="h-2" />
-            <p className="text-xs text-muted-foreground mt-2">
-              6 months remaining to meet experience requirement
-            </p>
+          </div>
+
+          <div className="flex items-start gap-3">
+            {summary.level2Count >= 2 ? (
+              <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+            ) : (
+              <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+            )}
+            <div className="flex-1">
+              <p className="font-medium text-sm">Minimum 2 Level 2 Competencies</p>
+              <p className="text-xs text-muted-foreground">
+                Currently have {summary.level2Count} competencies at Level 2
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            {summary.level1OrHigherCount >= 8 ? (
+              <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+            ) : (
+              <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+            )}
+            <div className="flex-1">
+              <p className="font-medium text-sm">All 8 Areas at Level 1 or Higher</p>
+              <p className="text-xs text-muted-foreground">
+                Currently have {summary.level1OrHigherCount} competencies at Level 1 or higher
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium text-sm">30-Month Experience Window</p>
+              <p className="text-xs text-muted-foreground">
+                Ensure all experiences fall within the required timeframe
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Actions */}
-      <div className="flex gap-3">
-        <Button 
-          onClick={onGenerateReport}
+      {/* Issues and Recommendations */}
+      {summary.missingCompetencies.length > 0 && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Action Required</AlertTitle>
+          <AlertDescription>
+            <ul className="mt-2 space-y-1">
+              {summary.missingCompetencies.map((issue, idx) => (
+                <li key={idx} className="text-sm">• {issue}</li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Recommendations */}
+      {complianceCheck.recommendations && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Recommendations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {JSON.parse(complianceCheck.recommendations).map((rec: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <Award className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-2">
+        {onGenerateReport && (
+          <Button
+            variant="outline"
+            onClick={onGenerateReport}
+            className="gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            Generate Report
+          </Button>
+        )}
+        <Button
+          variant="default"
+          onClick={() => window.print()}
           className="gap-2"
         >
           <Download className="h-4 w-4" />
-          Generate Compliance Report
-        </Button>
-        <Button variant="outline" className="gap-2">
-          <TrendingUp className="h-4 w-4" />
-          View Recommendations
+          Download Summary
         </Button>
       </div>
-    </div>
-  );
-}
-
-interface RequirementItemProps {
-  met: boolean;
-  title: string;
-  description: string;
-}
-
-function RequirementItem({ met, title, description }: RequirementItemProps) {
-  return (
-    <div className="flex items-start gap-3">
-      {met ? (
-        <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-      ) : (
-        <div className="h-5 w-5 rounded-full border-2 border-gray-300 mt-0.5" />
-      )}
-      <div className="flex-1">
-        <p className={`text-sm font-medium ${met ? 'text-green-600' : ''}`}>
-          {title}
-        </p>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-interface TimelineItemProps {
-  date: string;
-  value: string;
-  status: 'completed' | 'in-progress' | 'upcoming';
-}
-
-function TimelineItem({ date, value, status }: TimelineItemProps) {
-  const getStatusIcon = () => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle2 className="h-5 w-5 text-green-600" />;
-      case 'in-progress':
-        return <Clock className="h-5 w-5 text-blue-600" />;
-      case 'upcoming':
-        return <div className="h-5 w-5 rounded-full border-2 border-gray-300" />;
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-3">
-      {getStatusIcon()}
-      <div className="flex-1 flex items-center justify-between">
-        <span className="text-sm">{date}</span>
-        <span className="text-sm font-medium">{value}</span>
-      </div>
-    </div>
-  );
-}
-
-// Note: We need to import Progress from the UI components
-function Progress({ value, className }: { value: number; className?: string }) {
-  return (
-    <div className={`h-2 w-full bg-gray-200 rounded-full overflow-hidden ${className}`}>
-      <div 
-        className="h-full bg-primary transition-all"
-        style={{ width: `${value}%` }}
-      />
     </div>
   );
 }
