@@ -12,6 +12,10 @@ import Chat from '@/pages/Chat'
 import Experiences from '@/pages/Experiences'
 import Profile from '@/pages/Profile'
 import CPAPert from '@/pages/CPAPert'
+import CPAPertMapping from '@/pages/CPAPertMapping'
+import CPAPertWriter from '@/pages/CPAPertWriter'
+import CPAPertCompliance from '@/pages/CPAPertCompliance'
+import CPAPertHistory from '@/pages/CPAPertHistory'
 import PertResponseDetail from '@/pages/PertResponseDetail'
 import CPAPertProgress from '@/pages/CPAPertProgress'
 
@@ -54,6 +58,10 @@ function App() {
             <Route path="chat" element={<Chat />} />
             <Route path="experiences" element={<Experiences />} />
             <Route path="cpa-pert" element={<CPAPert />} />
+            <Route path="cpa-pert/mapping" element={<CPAPertMapping />} />
+            <Route path="cpa-pert/write" element={<CPAPertWriter />} />
+            <Route path="cpa-pert/compliance" element={<CPAPertCompliance />} />
+            <Route path="cpa-pert/history" element={<CPAPertHistory />} />
             <Route path="cpa-pert/response/:responseId" element={<PertResponseDetail />} />
             <Route path="cpa-pert/progress" element={<CPAPertProgress />} />
             <Route path="profile" element={<Profile />} />

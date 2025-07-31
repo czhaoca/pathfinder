@@ -1,5 +1,12 @@
 import api from '@/lib/api';
-import { Experience, ExperienceFilters, ExperienceStats } from '@/types/experience';
+import { 
+  Experience, 
+  ExperienceFilters, 
+  ExperienceStats, 
+  ExperienceTemplate, 
+  ExtractedSkill,
+  BulkExperienceUpdate 
+} from '@/types/experience';
 
 class ExperienceService {
   async getExperiences(filters?: ExperienceFilters): Promise<{ experiences: Experience[], count: number }> {
@@ -35,6 +42,28 @@ class ExperienceService {
 
   async getStats(): Promise<ExperienceStats> {
     return api.get('/experiences/stats');
+  }
+
+  async bulkCreateExperiences(experiences: Partial<Experience>[]): Promise<{ message: string, experiences: Experience[] }> {
+    return api.post('/experiences/bulk', { experiences });
+  }
+
+  async bulkUpdateExperiences(updates: BulkExperienceUpdate[]): Promise<{ message: string, experiences: Experience[] }> {
+    return api.put('/experiences/bulk', { updates });
+  }
+
+  async duplicateExperience(id: string, modifications?: Partial<Experience>): Promise<{ message: string, experience: Experience }> {
+    return api.post(`/experiences/${id}/duplicate`, { modifications });
+  }
+
+  async extractSkills(id: string, regenerate = false): Promise<{ message: string, skills: ExtractedSkill[] }> {
+    return api.post(`/experiences/${id}/extract-skills`, { regenerate });
+  }
+
+  async getTemplates(category?: string): Promise<{ templates: ExperienceTemplate[], count: number }> {
+    const params = new URLSearchParams();
+    if (category) params.append('category', category);
+    return api.get(`/experiences/templates?${params.toString()}`);
   }
 }
 

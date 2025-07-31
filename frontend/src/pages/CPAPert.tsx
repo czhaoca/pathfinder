@@ -1,112 +1,142 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { ErrorMessage } from '@/components/common/ErrorMessage';
-import { cpaPertService } from '@/services/cpaPertService';
+import { ComplianceMonitor } from '@/components/cpaPert/ComplianceMonitor';
+import { ProgressTracker } from '@/components/cpaPert/ProgressTracker';
+import { useCPAPert } from '@/hooks/useCPAPert';
+import { useExperiences } from '@/hooks/useExperiences';
+import { ComplianceResult, PertResponse } from '@/types/cpaPert';
 import { 
-  CheckCircle2, 
-  AlertCircle, 
   FileText, 
   BarChart3, 
   Target,
   TrendingUp,
   BookOpen,
-  Award
+  Award,
+  Plus,
+  ArrowRight,
+  Sparkles,
+  Shield
 } from 'lucide-react';
 
 export default function CPAPert() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [complianceData, setComplianceData] = useState<any>(null);
-  const [competencyReport, setCompetencyReport] = useState<any>(null);
-  const [recentResponses, setRecentResponses] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const { 
+    checkCompliance, 
+    getCompetencyReport, 
+    getPERTResponses,
+    loading,
+    error 
+  } = useCPAPert();
+  const { experiences } = useExperiences();
+  
+  const [compliance, setCompliance] = useState<ComplianceResult | null>(null);
+  const [recentResponses, setRecentResponses] = useState<PertResponse[]>([]);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    fetchDashboardData();
+    loadDashboardData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const loadDashboardData = async () => {
     try {
-      setLoading(true);
-      setError(null);
-
-      const [compliance, report, responses] = await Promise.all([
-        cpaPertService.getComplianceCheck(),
-        cpaPertService.getCompetencyReport(),
-        cpaPertService.getResponses({ limit: 5 })
+      const [complianceData, responses] = await Promise.all([
+        checkCompliance(),
+        getPERTResponses(5)
       ]);
-
-      setComplianceData(compliance);
-      setCompetencyReport(report);
-      setRecentResponses(responses.responses || []);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load CPA PERT dashboard');
-    } finally {
-      setLoading(false);
+      
+      setCompliance(complianceData);
+      setRecentResponses(responses || []);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
     }
   };
 
-  if (loading) return <LoadingSpinner message="Loading CPA PERT dashboard..." />;
-  if (error) return <ErrorMessage message={error} onRetry={fetchDashboardData} />;
+  const handleComplianceUpdate = (newCompliance: ComplianceResult) => {
+    setCompliance(newCompliance);
+  };
 
-  const isCompliant = complianceData?.status === 'compliant';
-  const summary = competencyReport?.summary || {};
+  const handleGenerateReport = async () => {
+    try {
+      const report = await getCompetencyReport();
+      // TODO: Implement report download/display
+      console.log('Generated report:', report);
+    } catch (err) {
+      console.error('Failed to generate report:', err);
+    }
+  };
+
+  const navigateToExperience = (experienceId?: string) => {
+    if (experienceId) {
+      navigate(`/cpa-pert/experience/${experienceId}`);
+    } else {
+      navigate('/experiences');
+    }
+  };
+
+  const navigateToResponse = (responseId: string) => {
+    navigate(`/cpa-pert/response/${responseId}`);
+  };
+
+  if (loading && !compliance) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner message="Loading CPA PERT dashboard..." />
+      </div>
+    );
+  }
+
+  if (error && !compliance) {
+    return (
+      <div className="container mx-auto p-6">
+        <ErrorMessage message={error} onRetry={loadDashboardData} />
+      </div>
+    );
+  }
+
+  const isCompliant = compliance?.isCompliant || false;
+  const summary = compliance?.summary || {
+    totalCompetencies: 0,
+    level2Count: 0,
+    level1OrHigherCount: 0,
+    missingCompetencies: []
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">CPA PERT Management</h1>
-        <p className="text-muted-foreground mt-2">
-          Track your progress towards CPA certification through the EVR route
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">CPA PERT Management</h1>
+          <p className="text-muted-foreground mt-2">
+            Track your progress towards CPA certification through the EVR route
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            onClick={() => navigate('/cpa-pert/framework')}
+            className="gap-2"
+          >
+            <BookOpen className="h-4 w-4" />
+            Framework
+          </Button>
+          <Button 
+            onClick={() => navigate('/cpa-pert/new')}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            New Response
+          </Button>
+        </div>
       </div>
 
-      {/* Compliance Status Card */}
-      <Card className={isCompliant ? 'border-green-500' : 'border-orange-500'}>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              {isCompliant ? (
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
-              ) : (
-                <AlertCircle className="h-5 w-5 text-orange-600" />
-              )}
-              EVR Compliance Status
-            </CardTitle>
-            <Badge variant={isCompliant ? 'default' : 'secondary'}>
-              {isCompliant ? 'Compliant' : 'In Progress'}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {complianceData?.issues && complianceData.issues.length > 0 ? (
-            <div className="space-y-2">
-              {complianceData.issues.map((issue: any, index: number) => (
-                <div key={index} className="flex items-start gap-2">
-                  <AlertCircle className={`h-4 w-4 mt-0.5 ${
-                    issue.severity === 'high' ? 'text-red-600' : 
-                    issue.severity === 'medium' ? 'text-orange-600' : 
-                    'text-yellow-600'
-                  }`} />
-                  <div>
-                    <p className="text-sm font-medium">{issue.description}</p>
-                    <p className="text-sm text-muted-foreground">{issue.recommendation}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-green-600">
-              All EVR requirements are currently met. Keep up the great work!
-            </p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Progress Overview */}
+      {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -114,9 +144,9 @@ export default function CPAPert() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summary.totalCompetencies || 0}/8</div>
+            <div className="text-2xl font-bold">{summary.totalCompetencies}/8</div>
             <p className="text-xs text-muted-foreground">
-              Minimum 8 required
+              {8 - summary.totalCompetencies} more needed
             </p>
           </CardContent>
         </Card>
@@ -127,9 +157,9 @@ export default function CPAPert() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summary.level2Achieved || 0}/2</div>
+            <div className="text-2xl font-bold">{summary.level2Count}/2</div>
             <p className="text-xs text-muted-foreground">
-              Minimum 2 required
+              {Math.max(0, 2 - summary.level2Count)} more needed
             </p>
           </CardContent>
         </Card>
@@ -140,9 +170,9 @@ export default function CPAPert() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summary.totalPERTResponses || 0}</div>
+            <div className="text-2xl font-bold">{recentResponses.length}</div>
             <p className="text-xs text-muted-foreground">
-              Total generated
+              Recent responses
             </p>
           </CardContent>
         </Card>
@@ -150,11 +180,18 @@ export default function CPAPert() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">EVR Status</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {summary.evrCompliant ? 'Ready' : 'Not Ready'}
+            <div className="flex items-center gap-2">
+              <div className="text-2xl font-bold">
+                {isCompliant ? 'Ready' : 'Not Ready'}
+              </div>
+              {isCompliant ? (
+                <Award className="h-5 w-5 text-green-600" />
+              ) : (
+                <Sparkles className="h-5 w-5 text-orange-600" />
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
               For submission
@@ -163,116 +200,147 @@ export default function CPAPert() {
         </Card>
       </div>
 
-      {/* Competency Coverage */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Competency Coverage
-          </CardTitle>
-          <CardDescription>
-            Your progress across CPA competency areas
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {competencyReport?.competencyCoverage && competencyReport.competencyCoverage.length > 0 ? (
-            <div className="space-y-3">
-              {competencyReport.competencyCoverage.map((comp: any) => (
-                <div key={comp.competencyId} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{comp.competencyName}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {comp.experienceCount} experience{comp.experienceCount !== 1 ? 's' : ''} • 
-                      Level {comp.averageProficiency}
-                    </p>
-                  </div>
-                  <Badge variant={
-                    comp.averageProficiency === '2' ? 'default' :
-                    comp.averageProficiency === '1' ? 'secondary' :
-                    'outline'
-                  }>
-                    Level {comp.averageProficiency}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">
-                No competency assessments yet. Start by analyzing your experiences.
-              </p>
-              <Button className="mt-4" onClick={() => window.location.href = '/experiences'}>
-                Go to Experiences
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Main Content Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="progress">Progress</TabsTrigger>
+        </TabsList>
 
-      {/* Recent PERT Responses */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Recent PERT Responses</CardTitle>
-              <CardDescription>
-                Your latest generated PERT responses
-              </CardDescription>
-            </div>
-            <Button variant="outline" size="sm">
-              View All
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {recentResponses.length > 0 ? (
-            <div className="space-y-3">
-              {recentResponses.map((response: any) => (
-                <div key={response.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <p className="text-sm font-medium">
-                      {response.competencies?.[0] || 'Competency'}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {response.wordCount} characters • Level {response.proficiencyLevel || '1'}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={response.status === 'final' ? 'default' : 'secondary'}>
-                      {response.status}
-                    </Badge>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => window.location.href = `/cpa-pert/response/${response.id}`}
+        <TabsContent value="overview" className="space-y-4">
+          {/* Recent PERT Responses */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Recent PERT Responses</CardTitle>
+                  <CardDescription>
+                    Your latest generated PERT responses
+                  </CardDescription>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/cpa-pert/responses')}
+                >
+                  View All
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {recentResponses.length > 0 ? (
+                <div className="space-y-3">
+                  {recentResponses.map((response) => (
+                    <div 
+                      key={response.response_id} 
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => navigateToResponse(response.response_id)}
                     >
-                      Edit
-                    </Button>
-                  </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {response.sub_code} - {response.sub_name || 'Competency'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {response.character_count} characters • Level {response.proficiency_level}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={response.is_current === 1 ? 'default' : 'secondary'}>
+                          {response.is_current === 1 ? 'Current' : 'Historical'}
+                        </Badge>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              No PERT responses generated yet
-            </p>
-          )}
-        </CardContent>
-      </Card>
+              ) : (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No PERT responses generated yet
+                  </p>
+                  <Button onClick={() => navigateToExperience()}>
+                    Analyze Experiences
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-      {/* Action Buttons */}
-      <div className="flex gap-4">
-        <Button onClick={() => window.location.href = '/experiences'}>
-          Analyze New Experience
-        </Button>
-        <Button variant="outline" onClick={() => window.location.href = '/cpa-pert/progress'}>
-          View Progress & Compliance
-        </Button>
-        <Button variant="outline">
-          View Competency Framework
-        </Button>
-      </div>
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>
+                Common tasks and workflows
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              <Button 
+                variant="outline" 
+                className="justify-start gap-2 h-auto p-4"
+                onClick={() => navigateToExperience()}
+              >
+                <BarChart3 className="h-5 w-5" />
+                <div className="text-left">
+                  <p className="font-medium">Analyze Experience</p>
+                  <p className="text-xs text-muted-foreground">Map experiences to competencies</p>
+                </div>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="justify-start gap-2 h-auto p-4"
+                onClick={() => navigate('/cpa-pert/new')}
+              >
+                <FileText className="h-5 w-5" />
+                <div className="text-left">
+                  <p className="font-medium">Generate PERT Response</p>
+                  <p className="text-xs text-muted-foreground">Create new PERT narrative</p>
+                </div>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="justify-start gap-2 h-auto p-4"
+                onClick={() => setActiveTab('compliance')}
+              >
+                <Shield className="h-5 w-5" />
+                <div className="text-left">
+                  <p className="font-medium">Check Compliance</p>
+                  <p className="text-xs text-muted-foreground">Review EVR requirements</p>
+                </div>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="justify-start gap-2 h-auto p-4"
+                onClick={handleGenerateReport}
+              >
+                <Award className="h-5 w-5" />
+                <div className="text-left">
+                  <p className="font-medium">Generate Report</p>
+                  <p className="text-xs text-muted-foreground">Download progress summary</p>
+                </div>
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="compliance">
+          <ComplianceMonitor 
+            onComplianceUpdate={handleComplianceUpdate}
+            onGenerateReport={handleGenerateReport}
+          />
+        </TabsContent>
+
+        <TabsContent value="progress">
+          <ProgressTracker 
+            onSelectCompetency={(competencyId) => navigate(`/cpa-pert/competency/${competencyId}`)}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

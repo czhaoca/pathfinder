@@ -292,6 +292,82 @@ class ChatRepository {
   }
 
   /**
+   * Get user's experience count
+   */
+  async getUserExperienceCount(userId) {
+    try {
+      const result = await this.database.executeQuery(
+        `SELECT COUNT(*) as count 
+         FROM experiences 
+         WHERE user_id = :userId 
+         AND status = 'active'`,
+        { userId }
+      );
+      
+      return result.rows[0]?.count || 0;
+    } catch (error) {
+      logger.error('Failed to get user experience count', { error: error.message, userId });
+      return 0;
+    }
+  }
+
+  /**
+   * Get user's top skills
+   */
+  async getUserTopSkills(userId, limit = 5) {
+    try {
+      const result = await this.database.executeQuery(
+        `SELECT skill_name, COUNT(*) as frequency
+         FROM (
+           SELECT TRIM(value) as skill_name 
+           FROM experiences,
+           JSON_TABLE(skills, '$[*]' COLUMNS (value VARCHAR2(100) PATH '$')) jt
+           WHERE user_id = :userId 
+           AND status = 'active'
+         )
+         GROUP BY skill_name
+         ORDER BY frequency DESC
+         FETCH FIRST :limit ROWS ONLY`,
+        { userId, limit }
+      );
+      
+      return result.rows.map(row => row.skill_name);
+    } catch (error) {
+      logger.error('Failed to get user top skills', { error: error.message, userId });
+      // Fallback for databases without JSON_TABLE support
+      try {
+        const experiences = await this.database.executeQuery(
+          `SELECT skills FROM experiences 
+           WHERE user_id = :userId 
+           AND status = 'active'`,
+          { userId }
+        );
+        
+        const skillCounts = {};
+        experiences.rows.forEach(row => {
+          if (row.skills) {
+            try {
+              const skills = JSON.parse(row.skills);
+              skills.forEach(skill => {
+                skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+              });
+            } catch (e) {
+              // Skip invalid JSON
+            }
+          }
+        });
+        
+        return Object.entries(skillCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, limit)
+          .map(([skill]) => skill);
+      } catch (fallbackError) {
+        return [];
+      }
+    }
+  }
+
+  /**
    * Estimate token count for a message
    * Rough estimate: ~4 characters per token
    */

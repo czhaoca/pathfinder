@@ -47,3 +47,23 @@ export interface ExperienceStats {
   latestExperience?: Date
   totalMonthsExperience?: number
 }
+
+export interface ExperienceTemplate {
+  id: string
+  category: string
+  title: string
+  description: string
+  suggestedSkills: string[]
+  template: Partial<Experience>
+}
+
+export interface ExtractedSkill {
+  name: string
+  category: string
+  confidence: number
+}
+
+export interface BulkExperienceUpdate {
+  id: string
+  data: Partial<Experience>
+}

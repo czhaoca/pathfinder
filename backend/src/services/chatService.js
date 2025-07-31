@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const logger = require('../utils/logger');
+const OpenAIChatService = require('./openaiChatService');
 
 class ChatService {
   constructor(userRepository, auditService, chatRepository, mcpClient = null) {
@@ -8,6 +9,7 @@ class ChatService {
     this.chatRepository = chatRepository;
     this.mcpClient = mcpClient;
     this.conversationCache = new Map();
+    this.openaiService = new OpenAIChatService();
   }
 
   async sendMessage(userId, message, conversationId = null) {
@@ -46,8 +48,8 @@ class ChatService {
       if (this.mcpClient) {
         response = await this.processWithMCP(user, message, history);
       } else {
-        // Fallback response when MCP is not available
-        response = await this.generateFallbackResponse(message, user);
+        // Use OpenAI when MCP is not available
+        response = await this.generateOpenAIResponse(message, user, history);
       }
 
       // Add assistant response to database
@@ -169,15 +171,35 @@ class ChatService {
           onError: callbacks.onError
         });
       } else {
-        // Simulate streaming for fallback response
-        const response = await this.generateFallbackResponse(message, user);
-        await this.simulateStreaming(response.content, callbacks.onChunk);
-        this.completeStreamingResponse(
-          conversationId, 
-          response.content, 
-          history, 
-          userId, 
-          callbacks
+        // Use OpenAI streaming when MCP is not available
+        const userContext = {
+          name: `${user.firstName} ${user.lastName}`.trim(),
+          experienceCount: await this.chatRepository.getUserExperienceCount(user.userId),
+          primarySkills: await this.chatRepository.getUserTopSkills(user.userId, 5)
+        };
+
+        const conversationHistory = history.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }));
+
+        await this.openaiService.generateStreamingResponse(
+          message,
+          conversationHistory,
+          userContext,
+          {
+            onChunk: callbacks.onChunk,
+            onComplete: (response) => {
+              this.completeStreamingResponse(
+                conversationId,
+                response.content,
+                history,
+                userId,
+                callbacks
+              ).catch(err => callbacks.onError(err));
+            },
+            onError: callbacks.onError
+          }
         );
       }
     } catch (error) {
@@ -251,6 +273,36 @@ class ChatService {
       conversationId,
       message: assistantMessage
     });
+  }
+
+  async generateOpenAIResponse(message, user, history = []) {
+    try {
+      // Get user context for better responses
+      const userContext = {
+        name: `${user.firstName} ${user.lastName}`.trim(),
+        experienceCount: await this.chatRepository.getUserExperienceCount(user.userId),
+        primarySkills: await this.chatRepository.getUserTopSkills(user.userId, 5)
+      };
+
+      // Convert history to OpenAI format
+      const conversationHistory = history.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      // Generate response using OpenAI
+      const response = await this.openaiService.generateResponse(
+        message,
+        conversationHistory,
+        userContext
+      );
+
+      return response;
+    } catch (error) {
+      logger.error('OpenAI response generation failed', { error: error.message });
+      // Fall back to rule-based response
+      return this.generateFallbackResponse(message, user);
+    }
   }
 
   async generateFallbackResponse(message, user) {

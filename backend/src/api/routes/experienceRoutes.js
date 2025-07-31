@@ -15,6 +15,20 @@ function createExperienceRoutes(container) {
     )
   );
 
+  // Stats route must come before /:id to avoid route conflicts
+  router.get('/stats',
+    ErrorHandler.asyncWrapper((req, res, next) => 
+      experienceController.getExperienceStats(req, res, next)
+    )
+  );
+
+  // Templates route must come before /:id to avoid route conflicts
+  router.get('/templates',
+    ErrorHandler.asyncWrapper((req, res, next) => 
+      experienceController.getExperienceTemplates(req, res, next)
+    )
+  );
+
   router.post('/',
     ErrorHandler.asyncWrapper((req, res, next) => 
       experienceController.createExperience(req, res, next)
@@ -36,6 +50,32 @@ function createExperienceRoutes(container) {
   router.delete('/:id',
     ErrorHandler.asyncWrapper((req, res, next) => 
       experienceController.deleteExperience(req, res, next)
+    )
+  );
+
+  // Bulk operations
+  router.post('/bulk',
+    ErrorHandler.asyncWrapper((req, res, next) => 
+      experienceController.bulkCreateExperiences(req, res, next)
+    )
+  );
+
+  router.put('/bulk',
+    ErrorHandler.asyncWrapper((req, res, next) => 
+      experienceController.bulkUpdateExperiences(req, res, next)
+    )
+  );
+
+  // Experience-specific operations (must be after generic routes)
+  router.post('/:id/duplicate',
+    ErrorHandler.asyncWrapper((req, res, next) => 
+      experienceController.duplicateExperience(req, res, next)
+    )
+  );
+
+  router.post('/:id/extract-skills',
+    ErrorHandler.asyncWrapper((req, res, next) => 
+      experienceController.extractSkills(req, res, next)
     )
   );
 

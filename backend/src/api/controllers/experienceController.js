@@ -131,6 +131,173 @@ class ExperienceController {
       next(error);
     }
   }
+
+  async bulkCreateExperiences(req, res, next) {
+    try {
+      const { experiences } = req.body;
+      
+      if (!Array.isArray(experiences) || experiences.length === 0) {
+        return res.status(400).json({ 
+          error: 'Invalid request', 
+          details: 'Experiences must be a non-empty array' 
+        });
+      }
+
+      // Validate each experience
+      const validationErrors = [];
+      const validExperiences = [];
+      
+      experiences.forEach((exp, index) => {
+        const validation = validateExperienceData(exp);
+        if (validation.error) {
+          validationErrors.push({
+            index,
+            errors: validation.error.details
+          });
+        } else {
+          validExperiences.push(validation.value);
+        }
+      });
+
+      if (validationErrors.length > 0) {
+        return res.status(400).json({
+          error: 'Validation failed for some experiences',
+          details: validationErrors
+        });
+      }
+
+      const createdExperiences = await this.experienceService.bulkCreateExperiences(
+        req.user.userId,
+        validExperiences
+      );
+
+      res.status(201).json({
+        message: `${createdExperiences.length} experiences created successfully`,
+        experiences: createdExperiences
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async bulkUpdateExperiences(req, res, next) {
+    try {
+      const { updates } = req.body;
+      
+      if (!Array.isArray(updates) || updates.length === 0) {
+        return res.status(400).json({ 
+          error: 'Invalid request', 
+          details: 'Updates must be a non-empty array' 
+        });
+      }
+
+      // Validate each update
+      const validationErrors = [];
+      const validUpdates = [];
+      
+      updates.forEach((update, index) => {
+        if (!update.id) {
+          validationErrors.push({
+            index,
+            errors: [{ message: 'Experience ID is required' }]
+          });
+        } else {
+          const validation = validateExperienceData(update.data, true);
+          if (validation.error) {
+            validationErrors.push({
+              index,
+              errors: validation.error.details
+            });
+          } else {
+            validUpdates.push({
+              id: update.id,
+              data: validation.value
+            });
+          }
+        }
+      });
+
+      if (validationErrors.length > 0) {
+        return res.status(400).json({
+          error: 'Validation failed for some updates',
+          details: validationErrors
+        });
+      }
+
+      const updatedExperiences = await this.experienceService.bulkUpdateExperiences(
+        req.user.userId,
+        validUpdates
+      );
+
+      res.json({
+        message: `${updatedExperiences.length} experiences updated successfully`,
+        experiences: updatedExperiences
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async duplicateExperience(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { modifications } = req.body;
+
+      const duplicatedExperience = await this.experienceService.duplicateExperience(
+        req.user.userId,
+        id,
+        modifications
+      );
+
+      res.status(201).json({
+        message: 'Experience duplicated successfully',
+        experience: duplicatedExperience
+      });
+    } catch (error) {
+      if (error.code === 'NOT_FOUND') {
+        return res.status(404).json({ error: error.message });
+      }
+      next(error);
+    }
+  }
+
+  async extractSkills(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { regenerate = false } = req.body;
+
+      const skills = await this.experienceService.extractSkills(
+        req.user.userId,
+        id,
+        regenerate
+      );
+
+      res.json({
+        message: 'Skills extracted successfully',
+        skills
+      });
+    } catch (error) {
+      if (error.code === 'NOT_FOUND') {
+        return res.status(404).json({ error: error.message });
+      }
+      next(error);
+    }
+  }
+
+  async getExperienceTemplates(req, res, next) {
+    try {
+      const { category } = req.query;
+      
+      const templates = await this.experienceService.getExperienceTemplates(category);
+
+      res.json({
+        templates,
+        count: templates.length
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = ExperienceController;

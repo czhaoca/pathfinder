@@ -14,6 +14,7 @@ const UserService = require('./services/userService');
 const ExperienceService = require('./services/experienceService');
 const ChatService = require('./services/chatService');
 const CPAPertService = require('./services/cpaPertService');
+const OpenAIChatService = require('./services/openaiChatService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -56,6 +57,13 @@ class Container {
 
       // Register services
       this.register('auditService', () => new AuditService(this.get('auditRepository')));
+      this.register('openaiService', () => {
+        // Only create OpenAI service if API key is available
+        if (process.env.OPENAI_API_KEY) {
+          return new OpenAIChatService();
+        }
+        return null;
+      }, { singleton: true });
       this.register('authService', () => new AuthService(
         this.get('userRepository'),
         this.get('sessionRepository'),
@@ -69,7 +77,8 @@ class Container {
       this.register('experienceService', () => new ExperienceService(
         this.get('experienceRepository'),
         this.get('userRepository'),
-        this.get('auditService')
+        this.get('auditService'),
+        this.get('openaiService')
       ));
       this.register('chatService', () => new ChatService(
         this.get('userRepository'),
