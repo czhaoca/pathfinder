@@ -8,7 +8,8 @@ import {
   LogOut,
   Menu,
   X,
-  FileText
+  FileText,
+  BarChart3
 } from 'lucide-react'
 import { authStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Career Chat', href: '/chat', icon: MessageSquare },
   { name: 'Experiences', href: '/experiences', icon: Briefcase },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'CPA PERT', href: '/cpa-pert', icon: FileText },
   { name: 'Profile', href: '/profile', icon: User },
 ]

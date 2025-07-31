@@ -18,6 +18,7 @@ import CPAPertCompliance from '@/pages/CPAPertCompliance'
 import CPAPertHistory from '@/pages/CPAPertHistory'
 import PertResponseDetail from '@/pages/PertResponseDetail'
 import CPAPertProgress from '@/pages/CPAPertProgress'
+import AnalyticsDashboard from '@/pages/AnalyticsDashboard'
 
 // Layouts
 import AuthLayout from '@/components/layout/AuthLayout'
@@ -57,6 +58,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="chat" element={<Chat />} />
             <Route path="experiences" element={<Experiences />} />
+            <Route path="analytics" element={<AnalyticsDashboard />} />
             <Route path="cpa-pert" element={<CPAPert />} />
             <Route path="cpa-pert/mapping" element={<CPAPertMapping />} />
             <Route path="cpa-pert/write" element={<CPAPertWriter />} />

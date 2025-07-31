@@ -13,6 +13,7 @@ const createProfileRoutes = require('./routes/profileRoutes');
 const createExperienceRoutes = require('./routes/experienceRoutes');
 const createChatRoutes = require('./routes/chatRoutes');
 const createCPAPertRoutes = require('./routes/cpaPertRoutes');
+const createAnalyticsRoutes = require('./routes/analyticsRoutes');
 
 class App {
   constructor() {
@@ -127,6 +128,7 @@ class App {
     this.app.use('/api/experiences', createExperienceRoutes(container));
     this.app.use('/api/chat', createChatRoutes(container));
     this.app.use('/api/cpa-pert', createCPAPertRoutes(container));
+    this.app.use('/api/analytics', createAnalyticsRoutes(container));
 
     // API documentation
     this.app.get('/api', (req, res) => {
@@ -172,6 +174,16 @@ class App {
             deleteResponse: 'DELETE /api/cpa-pert/response/:responseId',
             batchAnalyze: 'POST /api/cpa-pert/batch/analyze',
             batchGenerate: 'POST /api/cpa-pert/batch/generate'
+          },
+          analytics: {
+            skillsProgression: 'GET /api/analytics/skills-progression',
+            careerTrajectory: 'GET /api/analytics/career-trajectory',
+            summary: 'GET /api/analytics/summary',
+            impactScores: 'GET /api/analytics/impact-scores',
+            insights: 'GET /api/analytics/insights',
+            export: 'GET /api/analytics/export',
+            quantifyAchievements: 'POST /api/analytics/experiences/:experienceId/quantify',
+            skillRecommendations: 'POST /api/analytics/skill-recommendations'
           }
         }
       });
