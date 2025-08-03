@@ -17,6 +17,9 @@ const CPAPertService = require('./services/cpaPertService');
 const OpenAIChatService = require('./services/openaiChatService');
 const AnalyticsService = require('./services/analyticsService');
 const ResumeService = require('./services/resumeService');
+const CareerPathService = require('./services/careerPathService');
+const SkillsGapService = require('./services/skillsGapService');
+const LearningService = require('./services/learningService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -35,6 +38,7 @@ const ChatController = require('./api/controllers/chatController');
 const CPAPertController = require('./api/controllers/cpaPertController');
 const AnalyticsController = require('./api/controllers/analyticsController');
 const ResumeController = require('./api/controllers/resumeController');
+const CareerPathController = require('./api/controllers/careerPathController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
@@ -111,6 +115,19 @@ class Container {
         this.get('auditService'),
         this.get('openaiService')
       ));
+      
+      // Career Path services
+      this.register('databaseService', () => this.get('database'));
+      this.register('careerPathService', () => new CareerPathService(
+        this.get('databaseService')
+      ));
+      this.register('skillsGapService', () => new SkillsGapService(
+        this.get('databaseService'),
+        this.get('careerPathService')
+      ));
+      this.register('learningService', () => new LearningService(
+        this.get('databaseService')
+      ));
 
       // Register middleware
       this.register('authMiddleware', () => new AuthMiddleware(this.get('authService')));
@@ -129,6 +146,11 @@ class Container {
       ));
       this.register('resumeController', () => new ResumeController(
         this.get('resumeService')
+      ));
+      this.register('careerPathController', () => new CareerPathController(
+        this.get('careerPathService'),
+        this.get('skillsGapService'),
+        this.get('learningService')
       ));
 
       logger.info('Dependency container initialized');

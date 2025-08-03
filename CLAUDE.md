@@ -324,7 +324,7 @@ npm run mcp:prod
 ```
 
 **Key Features:**
-1. **Table Prefixing**: All tables use `cn_` prefix for shared database coexistence
+1. **Table Prefixing**: All tables use `pf_` prefix for shared database coexistence
 2. **Environment Isolation**: Separate dev/prod database connections and schemas
 3. **User-Specific Schemas**: Complete data isolation with user-prefixed table names
 4. **Access Control**: Role-based security with Row Level Security (RLS) policies
