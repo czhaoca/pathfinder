@@ -17,6 +17,7 @@ const createAnalyticsRoutes = require('./routes/analyticsRoutes');
 const createResumeRoutes = require('./routes/resumeRoutes');
 const careerPathRoutes = require('./routes/careerPathRoutes');
 const networkingRoutes = require('./routes/networkingRoutes');
+const createJobSearchRoutes = require('./routes/jobSearchRoutes');
 
 class App {
   constructor() {
@@ -135,6 +136,7 @@ class App {
     this.app.use('/api/resume', createResumeRoutes(container));
     this.app.use('/api', careerPathRoutes);
     this.app.use('/api', networkingRoutes);
+    this.app.use('/api', createJobSearchRoutes(container));
 
     // API documentation
     this.app.get('/api', (req, res) => {
@@ -198,6 +200,27 @@ class App {
             generateVersions: 'POST /api/resume/generate-versions',
             atsOptimization: 'GET /api/resume/ats-optimization',
             updateSection: 'PUT /api/resume/section/:section'
+          },
+          jobSearch: {
+            search: 'GET /api/jobs/search',
+            recommended: 'GET /api/jobs/recommended',
+            details: 'GET /api/jobs/:jobId',
+            matchScores: 'POST /api/jobs/match-scores',
+            import: 'POST /api/jobs/import',
+            preferences: 'GET /api/job-preferences',
+            updatePreferences: 'PUT /api/job-preferences',
+            savedSearches: 'GET /api/saved-searches',
+            applications: 'GET /api/applications',
+            applicationDetails: 'GET /api/applications/:applicationId',
+            createApplication: 'POST /api/applications',
+            applicationTimeline: 'GET /api/applications/:applicationId/timeline',
+            applicationStats: 'GET /api/applications/stats',
+            interviewQuestions: 'GET /api/interview-prep/questions',
+            interviewPrep: 'GET /api/interview-prep/application/:applicationId',
+            interviewResponse: 'POST /api/interview-prep/responses',
+            interviewInsights: 'GET /api/interview-prep/insights',
+            companies: 'GET /api/companies/search',
+            companyDetails: 'GET /api/companies/:companyId'
           }
         }
       });

@@ -24,6 +24,11 @@ const ContactService = require('./services/contactService');
 const InteractionService = require('./services/interactionService');
 const ReminderService = require('./services/reminderService');
 const NetworkingService = require('./services/networkingService');
+const JobSearchService = require('./services/jobSearchService');
+const JobMatchingService = require('./services/jobMatchingService');
+const ApplicationService = require('./services/applicationService');
+const InterviewPrepService = require('./services/interviewPrepService');
+const CompanyService = require('./services/companyService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -44,6 +49,7 @@ const AnalyticsController = require('./api/controllers/analyticsController');
 const ResumeController = require('./api/controllers/resumeController');
 const CareerPathController = require('./api/controllers/careerPathController');
 const NetworkingController = require('./api/controllers/networkingController');
+const JobSearchController = require('./api/controllers/jobSearchController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
@@ -153,6 +159,32 @@ class Container {
         this.get('contactService'),
         this.get('openaiService')
       ));
+      
+      // Job Search services
+      this.register('companyService', () => new CompanyService(
+        this.get('databaseService')
+      ));
+      this.register('profileService', () => this.get('userService'));
+      this.register('jobSearchService', () => new JobSearchService(
+        this.get('databaseService'),
+        this.get('openaiService'),
+        this.get('profileService')
+      ));
+      this.register('jobMatchingService', () => new JobMatchingService(
+        this.get('databaseService'),
+        this.get('profileService'),
+        this.get('experienceService')
+      ));
+      this.register('applicationService', () => new ApplicationService(
+        this.get('databaseService'),
+        this.get('auditService'),
+        this.get('resumeService')
+      ));
+      this.register('interviewPrepService', () => new InterviewPrepService(
+        this.get('databaseService'),
+        this.get('openaiService'),
+        this.get('profileService')
+      ));
 
       // Register middleware
       this.register('authMiddleware', () => new AuthMiddleware(this.get('authService')));
@@ -182,6 +214,13 @@ class Container {
         this.get('interactionService'),
         this.get('reminderService'),
         this.get('networkingService')
+      ));
+      this.register('jobSearchController', () => new JobSearchController(
+        this.get('jobSearchService'),
+        this.get('jobMatchingService'),
+        this.get('applicationService'),
+        this.get('interviewPrepService'),
+        this.get('companyService')
       ));
 
       logger.info('Dependency container initialized');
