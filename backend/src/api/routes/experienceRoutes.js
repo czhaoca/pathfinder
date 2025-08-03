@@ -1,5 +1,5 @@
 const express = require('express');
-const ErrorHandler = require('../middleware/errorHandler');
+const { validate, schemas } = require('../middleware/validation');
 
 function createExperienceRoutes(container) {
   const router = express.Router();
@@ -10,41 +10,32 @@ function createExperienceRoutes(container) {
   router.use(authMiddleware.authenticate());
 
   router.get('/',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      experienceController.listExperiences(req, res, next)
-    )
+    validate(schemas.pagination),
+    experienceController.listExperiences
   );
 
   // Stats route must come before /:id to avoid route conflicts
   router.get('/stats',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      experienceController.getExperienceStats(req, res, next)
-    )
+    experienceController.getExperienceStats
   );
 
   // Templates route must come before /:id to avoid route conflicts
   router.get('/templates',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      experienceController.getExperienceTemplates(req, res, next)
-    )
+    experienceController.getExperienceTemplates
   );
 
   router.post('/',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      experienceController.createExperience(req, res, next)
-    )
+    validate(schemas.experience.create),
+    experienceController.createExperience
   );
 
   router.get('/:id',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      experienceController.getExperience(req, res, next)
-    )
+    experienceController.getExperience
   );
 
   router.put('/:id',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      experienceController.updateExperience(req, res, next)
-    )
+    validate(schemas.experience.update),
+    experienceController.updateExperience
   );
 
   router.delete('/:id',

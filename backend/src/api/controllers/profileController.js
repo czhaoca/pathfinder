@@ -1,5 +1,3 @@
-const logger = require('../../utils/logger');
-
 class ProfileController {
   constructor(userService) {
     this.userService = userService;

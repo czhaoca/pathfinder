@@ -58,9 +58,11 @@ export function ConversationSidebar({
 
     try {
       const response = await chatService.searchConversations(searchQuery)
-      setConversations(response.results)
-    } catch (error: any) {
-      toast.error('Search failed')
+      if (response.results && Array.isArray(response.results)) {
+        setConversations(response.results)
+      }
+    } catch (error) {
+      handleApiError(error)
     }
   }
 
@@ -73,17 +75,16 @@ export function ConversationSidebar({
 
     try {
       await chatService.deleteConversation(conversationId)
-      toast.success('Conversation deleted')
       
       // Update local state
-      setConversations(prev => prev.filter(c => c.conversation_id !== conversationId))
+      setConversations(prev => prev.filter(c => c.conversationId !== conversationId))
       
       // If deleting current conversation, clear selection
       if (conversationId === currentConversationId) {
         onSelectConversation(undefined)
       }
-    } catch (error: any) {
-      toast.error('Failed to delete conversation')
+    } catch (error) {
+      handleApiError(error)
     }
   }
 
@@ -157,13 +158,13 @@ export function ConversationSidebar({
                           {format(new Date(conv.last_message_at), 'MMM d, h:mm a')}
                         </span>
                         <span>•</span>
-                        <span>{conv.message_count} messages</span>
+                        <span>{conv.messageCount} messages</span>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
-                        onClick={(e) => handleDelete(conv.conversation_id, e)}
+                        onClick={(e) => handleDelete(conv.conversationId, e)}
                         size="icon"
                         variant="ghost"
                         className="h-7 w-7"

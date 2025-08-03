@@ -1,5 +1,35 @@
 # REST API Reference
 
+## Overview
+
+Pathfinder provides a comprehensive REST API for career management, experience tracking, AI-powered analytics, and professional document generation. All endpoints require authentication unless otherwise specified.
+
+## Base URL
+
+```
+https://api.pathfinder.com/api
+```
+
+## Authentication
+
+Most endpoints require JWT authentication. Include the token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+Tokens expire after 15 minutes. Use the refresh endpoint to obtain new tokens.
+
+## API Endpoints Overview
+
+- **Authentication**: User registration, login, and session management
+- **Profile**: User profile management and settings
+- **Experiences**: Professional experience CRUD operations
+- **Analytics**: AI-powered career insights and progression analysis
+- **Chat**: AI assistant for career guidance
+- **Resume**: Professional document generation (PDF, DOCX, TXT)
+- **CPA PERT**: Specialized competency mapping for CPAs (add-on)
+
 ## Authentication Endpoints
 
 ### Register User

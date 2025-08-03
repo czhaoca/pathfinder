@@ -318,9 +318,9 @@ Create a copy of an existing experience with optional modifications.
 }
 ```
 
-### 11. Extract Skills
+### 11. Extract Skills (AI-Powered)
 
-Extract skills from an experience using AI analysis.
+Extract skills from an experience using OpenAI GPT-4 analysis.
 
 **Endpoint:** `POST /api/experiences/:id/extract-skills`
 
@@ -342,21 +342,23 @@ Extract skills from an experience using AI analysis.
     {
       "name": "React",
       "category": "frontend",
-      "confidence": 0.8
+      "confidence": 0.95
     },
     {
       "name": "Node.js",
       "category": "backend",
-      "confidence": 0.8
+      "confidence": 0.92
     },
     {
       "name": "AWS",
       "category": "cloud",
-      "confidence": 0.8
+      "confidence": 0.88
     }
   ]
 }
 ```
+
+**Note:** This endpoint uses OpenAI's GPT-4 model to analyze the experience description and extract relevant skills. The confidence score indicates the AI's certainty about the skill's relevance to the experience.
 
 ## Error Responses
 

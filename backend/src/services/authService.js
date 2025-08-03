@@ -3,6 +3,13 @@ const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const config = require('../config');
 const logger = require('../utils/logger');
+const { 
+  ValidationError, 
+  AuthenticationError, 
+  ConflictError,
+  DatabaseError 
+} = require('../utils/errors');
+const { AUTH, REGEX } = require('../utils/constants');
 
 class AuthService {
   constructor(userRepository, sessionRepository, auditService) {
@@ -12,16 +19,30 @@ class AuthService {
   }
 
   async register({ username, email, password, firstName, lastName, ipAddress, userAgent }) {
-    // Check if user exists
-    const existingUser = await this.userRepository.findByUsernameOrEmail(username, email);
-    if (existingUser) {
-      const error = new Error('Username or email already exists');
-      error.code = 'USER_EXISTS';
-      throw error;
+    // Validate inputs
+    if (!REGEX.EMAIL.test(email)) {
+      throw new ValidationError('Invalid email format', { email: 'Must be a valid email address' });
+    }
+    if (!REGEX.USERNAME.test(username)) {
+      throw new ValidationError('Invalid username format', { 
+        username: 'Must be 3-30 characters, alphanumeric with underscores and hyphens' 
+      });
+    }
+    if (!REGEX.PASSWORD.test(password)) {
+      throw new ValidationError('Invalid password format', { 
+        password: 'Must be at least 8 characters with uppercase, lowercase, and number' 
+      });
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 10);
+    try {
+      // Check if user exists
+      const existingUser = await this.userRepository.findByUsernameOrEmail(username, email);
+      if (existingUser) {
+        throw new ConflictError('Username or email already exists');
+      }
+
+      // Hash password
+      const passwordHash = await bcrypt.hash(password, AUTH.SALT_ROUNDS);
 
     // Create user
     const userId = uuidv4();
@@ -37,14 +58,14 @@ class AuthService {
     // Create user-specific schema
     await this.userRepository.createUserSchema(user.schemaPrefix);
 
-    // Create session
-    const sessionId = uuidv4();
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    await this.sessionRepository.create({
-      sessionId,
-      userId,
-      expiresAt
-    });
+      // Create session
+      const sessionId = uuidv4();
+      const expiresAt = new Date(Date.now() + AUTH.SESSION_DURATION_MS);
+      await this.sessionRepository.create({
+        sessionId,
+        userId,
+        expiresAt
+      });
 
     // Generate tokens
     const tokens = this.generateTokens({ userId, username, sessionId });
@@ -60,61 +81,63 @@ class AuthService {
       success: true
     });
 
-    return {
-      ...tokens,
-      user: {
-        id: user.userId,
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        createdAt: user.createdAt,
-        accountStatus: user.accountStatus
+      return {
+        ...tokens,
+        user: {
+          id: user.userId,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          createdAt: user.createdAt,
+          accountStatus: user.accountStatus
+        }
+      };
+    } catch (error) {
+      if (error.isOperational) {
+        throw error;
       }
-    };
+      logger.error('Registration error', { error: error.message, username, email });
+      throw new DatabaseError('Failed to register user', error);
+    }
   }
 
   async login({ username, password, ipAddress, userAgent }) {
-    // Get user
-    const user = await this.userRepository.findByUsername(username);
-    if (!user) {
-      const error = new Error('Invalid credentials');
-      error.code = 'INVALID_CREDENTIALS';
-      throw error;
+    try {
+      // Get user
+      const user = await this.userRepository.findByUsername(username);
+      if (!user) {
+        throw new AuthenticationError('Invalid credentials');
+      }
+
+      // Verify password
+      const validPassword = await bcrypt.compare(password, user.passwordHash);
+      if (!validPassword) {
+        await this.auditService.logAuth({
+          userId: user.userId,
+          action: 'LOGIN_FAILED',
+          resourceType: 'auth',
+          ipAddress,
+          userAgent,
+          success: false,
+          errorMessage: 'Invalid password'
+        });
+        throw new AuthenticationError('Invalid credentials');
     }
 
-    // Verify password
-    const validPassword = await bcrypt.compare(password, user.passwordHash);
-    if (!validPassword) {
-      await this.auditService.logAuth({
+      // Check account status
+      if (user.accountStatus !== 'active') {
+        throw new AuthenticationError(`Account is ${user.accountStatus}`);
+      }
+
+      // Create session
+      const sessionId = uuidv4();
+      const expiresAt = new Date(Date.now() + AUTH.SESSION_DURATION_MS);
+      await this.sessionRepository.create({
+        sessionId,
         userId: user.userId,
-        action: 'LOGIN_FAILED',
-        resourceType: 'auth',
-        ipAddress,
-        userAgent,
-        success: false,
-        errorMessage: 'Invalid password'
+        expiresAt
       });
-      const error = new Error('Invalid credentials');
-      error.code = 'INVALID_CREDENTIALS';
-      throw error;
-    }
-
-    // Check account status
-    if (user.accountStatus !== 'active') {
-      const error = new Error('Account is not active');
-      error.code = 'ACCOUNT_INACTIVE';
-      throw error;
-    }
-
-    // Create session
-    const sessionId = uuidv4();
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    await this.sessionRepository.create({
-      sessionId,
-      userId: user.userId,
-      expiresAt
-    });
 
     // Generate tokens
     const tokens = this.generateTokens({ 
@@ -136,19 +159,26 @@ class AuthService {
       success: true
     });
 
-    return {
-      ...tokens,
-      user: {
-        id: user.userId,
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        createdAt: user.createdAt,
-        lastLogin: new Date(),
-        accountStatus: user.accountStatus
+      return {
+        ...tokens,
+        user: {
+          id: user.userId,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          createdAt: user.createdAt,
+          lastLogin: new Date(),
+          accountStatus: user.accountStatus
+        }
+      };
+    } catch (error) {
+      if (error.isOperational) {
+        throw error;
       }
-    };
+      logger.error('Login error', { error: error.message, username });
+      throw new DatabaseError('Failed to login', error);
+    }
   }
 
   async refreshToken(refreshToken) {
@@ -156,17 +186,13 @@ class AuthService {
       const decoded = jwt.verify(refreshToken, config.security.jwtSecret);
       
       if (decoded.type !== 'refresh') {
-        const error = new Error('Invalid token type');
-        error.code = 'INVALID_TOKEN';
-        throw error;
+        throw new AuthenticationError('Invalid token type');
       }
 
       // Check if session is still valid
       const session = await this.sessionRepository.findById(decoded.sessionId);
       if (!session) {
-        const error = new Error('Session not found');
-        error.code = 'SESSION_NOT_FOUND';
-        throw error;
+        throw new AuthenticationError('Session not found');
       }
 
       // Generate new tokens

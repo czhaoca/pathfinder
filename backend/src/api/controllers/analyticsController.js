@@ -1,5 +1,3 @@
-const logger = require('../../utils/logger');
-
 class AnalyticsController {
   constructor(analyticsService) {
     this.analyticsService = analyticsService;

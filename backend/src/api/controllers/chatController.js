@@ -1,5 +1,3 @@
-const logger = require('../../utils/logger');
-
 class ChatController {
   constructor(chatService) {
     this.chatService = chatService;

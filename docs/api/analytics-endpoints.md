@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Analytics API provides comprehensive insights into career progression, skills development, and professional achievements. These endpoints analyze user experiences to generate actionable insights and visualizations.
+The Analytics API provides comprehensive insights into career progression, skills development, and professional achievements. These endpoints analyze user experiences using AI-powered analysis (OpenAI GPT-4) to generate actionable insights and visualizations.
 
 ## Authentication
 

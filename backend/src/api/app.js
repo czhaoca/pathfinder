@@ -14,6 +14,7 @@ const createExperienceRoutes = require('./routes/experienceRoutes');
 const createChatRoutes = require('./routes/chatRoutes');
 const createCPAPertRoutes = require('./routes/cpaPertRoutes');
 const createAnalyticsRoutes = require('./routes/analyticsRoutes');
+const createResumeRoutes = require('./routes/resumeRoutes');
 
 class App {
   constructor() {
@@ -129,6 +130,7 @@ class App {
     this.app.use('/api/chat', createChatRoutes(container));
     this.app.use('/api/cpa-pert', createCPAPertRoutes(container));
     this.app.use('/api/analytics', createAnalyticsRoutes(container));
+    this.app.use('/api/resume', createResumeRoutes(container));
 
     // API documentation
     this.app.get('/api', (req, res) => {
@@ -184,6 +186,14 @@ class App {
             export: 'GET /api/analytics/export',
             quantifyAchievements: 'POST /api/analytics/experiences/:experienceId/quantify',
             skillRecommendations: 'POST /api/analytics/skill-recommendations'
+          },
+          resume: {
+            templates: 'GET /api/resume/templates',
+            preview: 'GET /api/resume/preview',
+            generate: 'POST /api/resume/generate',
+            generateVersions: 'POST /api/resume/generate-versions',
+            atsOptimization: 'GET /api/resume/ats-optimization',
+            updateSection: 'PUT /api/resume/section/:section'
           }
         }
       });

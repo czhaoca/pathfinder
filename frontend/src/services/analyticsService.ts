@@ -10,6 +10,7 @@ import {
   SkillRecommendationRequest,
   ExportFormat
 } from '@/types/analytics'
+import { downloadBlob, generateFilename } from '@/utils/download'
 
 class AnalyticsService {
   /**

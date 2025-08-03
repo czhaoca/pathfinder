@@ -1,5 +1,4 @@
 const { validateExperienceData } = require('../../validators/experienceValidator');
-const logger = require('../../utils/logger');
 
 class ExperienceController {
   constructor(experienceService) {

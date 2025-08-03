@@ -4,7 +4,6 @@
  */
 
 const Joi = require('joi');
-const logger = require('../../utils/logger');
 
 class CPAPertController {
   constructor(cpaPertService, authService) {

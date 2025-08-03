@@ -16,6 +16,7 @@ const ChatService = require('./services/chatService');
 const CPAPertService = require('./services/cpaPertService');
 const OpenAIChatService = require('./services/openaiChatService');
 const AnalyticsService = require('./services/analyticsService');
+const ResumeService = require('./services/resumeService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -33,6 +34,7 @@ const ExperienceController = require('./api/controllers/experienceController');
 const ChatController = require('./api/controllers/chatController');
 const CPAPertController = require('./api/controllers/cpaPertController');
 const AnalyticsController = require('./api/controllers/analyticsController');
+const ResumeController = require('./api/controllers/resumeController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
@@ -102,6 +104,13 @@ class Container {
         this.get('auditService'),
         this.get('openaiService')
       ));
+      this.register('resumeService', () => new ResumeService(
+        this.get('experienceRepository'),
+        this.get('userRepository'),
+        this.get('analyticsService'),
+        this.get('auditService'),
+        this.get('openaiService')
+      ));
 
       // Register middleware
       this.register('authMiddleware', () => new AuthMiddleware(this.get('authService')));
@@ -117,6 +126,9 @@ class Container {
       ));
       this.register('analyticsController', () => new AnalyticsController(
         this.get('analyticsService')
+      ));
+      this.register('resumeController', () => new ResumeController(
+        this.get('resumeService')
       ));
 
       logger.info('Dependency container initialized');

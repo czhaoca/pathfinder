@@ -1,9 +1,11 @@
+import { Metadata } from './common'
+
 export interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
   timestamp: Date
-  metadata?: Record<string, any>
+  metadata?: Metadata
 }
 
 export interface ChatResponse {
@@ -12,10 +14,10 @@ export interface ChatResponse {
 }
 
 export interface ConversationSummary {
-  conversation_id: string
+  conversationId: string
   title: string
-  first_message: string
-  last_message_at: Date
-  message_count: number
-  created_at: Date
+  firstMessage: string
+  lastMessageAt: Date
+  messageCount: number
+  createdAt: Date
 }

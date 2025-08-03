@@ -1,5 +1,5 @@
 const express = require('express');
-const ErrorHandler = require('../middleware/errorHandler');
+const { validate, schemas } = require('../middleware/validation');
 
 function createAuthRoutes(container) {
   const router = express.Router();
@@ -8,29 +8,23 @@ function createAuthRoutes(container) {
 
   // Public routes
   router.post('/register', 
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      authController.register(req, res, next)
-    )
+    validate(schemas.auth.register),
+    authController.register
   );
 
   router.post('/login',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      authController.login(req, res, next)
-    )
+    validate(schemas.auth.login),
+    authController.login
   );
 
   router.post('/refresh',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      authController.refreshToken(req, res, next)
-    )
+    authController.refreshToken
   );
 
   // Protected routes
   router.post('/logout',
     authMiddleware.authenticate(),
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      authController.logout(req, res, next)
-    )
+    authController.logout
   );
 
   return router;

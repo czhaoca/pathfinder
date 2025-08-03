@@ -1,6 +1,5 @@
 const express = require('express');
-const ErrorHandler = require('../middleware/errorHandler');
-const { validatePasswordChangeRequest } = require('../../validators/authValidator');
+const { validate, schemas } = require('../middleware/validation');
 
 function createProfileRoutes(container) {
   const router = express.Router();
@@ -11,32 +10,22 @@ function createProfileRoutes(container) {
   router.use(authMiddleware.authenticate());
 
   router.get('/',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      profileController.getProfile(req, res, next)
-    )
+    profileController.getProfile
   );
 
   router.put('/',
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      profileController.updateProfile(req, res, next)
-    )
+    validate(schemas.profile.update),
+    profileController.updateProfile
   );
 
   router.post('/change-password',
-    ErrorHandler.asyncWrapper((req, res, next) => {
-      const validation = validatePasswordChangeRequest(req.body);
-      if (validation.error) {
-        return res.status(400).json({ error: validation.error.details[0].message });
-      }
-      return profileController.changePassword(req, res, next);
-    })
+    validate(schemas.auth.changePassword),
+    profileController.changePassword
   );
 
   router.delete('/',
     authMiddleware.rateLimitByUser({ windowMs: 60000, max: 3 }),
-    ErrorHandler.asyncWrapper((req, res, next) => 
-      profileController.deleteAccount(req, res, next)
-    )
+    profileController.deleteAccount
   );
 
   return router;
