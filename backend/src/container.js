@@ -20,6 +20,10 @@ const ResumeService = require('./services/resumeService');
 const CareerPathService = require('./services/careerPathService');
 const SkillsGapService = require('./services/skillsGapService');
 const LearningService = require('./services/learningService');
+const ContactService = require('./services/contactService');
+const InteractionService = require('./services/interactionService');
+const ReminderService = require('./services/reminderService');
+const NetworkingService = require('./services/networkingService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -39,6 +43,7 @@ const CPAPertController = require('./api/controllers/cpaPertController');
 const AnalyticsController = require('./api/controllers/analyticsController');
 const ResumeController = require('./api/controllers/resumeController');
 const CareerPathController = require('./api/controllers/careerPathController');
+const NetworkingController = require('./api/controllers/networkingController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
@@ -128,6 +133,26 @@ class Container {
       this.register('learningService', () => new LearningService(
         this.get('databaseService')
       ));
+      
+      // Professional Networking services
+      this.register('contactService', () => new ContactService(
+        this.get('databaseService'),
+        this.get('auditService')
+      ));
+      this.register('interactionService', () => new InteractionService(
+        this.get('databaseService'),
+        this.get('contactService'),
+        this.get('auditService')
+      ));
+      this.register('reminderService', () => new ReminderService(
+        this.get('databaseService'),
+        this.get('auditService')
+      ));
+      this.register('networkingService', () => new NetworkingService(
+        this.get('databaseService'),
+        this.get('contactService'),
+        this.get('openaiService')
+      ));
 
       // Register middleware
       this.register('authMiddleware', () => new AuthMiddleware(this.get('authService')));
@@ -151,6 +176,12 @@ class Container {
         this.get('careerPathService'),
         this.get('skillsGapService'),
         this.get('learningService')
+      ));
+      this.register('networkingController', () => new NetworkingController(
+        this.get('contactService'),
+        this.get('interactionService'),
+        this.get('reminderService'),
+        this.get('networkingService')
       ));
 
       logger.info('Dependency container initialized');

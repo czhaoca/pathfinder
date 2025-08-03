@@ -16,6 +16,7 @@ const createCPAPertRoutes = require('./routes/cpaPertRoutes');
 const createAnalyticsRoutes = require('./routes/analyticsRoutes');
 const createResumeRoutes = require('./routes/resumeRoutes');
 const careerPathRoutes = require('./routes/careerPathRoutes');
+const networkingRoutes = require('./routes/networkingRoutes');
 
 class App {
   constructor() {
@@ -133,6 +134,7 @@ class App {
     this.app.use('/api/analytics', createAnalyticsRoutes(container));
     this.app.use('/api/resume', createResumeRoutes(container));
     this.app.use('/api', careerPathRoutes);
+    this.app.use('/api', networkingRoutes);
 
     // API documentation
     this.app.get('/api', (req, res) => {
