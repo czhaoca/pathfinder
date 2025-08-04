@@ -1,156 +1,90 @@
 # Pathfinder Documentation
 
-Welcome to the Pathfinder documentation. This comprehensive guide covers everything from getting started to advanced development and deployment.
+Welcome to the Pathfinder documentation. This comprehensive guide covers all aspects of the AI-powered career navigation and experience management system.
 
-## 📖 Documentation Overview
+## 📚 Documentation Structure
 
-Pathfinder is an AI-powered career development platform that helps professionals:
-- 🧭 Explore career paths with AI guidance
-- 📝 Build compelling professional narratives
-- 🎯 Track and manage career experiences
-- 🤝 Network strategically (coming soon)
+### [Getting Started](./getting-started/)
+- [Quick Start Guide](./getting-started/quick-start.md) - Get up and running in minutes
+- [Installation](./getting-started/installation.md) - Detailed installation instructions
+- [Configuration](./getting-started/configuration.md) - Environment setup and configuration
 
-## 🚀 Quick Start
+### [Architecture](./architecture/)
+- [System Overview](./architecture/system-overview.md) - High-level architecture
+- [Frontend Architecture](./architecture/frontend.md) - React application structure
+- [Backend Architecture](./architecture/backend.md) - Node.js API and services
+- [Database Design](./architecture/database.md) - Schema and data models
+- [Security Architecture](./architecture/security.md) - Authentication and encryption
 
-### For Users
-- [**Getting Started Guide**](./user-guides/getting-started/) - Start using Pathfinder in minutes
-- [**Features Documentation**](./user-guides/features/) - Complete feature guides
+### [API Reference](./api/)
+- [Authentication](./api/authentication.md) - Login, registration, and JWT tokens
+- [User Profile](./api/profile.md) - User profile management
+- [Experiences](./api/experiences.md) - Experience CRUD operations
+- [Chat](./api/chat.md) - AI chat integration
+- [Analytics](./api/analytics.md) - Career analytics and insights
+- [Resume Builder](./api/resume.md) - Resume generation and optimization
+- [CPA PERT](./api/cpa-pert.md) - CPA professional experience reporting
+- [Career Paths](./api/career-paths.md) - Career exploration and planning
+- [Networking](./api/networking.md) - Professional networking features
+- [Job Search](./api/job-search.md) - Job matching and applications
+- [Learning](./api/learning.md) - Skills development and courses
 
-### For Developers
-- [**Development Setup**](./technical/development/development-setup.md) - Set up your development environment
-- [**Architecture Overview**](./reference/architecture/system-overview.md) - Understand the system design
-- [**Contributing Guide**](./technical/development/contributing-guide.md) - How to contribute
+### [Features](./features/)
+- [AI Chat Assistant](./features/chat-assistant.md) - Interactive career guidance
+- [Experience Management](./features/experience-management.md) - 3-tier experience system
+- [Resume Builder](./features/resume-builder.md) - Dynamic resume generation
+- [Analytics Dashboard](./features/analytics.md) - Career insights and metrics
+- [CPA PERT Module](./features/cpa-pert.md) - Professional certification tracking
+- [Career Planning](./features/career-planning.md) - Career path exploration
+- [Professional Networking](./features/networking.md) - Network management
+- [Job Search Integration](./features/job-search.md) - Job opportunities
+- [Learning & Development](./features/learning.md) - Skill building
 
-### For Administrators
-- [**Docker Deployment**](./technical/deployment/docker-deployment.md) - Production deployment
-- [**Security Guide**](./technical/security/security-procedures.md) - Security best practices
+### [Development](./development/)
+- [Development Setup](./development/setup.md) - Local development environment
+- [Code Structure](./development/code-structure.md) - Project organization
+- [Testing Guide](./development/testing.md) - Unit and integration testing
+- [Contributing](./development/contributing.md) - Contribution guidelines
+- [API Development](./development/api-development.md) - Backend development guide
+- [Frontend Development](./development/frontend-development.md) - React development guide
 
-## 📚 Complete Documentation
+### [Deployment](./deployment/)
+- [Docker Deployment](./deployment/docker.md) - Container-based deployment
+- [Production Setup](./deployment/production.md) - Production configuration
+- [Environment Variables](./deployment/environment.md) - Configuration reference
+- [Database Setup](./deployment/database-setup.md) - Oracle database configuration
+- [Monitoring](./deployment/monitoring.md) - Application monitoring
 
-### 1. Reference Documentation
-#### Architecture & Design
-- [**System Architecture**](./reference/architecture/system-overview.md) - High-level system design and components
-- [**Multi-User Architecture**](./reference/architecture/multi-user-architecture.md) - User isolation and data privacy
-- [**Database Design**](./reference/architecture/database-design.md) - Schema design and data models
-- [**Security Architecture**](./reference/architecture/security-architecture.md) - Security implementation details
-- [**Frontend Architecture**](./reference/architecture/frontend-architecture.md) - React application structure
+### [Security](./security/)
+- [Security Overview](./security/overview.md) - Security features and best practices
+- [Authentication](./security/authentication.md) - JWT and session management
+- [Data Encryption](./security/encryption.md) - Field-level encryption
+- [Compliance](./security/compliance.md) - HIPAA and GDPR compliance
+- [Audit Logging](./security/audit-logging.md) - Security audit trails
 
-#### API Documentation
-- [**REST API Reference**](./reference/api/rest-api.md) - Complete API documentation
-- [**Experience API**](./reference/api/experience-endpoints.md) - Experience management endpoints
-- [**Career Path API**](./reference/api/career-path-endpoints.md) - Career planning endpoints
-- [**Analytics API**](./reference/api/analytics-endpoints.md) - Analytics and reporting
-- [**Resume API**](./reference/api/resume-endpoints.md) - Resume generation endpoints
+## 🚀 Quick Links
 
-#### Database Documentation
-- [**Database Schema**](./reference/database/) - Complete schema documentation
-- [**Entity Relationships**](./reference/database/diagrams/) - ERD diagrams
-- [**Multi-User Schema**](./reference/database/multi-user-architecture.md) - User isolation patterns
-- [**Security Model**](./reference/database/security-encryption-model.md) - Encryption and security
+- **Repository**: [github.com/czhaoca/pathfinder](https://github.com/czhaoca/pathfinder)
+- **Issues**: [GitHub Issues](https://github.com/czhaoca/pathfinder/issues)
+- **License**: [MIT License](../LICENSE)
 
-### 2. User Guides
-- [**Core Features**](./user-guides/features/README.md) - All platform capabilities
-  - [Career Exploration](./user-guides/features/career-exploration.md) - AI-powered career discovery
-  - [Experience Management](./user-guides/features/experience-management.md) - Professional experience tracking
-  - [Story Development](./user-guides/features/story-development.md) - Resume and narrative building
-  - [AI Chat Assistant](./user-guides/features/ai-chat-assistant.md) - Intelligent career guidance
-  - [Professional Networking](./user-guides/features/professional-networking.md) - Network management
-  - [Job Search Integration](./user-guides/features/job-search-integration.md) - Job search tools
-  - [Learning Development](./user-guides/features/learning-development.md) - Skill development paths
+## 📊 System Requirements
 
-### 3. Technical Documentation
-#### Development
-- [**Development Setup**](./technical/development/development-setup.md) - Local development environment
-- [**Getting Started**](./technical/development/getting-started.md) - Developer quick start
-- [**Contributing Guide**](./technical/development/contributing-guide.md) - Contribution guidelines
-- [**Troubleshooting**](./technical/development/troubleshooting.md) - Common issues
-- [**Mermaid Diagrams**](./technical/development/mermaid-diagrams.md) - Creating diagrams
+- Node.js 18+ and npm 8+
+- Docker and Docker Compose
+- Oracle Cloud Infrastructure account (for database)
+- 4GB RAM minimum (8GB recommended)
+- 10GB disk space
 
-#### Deployment
-- [**Docker Deployment**](./technical/deployment/docker-deployment.md) - Container-based deployment
-- [**MCP Configuration**](./technical/deployment/mcp-configuration.md) - Model Context Protocol setup
-- [**OCI Database Setup**](./technical/deployment/oci-provisioning-guide.md) - Oracle Cloud setup
-- [**Multi-Project Database**](./technical/deployment/multi-project-database-guide.md) - Shared database patterns
+## 🛟 Getting Help
 
-#### Security
-- [**Security Procedures**](./technical/security/security-procedures.md) - Security hardening
-- [**BYOK Implementation**](./technical/security/byok-implementation.md) - Bring Your Own Key
-- [**Encryption Specification**](./technical/security/encryption-specification.md) - Encryption details
-- [**Security Compliance**](./technical/security/security-compliance.md) - Compliance standards
-- [**CPA PERT Security**](./technical/security/cpa-pert-security-audit.md) - Module security audit
+- Check the [Troubleshooting Guide](./development/troubleshooting.md)
+- Search existing [GitHub Issues](https://github.com/czhaoca/pathfinder/issues)
+- Join our community discussions
+- Contact the development team
 
-### 4. Project Documentation
-- [**Changelog**](./project/changelog/) - Development history and updates
-- [**Add-on Modules**](./project/addons/) - Specialized modules
-  - [CPA PERT Writer](./project/addons/cpa-pert-writer/README.md) - Accounting module
+## 📝 Documentation Updates
 
-## 🏗️ Project Structure
+This documentation is maintained alongside the codebase. For corrections or improvements, please submit a pull request.
 
-```
-pathfinder/
-├── frontend/          # React TypeScript application
-├── backend/           # Node.js Express API
-├── docs/              # This documentation
-├── nginx/             # Reverse proxy configuration
-└── docker-compose.yml # Container orchestration
-```
-
-## 🔧 Technology Stack
-
-- **Frontend**: React, TypeScript, Tailwind CSS, Zustand
-- **Backend**: Node.js, Express, TypeScript
-- **Database**: Oracle Autonomous Database
-- **AI Integration**: Model Context Protocol (MCP)
-- **Security**: JWT, AES-256 encryption, RBAC
-- **Deployment**: Docker, Docker Compose
-
-## 📊 Key Features
-
-### For Individuals
-- ✅ AI-powered career exploration and guidance
-- ✅ Professional experience management
-- ✅ Dynamic resume generation
-- ✅ Skills gap analysis
-- ✅ Career progression tracking
-
-### For Organizations
-- ✅ Multi-user support with data isolation
-- ✅ HIPAA-level security standards
-- ✅ Self-hosted deployment options
-- ✅ Customizable add-on modules
-- ✅ Comprehensive audit logging
-
-## 🛡️ Security & Privacy
-
-Pathfinder prioritizes data security and user privacy:
-- **Data Isolation**: Complete user data separation
-- **Encryption**: AES-256 for sensitive data
-- **Authentication**: JWT with short-lived tokens
-- **Audit Trail**: Comprehensive activity logging
-- **Compliance**: HIPAA-level security standards
-
-Learn more in our [Security Architecture](./reference/architecture/security-architecture.md) documentation.
-
-## 🤝 Contributing
-
-We welcome contributions! See our [Contributing Guide](./technical/development/contributing-guide.md) for:
-- Code contribution guidelines
-- Documentation improvements
-- Bug reporting procedures
-- Feature request process
-
-## 📞 Support
-
-- **Documentation Issues**: Submit a GitHub issue
-- **Bug Reports**: Use the bug report template
-- **Feature Requests**: Use the feature request template
-- **Security Issues**: Email security@pathfinder.com
-
-## 🔄 Version History
-
-- **v1.0.0** (Current) - Initial release with core features
-- See [Changelog](./project/changelog/) for detailed version history
-
----
-
-*Last updated: December 2024*
+Last updated: February 2025
