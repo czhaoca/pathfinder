@@ -13,7 +13,7 @@ Pathfinder is an AI-powered career development platform that helps professionals
 ## 🚀 Quick Start
 
 ### For Users
-- [**Getting Started Guide**](./user-guides/features/) - Start using Pathfinder in minutes
+- [**Getting Started Guide**](./user-guides/getting-started/) - Start using Pathfinder in minutes
 - [**Features Documentation**](./user-guides/features/) - Complete feature guides
 
 ### For Developers
@@ -129,11 +129,11 @@ Pathfinder prioritizes data security and user privacy:
 - **Audit Trail**: Comprehensive activity logging
 - **Compliance**: HIPAA-level security standards
 
-Learn more in our [Security Architecture](./architecture/security-architecture.md) documentation.
+Learn more in our [Security Architecture](./reference/architecture/security-architecture.md) documentation.
 
 ## 🤝 Contributing
 
-We welcome contributions! See our [Contributing Guide](./guides/contributing-guide.md) for:
+We welcome contributions! See our [Contributing Guide](./technical/development/contributing-guide.md) for:
 - Code contribution guidelines
 - Documentation improvements
 - Bug reporting procedures
@@ -149,7 +149,7 @@ We welcome contributions! See our [Contributing Guide](./guides/contributing-gui
 ## 🔄 Version History
 
 - **v1.0.0** (Current) - Initial release with core features
-- See [CHANGELOG.md](../CHANGELOG.md) for detailed version history
+- See [Changelog](./project/changelog/) for detailed version history
 
 ---
 

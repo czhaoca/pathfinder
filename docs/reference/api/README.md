@@ -6,12 +6,19 @@ Pathfinder provides a comprehensive RESTful API for all platform functionality. 
 
 ## API Documentation
 
+### Core APIs
 1. [**REST API Reference**](./rest-api.md) - Complete endpoint documentation
 2. [**Authentication**](./authentication.md) - Auth flows and security
-3. [**Experience API**](./experience-api.md) - Experience management
+3. [**Experience API**](./experience-endpoints.md) - Experience management
 4. [**Chat API**](./chat-api.md) - AI chat integration
-5. [**Profile API**](./profile-api.md) - User profile management
-6. [**MCP Integration**](./mcp-integration.md) - Model Context Protocol
+
+### Feature APIs
+5. [**Career Path API**](./career-path-endpoints.md) - Career planning endpoints
+6. [**Resume API**](./resume-endpoints.md) - Resume generation
+7. [**Analytics API**](./analytics-endpoints.md) - Analytics and reporting
+8. [**Job Search API**](./job-search-endpoints.md) - Job search integration
+9. [**Networking API**](./networking-endpoints.md) - Professional networking
+10. [**Learning API**](./learning-development-endpoints.md) - Learning & development
 
 ## Base URL
 
@@ -175,7 +182,7 @@ Download our [OpenAPI 3.0 spec](./openapi.yaml) for:
 
 ## Related Documentation
 
-- [Development Setup](../development/setup.md)
+- [Development Setup](../../technical/development/development-setup.md)
 - [Authentication Guide](./authentication.md)
-- [Error Handling](../development/error-handling.md)
-- [Security Best Practices](../deployment/security/security-procedures.md)
+- [Security Best Practices](../../technical/security/security-procedures.md)
+- [Architecture Overview](../architecture/system-overview.md)
