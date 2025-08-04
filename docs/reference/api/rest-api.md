@@ -28,6 +28,7 @@ Tokens expire after 15 minutes. Use the refresh endpoint to obtain new tokens.
 - **Analytics**: AI-powered career insights and progression analysis
 - **Chat**: AI assistant for career guidance
 - **Resume**: Professional document generation (PDF, DOCX, TXT)
+- **Learning & Development**: Course management, skill assessments, certifications, and learning paths
 - **CPA PERT**: Specialized competency mapping for CPAs (add-on)
 
 ## Authentication Endpoints
@@ -299,6 +300,17 @@ Authorization: Bearer <token>
 **Query Parameters:**
 - `conversationId` - Filter by conversation
 - `limit` - Number of messages (default: 50, max: 200)
+
+## Learning & Development Endpoints
+
+The Learning & Development API provides comprehensive endpoints for:
+- Course discovery and enrollment
+- Skill assessments with AI evaluation
+- Professional certification tracking
+- Structured learning paths
+- Learning goals and analytics
+
+See the complete [Learning & Development API documentation](./learning-development-endpoints.md) for detailed endpoint specifications.
 
 ## CPA PERT Endpoints (Add-on)
 

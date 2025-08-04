@@ -13,81 +13,76 @@ Pathfinder is an AI-powered career development platform that helps professionals
 ## 🚀 Quick Start
 
 ### For Users
-- [**Getting Started Guide**](./guides/getting-started.md) - Start using Pathfinder in minutes
-- [**User Manual**](./guides/user-manual.md) - Complete user documentation
-- [**FAQ**](./guides/faq.md) - Frequently asked questions
+- [**Getting Started Guide**](./user-guides/features/) - Start using Pathfinder in minutes
+- [**Features Documentation**](./user-guides/features/) - Complete feature guides
 
 ### For Developers
-- [**Development Setup**](./development/setup.md) - Set up your development environment
-- [**Architecture Overview**](./architecture/system-overview.md) - Understand the system design
-- [**Contributing Guide**](./development/contributing/CONTRIBUTING.md) - How to contribute
+- [**Development Setup**](./technical/development/development-setup.md) - Set up your development environment
+- [**Architecture Overview**](./reference/architecture/system-overview.md) - Understand the system design
+- [**Contributing Guide**](./technical/development/contributing-guide.md) - How to contribute
 
 ### For Administrators
-- [**Docker Deployment**](./deployment/docker/docker-deployment.md) - Production deployment
-- [**Configuration Guide**](./guides/configuration.md) - System configuration
-- [**Security Guide**](./deployment/security/security-procedures.md) - Security best practices
+- [**Docker Deployment**](./technical/deployment/docker-deployment.md) - Production deployment
+- [**Security Guide**](./technical/security/security-procedures.md) - Security best practices
 
 ## 📚 Complete Documentation
 
-### 1. Architecture & Design
-- [**System Architecture**](./architecture/system-overview.md) - High-level system design and components
-- [**Multi-User Architecture**](./architecture/multi-user-architecture.md) - User isolation and data privacy
-- [**Database Design**](./architecture/database-design.md) - Schema design and data models
-- [**Security Architecture**](./architecture/security-architecture.md) - Security implementation details
-- [**Frontend Architecture**](./architecture/frontend-architecture.md) - React application structure
+### 1. Reference Documentation
+#### Architecture & Design
+- [**System Architecture**](./reference/architecture/system-overview.md) - High-level system design and components
+- [**Multi-User Architecture**](./reference/architecture/multi-user-architecture.md) - User isolation and data privacy
+- [**Database Design**](./reference/architecture/database-design.md) - Schema design and data models
+- [**Security Architecture**](./reference/architecture/security-architecture.md) - Security implementation details
+- [**Frontend Architecture**](./reference/architecture/frontend-architecture.md) - React application structure
 
-### 2. Features Documentation
-- [**Core Features Overview**](./features/README.md) - All platform capabilities
-  - [Career Exploration](./features/career-exploration.md) - AI-powered career discovery
-  - [Experience Management](./features/experience-management.md) - Professional experience tracking
-  - [Story Development](./features/story-development.md) - Resume and narrative building
-  - [AI Chat Assistant](./features/ai-chat-assistant.md) - Intelligent career guidance
-- [**Add-on Modules**](./features/addons.md) - Extended functionality
-  - [CPA PERT Writer](./addons/cpa-pert-writer/README.md) - Specialized accounting module
+#### API Documentation
+- [**REST API Reference**](./reference/api/rest-api.md) - Complete API documentation
+- [**Experience API**](./reference/api/experience-endpoints.md) - Experience management endpoints
+- [**Career Path API**](./reference/api/career-path-endpoints.md) - Career planning endpoints
+- [**Analytics API**](./reference/api/analytics-endpoints.md) - Analytics and reporting
+- [**Resume API**](./reference/api/resume-endpoints.md) - Resume generation endpoints
 
-### 3. API Documentation
-- [**REST API Reference**](./api/rest-api.md) - Complete API documentation
-- [**Authentication API**](./api/authentication.md) - Auth endpoints and flows
-- [**Experience API**](./api/experience-api.md) - Experience management endpoints
-- [**Chat API**](./api/chat-api.md) - AI chat integration
-- [**MCP Integration**](./api/mcp-integration.md) - Model Context Protocol details
+#### Database Documentation
+- [**Database Schema**](./reference/database/) - Complete schema documentation
+- [**Entity Relationships**](./reference/database/diagrams/) - ERD diagrams
+- [**Multi-User Schema**](./reference/database/multi-user-architecture.md) - User isolation patterns
+- [**Security Model**](./reference/database/security-encryption-model.md) - Encryption and security
 
-### 4. Development Guide
-- [**Development Setup**](./development/setup.md) - Local development environment
-- [**Code Architecture**](./development/code-architecture.md) - Code organization and patterns
-- [**Backend Development**](./development/backend-guide.md) - Node.js/Express development
-- [**Frontend Development**](./development/frontend-guide.md) - React/TypeScript development
-- [**Testing Guide**](./development/testing.md) - Testing strategies and execution
-- [**Contributing**](./development/contributing/CONTRIBUTING.md) - Contribution guidelines
+### 2. User Guides
+- [**Core Features**](./user-guides/features/README.md) - All platform capabilities
+  - [Career Exploration](./user-guides/features/career-exploration.md) - AI-powered career discovery
+  - [Experience Management](./user-guides/features/experience-management.md) - Professional experience tracking
+  - [Story Development](./user-guides/features/story-development.md) - Resume and narrative building
+  - [AI Chat Assistant](./user-guides/features/ai-chat-assistant.md) - Intelligent career guidance
+  - [Professional Networking](./user-guides/features/professional-networking.md) - Network management
+  - [Job Search Integration](./user-guides/features/job-search-integration.md) - Job search tools
+  - [Learning Development](./user-guides/features/learning-development.md) - Skill development paths
 
-### 5. Deployment & Operations
-- [**Deployment Overview**](./deployment/README.md) - Deployment options and strategies
-- [**Docker Deployment**](./deployment/docker/docker-deployment.md) - Container-based deployment
-- [**Cloud Deployment**](./deployment/cloud-deployment.md) - AWS, GCP, Azure guides
-- [**Database Setup**](./deployment/database-setup.md) - Oracle ATP configuration
-- [**Security Procedures**](./deployment/security/security-procedures.md) - Security hardening
-- [**Monitoring & Logging**](./deployment/monitoring.md) - Observability setup
+### 3. Technical Documentation
+#### Development
+- [**Development Setup**](./technical/development/development-setup.md) - Local development environment
+- [**Getting Started**](./technical/development/getting-started.md) - Developer quick start
+- [**Contributing Guide**](./technical/development/contributing-guide.md) - Contribution guidelines
+- [**Troubleshooting**](./technical/development/troubleshooting.md) - Common issues
+- [**Mermaid Diagrams**](./technical/development/mermaid-diagrams.md) - Creating diagrams
 
-### 6. User Guides
-- [**Getting Started**](./guides/getting-started.md) - First steps with Pathfinder
-- [**User Manual**](./guides/user-manual.md) - Detailed feature documentation
-- [**Career Planning Guide**](./guides/career-planning.md) - Using AI for career decisions
-- [**Experience Writing**](./guides/experience-writing.md) - Crafting compelling experiences
-- [**Privacy Guide**](./guides/privacy-guide.md) - Understanding data privacy
+#### Deployment
+- [**Docker Deployment**](./technical/deployment/docker-deployment.md) - Container-based deployment
+- [**MCP Configuration**](./technical/deployment/mcp-configuration.md) - Model Context Protocol setup
+- [**OCI Database Setup**](./technical/deployment/oci-provisioning-guide.md) - Oracle Cloud setup
+- [**Multi-Project Database**](./technical/deployment/multi-project-database-guide.md) - Shared database patterns
 
-### 7. Administrator Guides
-- [**Admin Overview**](./guides/admin-guide.md) - System administration
-- [**Configuration**](./guides/configuration.md) - Environment and system setup
-- [**User Management**](./guides/user-management.md) - Managing users and access
-- [**Backup & Recovery**](./guides/backup-recovery.md) - Data protection strategies
-- [**Troubleshooting**](./guides/troubleshooting.md) - Common issues and solutions
+#### Security
+- [**Security Procedures**](./technical/security/security-procedures.md) - Security hardening
+- [**BYOK Implementation**](./technical/security/byok-implementation.md) - Bring Your Own Key
+- [**Encryption Specification**](./technical/security/encryption-specification.md) - Encryption details
+- [**Security Compliance**](./technical/security/security-compliance.md) - Compliance standards
+- [**CPA PERT Security**](./technical/security/cpa-pert-security-audit.md) - Module security audit
 
-### 8. Add-ons & Extensions
-- [**Add-ons Overview**](./addons/README.md) - Available modules
-- [**CPA PERT Writer**](./addons/cpa-pert-writer/README.md) - CPA experience reporting
-  - [User Guide](./addons/cpa-pert-writer/docs/user-guide.md)
-  - [Integration Guide](./addons/cpa-pert-writer/docs/integration.md)
-- [**Extension Development**](./guides/extension-development.md) - Building custom modules
+### 4. Project Documentation
+- [**Changelog**](./project/changelog/) - Development history and updates
+- [**Add-on Modules**](./project/addons/) - Specialized modules
+  - [CPA PERT Writer](./project/addons/cpa-pert-writer/README.md) - Accounting module
 
 ## 🏗️ Project Structure
 

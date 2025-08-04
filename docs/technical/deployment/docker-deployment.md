@@ -371,8 +371,8 @@ docker system prune -f
 ### Database Schema Updates
 
 ```bash
-# Run database migrations
-docker-compose exec pathfinder npm run db:migrate
+# Set up database schema
+docker-compose exec pathfinder npm run db:setup
 
 # Verify schema deployment
 docker-compose exec pathfinder npm run db:health

@@ -60,11 +60,11 @@ docker-compose up -d oracle-xe
 docker-compose logs -f oracle-xe
 ```
 
-### 5. Run Database Migrations
+### 5. Set Up Database
 
 ```bash
-# Run migrations
-npm run db:migrate
+# Set up database schema
+npm run db:setup
 
 # Seed test data (optional)
 npm run db:seed
@@ -117,10 +117,9 @@ npm run backend:dev      # Start backend only
 npm run frontend:dev     # Start frontend only
 
 # Database
-npm run db:migrate       # Run migrations
-npm run db:rollback      # Rollback last migration
+npm run db:setup         # Set up database schema
 npm run db:seed          # Seed test data
-npm run db:reset         # Reset database
+npm run db:health        # Check database health
 
 # Testing
 npm run test             # Run all tests

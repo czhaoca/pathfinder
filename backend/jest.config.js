@@ -6,7 +6,7 @@ module.exports = {
     '!src/**/*.test.js',
     '!src/**/index.js',
     '!src/config/**',
-    '!src/database/migrations/**',
+    '!src/database/setup/**',
     '!src/database/seeds/**'
   ],
   testMatch: [

@@ -29,6 +29,10 @@ const JobMatchingService = require('./services/jobMatchingService');
 const ApplicationService = require('./services/applicationService');
 const InterviewPrepService = require('./services/interviewPrepService');
 const CompanyService = require('./services/companyService');
+const CourseService = require('./services/courseService');
+const SkillAssessmentService = require('./services/skillAssessmentService');
+const CertificationService = require('./services/certificationService');
+const LearningPathService = require('./services/learningPathService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -50,6 +54,7 @@ const ResumeController = require('./api/controllers/resumeController');
 const CareerPathController = require('./api/controllers/careerPathController');
 const NetworkingController = require('./api/controllers/networkingController');
 const JobSearchController = require('./api/controllers/jobSearchController');
+const LearningController = require('./api/controllers/learningController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
@@ -185,6 +190,29 @@ class Container {
         this.get('openaiService'),
         this.get('profileService')
       ));
+      
+      // Learning & Development services
+      this.register('courseService', () => new CourseService(
+        this.get('databaseService'),
+        this.get('profileService'),
+        this.get('skillsGapService'),
+        this.get('openaiService')
+      ));
+      this.register('skillAssessmentService', () => new SkillAssessmentService(
+        this.get('databaseService'),
+        this.get('openaiService'),
+        this.get('experienceService')
+      ));
+      this.register('certificationService', () => new CertificationService(
+        this.get('databaseService'),
+        this.get('auditService')
+      ));
+      this.register('learningPathService', () => new LearningPathService(
+        this.get('databaseService'),
+        this.get('courseService'),
+        this.get('skillAssessmentService'),
+        this.get('certificationService')
+      ));
 
       // Register middleware
       this.register('authMiddleware', () => new AuthMiddleware(this.get('authService')));
@@ -221,6 +249,12 @@ class Container {
         this.get('applicationService'),
         this.get('interviewPrepService'),
         this.get('companyService')
+      ));
+      this.register('learningController', () => new LearningController(
+        this.get('courseService'),
+        this.get('skillAssessmentService'),
+        this.get('certificationService'),
+        this.get('learningPathService')
       ));
 
       logger.info('Dependency container initialized');

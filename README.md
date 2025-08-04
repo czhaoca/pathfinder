@@ -28,7 +28,7 @@ pathfinder/
 │   │   │   ├── encryption.js
 │   │   │   └── mcp-server.js
 │   │   ├── database/       # Database related
-│   │   │   ├── migrations/ # Schema migrations
+│   │   │   ├── schema/     # Table creation schemas
 │   │   │   ├── seeds/      # Seed data
 │   │   │   └── queries/    # SQL queries
 │   │   ├── config/         # Configuration
@@ -73,9 +73,9 @@ pathfinder/
    # Edit .env files with your configuration
    ```
 
-4. **Run database migrations**
+4. **Set up database**
    ```bash
-   npm run db:migrate:dev
+   npm run db:setup:dev
    ```
 
 5. **Start development servers**

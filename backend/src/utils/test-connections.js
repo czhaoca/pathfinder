@@ -164,9 +164,9 @@ async function testConnection(env) {
     console.log(`   Schema tables: ${tableCount}/3 found`);
     
     if (tableCount === 0) {
-      printWarning('No schema tables found - run migration: npm run db:migrate');
+      printWarning('No schema tables found - run setup: npm run db:setup');
     } else if (tableCount < 3) {
-      printWarning('Partial schema found - consider re-running migration');
+      printWarning('Partial schema found - consider re-running setup');
     } else {
       printSuccess('Complete schema found');
     }
@@ -270,12 +270,12 @@ function showRecommendations(devResult, prodResult) {
                          devResult.tableCount === 3 && prodResult.tableCount === 3;
   
   if (!bothHaveSchema) {
-    console.log('\nSchema deployment needed:');
+    console.log('\nSchema setup needed:');
     if (devResult.success && devResult.tableCount < 3) {
-      console.log('   • Development: npm run db:migrate:dev');
+      console.log('   • Development: npm run db:setup:dev');
     }
     if (prodResult.success && prodResult.tableCount < 3) {
-      console.log('   • Production: npm run db:migrate:prod');
+      console.log('   • Production: npm run db:setup:prod');
     }
   }
 }

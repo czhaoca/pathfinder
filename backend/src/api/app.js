@@ -18,6 +18,7 @@ const createResumeRoutes = require('./routes/resumeRoutes');
 const careerPathRoutes = require('./routes/careerPathRoutes');
 const networkingRoutes = require('./routes/networkingRoutes');
 const createJobSearchRoutes = require('./routes/jobSearchRoutes');
+const createLearningRoutes = require('./routes/learningRoutes');
 
 class App {
   constructor() {
@@ -137,6 +138,7 @@ class App {
     this.app.use('/api', careerPathRoutes);
     this.app.use('/api', networkingRoutes);
     this.app.use('/api', createJobSearchRoutes(container));
+    this.app.use('/api/learning', createLearningRoutes(container));
 
     // API documentation
     this.app.get('/api', (req, res) => {
@@ -221,6 +223,27 @@ class App {
             interviewInsights: 'GET /api/interview-prep/insights',
             companies: 'GET /api/companies/search',
             companyDetails: 'GET /api/companies/:companyId'
+          },
+          learning: {
+            coursesSearch: 'GET /api/learning/courses/search',
+            coursesRecommended: 'GET /api/learning/courses/recommended',
+            coursesEnrolled: 'GET /api/learning/courses/enrolled',
+            courseDetails: 'GET /api/learning/courses/:courseId',
+            courseEnroll: 'POST /api/learning/courses/enroll',
+            courseProgress: 'PUT /api/learning/courses/:enrollmentId/progress',
+            courseComplete: 'POST /api/learning/courses/:enrollmentId/complete',
+            assessments: 'GET /api/learning/assessments',
+            assessmentStart: 'POST /api/learning/assessments/:assessmentId/start',
+            assessmentSubmit: 'POST /api/learning/assessments/:assessmentId/submit',
+            assessmentResults: 'GET /api/learning/assessments/results',
+            certificationsCatalog: 'GET /api/learning/certifications/catalog',
+            certificationsMy: 'GET /api/learning/certifications/my',
+            certificationsAdd: 'POST /api/learning/certifications/add',
+            learningPaths: 'GET /api/learning/learning-paths',
+            learningPathsMy: 'GET /api/learning/learning-paths/my',
+            learningPathEnroll: 'POST /api/learning/learning-paths/:pathId/enroll',
+            learningGoals: 'GET /api/learning/learning-goals',
+            learningAnalytics: 'GET /api/learning/learning/analytics'
           }
         }
       });
