@@ -18,6 +18,7 @@
     "db:seed:prod": "NODE_ENV=production node src/database/seeds/seed-data.js",
     "db:health": "node src/utils/db-health-check.js",
     "db:test": "node src/utils/test-connections.js",
+    "db:sync": "node src/utils/db-sync.js",
     "cpa:collect": "tsx src/services/cpa-data-collector/run-collection.ts",
     "cpa:collect:watch": "node-schedule src/services/cpa-data-collector/scheduled-collection.js",
     "test": "jest",

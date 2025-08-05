@@ -42,11 +42,38 @@ nano .env
 ```
 
 Required environment variables:
+
+**For Single Database Mode:**
 ```env
-# Database
+# Database (Legacy format - still supported)
 DB_USER=oracle_user
 DB_PASSWORD=oracle_password
 DB_CONNECTION_STRING=your_connection_string
+ACTIVE_DATABASES=development  # or production
+
+# Security
+JWT_SECRET=your-secret-key-minimum-32-chars
+
+# API Keys
+OPENAI_API_KEY=sk-...
+```
+
+**For Dual Database Mode:**
+```env
+# Development Database
+DEV_DB_USER=dev_oracle_user
+DEV_DB_PASSWORD=dev_oracle_password
+DEV_DB_CONNECTION_STRING=dev_connection_string
+DEV_DB_WALLET_PATH=/path/to/dev/wallet
+
+# Production Database  
+PROD_DB_USER=prod_oracle_user
+PROD_DB_PASSWORD=prod_oracle_password
+PROD_DB_CONNECTION_STRING=prod_connection_string
+PROD_DB_WALLET_PATH=/path/to/prod/wallet
+
+# Active Databases
+ACTIVE_DATABASES=both  # Enables dual database mode
 
 # Security
 JWT_SECRET=your-secret-key-minimum-32-chars
@@ -218,6 +245,106 @@ services:
       - frontend
       - backend
 ```
+
+## Dual Database Configuration
+
+### Overview
+
+Pathfinder supports running with connections to both development and production databases simultaneously. This allows for:
+- Easy data comparison between environments
+- Gradual migration from dev to prod
+- Testing production features with development data
+- Data synchronization capabilities
+
+### Configuration Modes
+
+**1. Single Database Mode (Default)**
+- Uses traditional `DB_*` environment variables
+- Connects to one database based on `NODE_ENV`
+- Set `ACTIVE_DATABASES=development` or `ACTIVE_DATABASES=production`
+
+**2. Dual Database Mode**
+- Uses `DEV_DB_*` and `PROD_DB_*` environment variables
+- Maintains connections to both databases
+- Set `ACTIVE_DATABASES=both`
+- Allows cross-environment operations
+
+### Using Dual Database Mode
+
+1. **Configure Both Databases**
+```bash
+# .env file
+ACTIVE_DATABASES=both
+
+# Development
+DEV_DB_USER=admin_dev
+DEV_DB_PASSWORD=dev_password
+DEV_DB_CONNECTION_STRING=dev.oracle.cloud/service
+DEV_DB_WALLET_PATH=./wallets/dev
+
+# Production
+PROD_DB_USER=admin_prod  
+PROD_DB_PASSWORD=prod_password
+PROD_DB_CONNECTION_STRING=prod.oracle.cloud/service
+PROD_DB_WALLET_PATH=./wallets/prod
+```
+
+2. **Database Sync Utility**
+```bash
+# Check health of both databases
+docker exec backend npm run db:sync health
+
+# View statistics
+docker exec backend npm run db:sync stats
+
+# List users in each environment
+docker exec backend npm run db:sync list development
+docker exec backend npm run db:sync list production
+
+# Compare user data
+docker exec backend npm run db:sync compare <userId> <schemaPrefix>
+
+# Sync user from dev to prod
+docker exec backend npm run db:sync sync <userId> development production
+```
+
+3. **API Endpoints with Environment Selection**
+When dual database mode is active, some endpoints accept an optional `env` query parameter:
+```bash
+# Query development database
+GET /api/users?env=development
+
+# Query production database  
+GET /api/users?env=production
+
+# Default uses NODE_ENV setting
+GET /api/users
+```
+
+### Docker Compose for Dual Database
+
+```yaml
+services:
+  backend:
+    environment:
+      - ACTIVE_DATABASES=both
+      - DEV_DB_USER=${DEV_DB_USER}
+      - DEV_DB_PASSWORD=${DEV_DB_PASSWORD}
+      - DEV_DB_CONNECTION_STRING=${DEV_DB_CONNECTION_STRING}
+      - PROD_DB_USER=${PROD_DB_USER}
+      - PROD_DB_PASSWORD=${PROD_DB_PASSWORD}
+      - PROD_DB_CONNECTION_STRING=${PROD_DB_CONNECTION_STRING}
+    volumes:
+      - ./wallets/dev:/app/wallets/dev:ro
+      - ./wallets/prod:/app/wallets/prod:ro
+```
+
+### Security Considerations
+
+1. **Separate Credentials**: Always use different credentials for dev and prod
+2. **Read-Only Access**: Consider read-only access for production in development environments
+3. **Audit Logging**: All cross-environment operations are logged
+4. **Network Isolation**: Ensure proper network segmentation between environments
 
 ## Container Management
 

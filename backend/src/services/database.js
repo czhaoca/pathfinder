@@ -788,4 +788,7 @@ class DatabaseManager {
 // Create singleton instance
 const databaseManager = new DatabaseManager();
 
-module.exports = databaseManager;
+// Export multi-database manager if configured
+const multiDbManager = config.activeDatabases === 'both' ? require('./multi-database') : null;
+
+module.exports = config.activeDatabases === 'both' ? multiDbManager : databaseManager;

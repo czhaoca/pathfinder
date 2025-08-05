@@ -6,6 +6,7 @@
 require('dotenv').config();
 
 const environment = process.env.NODE_ENV || 'development';
+const activeDatabases = process.env.ACTIVE_DATABASES || environment; // 'development', 'production', or 'both'
 
 // Project configuration for shared database environments
 const projectConfig = {
@@ -28,17 +29,18 @@ const projectConfig = {
 
 const config = {
   environment,
+  activeDatabases,
   project: projectConfig,
   
   database: {
     development: {
-      host: process.env.OCI_DB_DEV_HOST,
-      port: parseInt(process.env.OCI_DB_DEV_PORT) || 1521,
-      serviceName: process.env.OCI_DB_DEV_SERVICE_NAME,
-      username: process.env.OCI_DB_DEV_USERNAME || 'ADMIN',
-      password: process.env.OCI_DB_DEV_PASSWORD,
-      walletLocation: process.env.OCI_DB_DEV_WALLET_PATH || './wallets/dev-wallet',
-      walletPassword: process.env.OCI_DB_DEV_WALLET_PASSWORD || '',
+      host: process.env.DEV_DB_HOST,
+      port: parseInt(process.env.DEV_DB_PORT) || 1521,
+      serviceName: process.env.DEV_DB_CONNECTION_STRING || process.env.DEV_DB_SERVICE_NAME,
+      username: process.env.DEV_DB_USER || 'ADMIN',
+      password: process.env.DEV_DB_PASSWORD,
+      walletLocation: process.env.DEV_DB_WALLET_PATH || './wallets/dev-wallet',
+      walletPassword: process.env.DEV_DB_WALLET_PASSWORD || '',
       pool: {
         min: 2,
         max: 8,
@@ -64,13 +66,13 @@ const config = {
     },
     
     production: {
-      host: process.env.OCI_DB_PROD_HOST,
-      port: parseInt(process.env.OCI_DB_PROD_PORT) || 1521,
-      serviceName: process.env.OCI_DB_PROD_SERVICE_NAME,
-      username: process.env.OCI_DB_PROD_USERNAME || 'ADMIN',
-      password: process.env.OCI_DB_PROD_PASSWORD,
-      walletLocation: process.env.OCI_DB_PROD_WALLET_PATH || './wallets/prod-wallet',
-      walletPassword: process.env.OCI_DB_PROD_WALLET_PASSWORD || '',
+      host: process.env.PROD_DB_HOST,
+      port: parseInt(process.env.PROD_DB_PORT) || 1521,
+      serviceName: process.env.PROD_DB_CONNECTION_STRING || process.env.PROD_DB_SERVICE_NAME,
+      username: process.env.PROD_DB_USER || 'ADMIN',
+      password: process.env.PROD_DB_PASSWORD,
+      walletLocation: process.env.PROD_DB_WALLET_PATH || './wallets/prod-wallet',
+      walletPassword: process.env.PROD_DB_WALLET_PASSWORD || '',
       pool: {
         min: 2,
         max: 15,
