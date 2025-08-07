@@ -21,6 +21,7 @@ import CPAPertProgress from '@/pages/CPAPertProgress'
 import AnalyticsDashboard from '@/pages/AnalyticsDashboard'
 import ResumePage from '@/pages/ResumePage'
 import CareerPath from '@/pages/CareerPath'
+import Networking from '@/pages/Networking'
 
 // Layouts
 import AuthLayout from '@/components/layout/AuthLayout'
@@ -63,6 +64,7 @@ function App() {
             <Route path="analytics" element={<AnalyticsDashboard />} />
             <Route path="resume" element={<ResumePage />} />
             <Route path="career-path" element={<CareerPath />} />
+            <Route path="networking" element={<Networking />} />
             <Route path="cpa-pert" element={<CPAPert />} />
             <Route path="cpa-pert/mapping" element={<CPAPertMapping />} />
             <Route path="cpa-pert/write" element={<CPAPertWriter />} />
