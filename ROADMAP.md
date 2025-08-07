@@ -51,7 +51,11 @@ This roadmap outlines the development progression for Pathfinder from its curren
 
 3. **Technical Debt**
    - [x] Unit tests for backend services ✅ (August 2025)
-   - [ ] Unit tests for frontend services
+   - [x] Unit tests for frontend services ✅ (August 2025)
+     - [x] Vitest and React Testing Library setup
+     - [x] AuthService unit tests
+     - [x] JobSearchService unit tests
+     - [x] LearningService unit tests
    - [ ] Increase overall test coverage from 17% to 80%
    - [x] Implement rate limiting for AI operations ✅ (August 2025)
      - [x] Token bucket algorithm for AI requests
