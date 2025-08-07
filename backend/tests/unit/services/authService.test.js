@@ -80,6 +80,8 @@ describe('AuthService', () => {
 
       // Mock no existing user
       mockUserRepository.findByUsernameOrEmail.mockResolvedValue(null);
+      mockUserRepository.findByUsername.mockResolvedValue(null);
+      mockUserRepository.findByEmail.mockResolvedValue(null);
 
       // Mock bcrypt
       bcrypt.hash.mockResolvedValue('hashed-password');
