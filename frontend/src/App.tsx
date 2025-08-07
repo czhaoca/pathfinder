@@ -20,6 +20,7 @@ import PertResponseDetail from '@/pages/PertResponseDetail'
 import CPAPertProgress from '@/pages/CPAPertProgress'
 import AnalyticsDashboard from '@/pages/AnalyticsDashboard'
 import ResumePage from '@/pages/ResumePage'
+import CareerPath from '@/pages/CareerPath'
 
 // Layouts
 import AuthLayout from '@/components/layout/AuthLayout'
@@ -61,6 +62,7 @@ function App() {
             <Route path="experiences" element={<Experiences />} />
             <Route path="analytics" element={<AnalyticsDashboard />} />
             <Route path="resume" element={<ResumePage />} />
+            <Route path="career-path" element={<CareerPath />} />
             <Route path="cpa-pert" element={<CPAPert />} />
             <Route path="cpa-pert/mapping" element={<CPAPertMapping />} />
             <Route path="cpa-pert/write" element={<CPAPertWriter />} />

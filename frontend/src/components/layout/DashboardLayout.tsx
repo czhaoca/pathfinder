@@ -10,7 +10,8 @@ import {
   X,
   FileText,
   BarChart3,
-  FileBadge
+  FileBadge,
+  Target
 } from 'lucide-react'
 import { authStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
@@ -20,6 +21,7 @@ import { PageErrorBoundary } from '@/components/common/PageErrorBoundary'
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Career Chat', href: '/chat', icon: MessageSquare },
+  { name: 'Career Path', href: '/career-path', icon: Target },
   { name: 'Experiences', href: '/experiences', icon: Briefcase },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Resume Builder', href: '/resume', icon: FileBadge },
