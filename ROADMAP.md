@@ -46,7 +46,13 @@ This roadmap outlines the development progression for Pathfinder from its curren
      - [x] Performance monitoring middleware
      - [x] Response compression
      - [x] Request deduplication
-   - [ ] User documentation
+   - [x] User documentation ✅ (August 2025)
+     - [x] Main user guide with table of contents
+     - [x] Getting started guide
+     - [x] Career chat assistant guide
+     - [x] Job search and applications guide
+     - [x] Quick start (15-minute setup)
+     - [x] Troubleshooting guide
    - [ ] Deployment preparation
 
 3. **Technical Debt**
