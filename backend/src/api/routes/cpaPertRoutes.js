@@ -4,6 +4,7 @@
  */
 
 const express = require('express');
+const ErrorHandler = require('../middleware/errorHandler');
 
 function createCPAPertRoutes(container) {
   const router = express.Router();
@@ -11,83 +12,83 @@ function createCPAPertRoutes(container) {
   const authMiddleware = container.get('authMiddleware');
 
   // All routes require authentication
-  router.use(authMiddleware.authenticate.bind(authMiddleware));
+  router.use(authMiddleware.authenticate());
 
   // Analyze experience and map competencies
   router.post(
     '/analyze-experience',
-    cpaPertController.analyzeExperience.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.analyzeExperience(req, res, next))
   );
 
   // Get competency mapping for an experience
   router.get(
     '/competency-mapping/:experienceId',
-    cpaPertController.getCompetencyMapping.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.getCompetencyMapping(req, res, next))
   );
 
   // Generate PERT response
   router.post(
     '/generate-response',
-    cpaPertController.generatePERTResponse.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.generatePERTResponse(req, res, next))
   );
 
   // EVR compliance check
   router.get(
     '/compliance-check',
-    cpaPertController.checkCompliance.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.checkCompliance(req, res, next))
   );
 
   // Validate EVR requirements (creates new check)
   router.post(
     '/validate-requirements',
-    cpaPertController.validateRequirements.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.validateRequirements(req, res, next))
   );
 
   // Get competency framework
   router.get(
     '/competency-framework',
-    cpaPertController.getCompetencyFramework.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.getCompetencyFramework(req, res, next))
   );
 
   // Get proficiency assessment
   router.get(
     '/proficiency-assessment/:experienceId',
-    cpaPertController.getProficiencyAssessment.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.getProficiencyAssessment(req, res, next))
   );
 
   // Get user's PERT responses
   router.get(
     '/responses',
-    cpaPertController.getUserPERTResponses.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.getUserPERTResponses(req, res, next))
   );
 
   // Get competency report
   router.get(
     '/competency-report',
-    cpaPertController.getCompetencyReport.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.getCompetencyReport(req, res, next))
   );
 
   // Update PERT response
   router.put(
     '/response/:responseId',
-    cpaPertController.updatePERTResponse.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.updatePERTResponse(req, res, next))
   );
 
   // Delete PERT response
   router.delete(
     '/response/:responseId',
-    cpaPertController.deletePERTResponse.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.deletePERTResponse(req, res, next))
   );
 
   // Batch operations
   router.post(
     '/batch/analyze',
-    cpaPertController.batchAnalyzeExperiences.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.batchAnalyzeExperiences(req, res, next))
   );
 
   router.post(
     '/batch/generate',
-    cpaPertController.batchGeneratePERTResponses.bind(cpaPertController)
+    ErrorHandler.asyncWrapper((req, res, next) => cpaPertController.batchGeneratePERTResponses(req, res, next))
   );
 
   return router;

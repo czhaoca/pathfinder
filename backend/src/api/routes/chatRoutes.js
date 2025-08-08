@@ -1,14 +1,11 @@
 const express = require('express');
 const ErrorHandler = require('../middleware/errorHandler');
-const ChatStreamController = require('../controllers/chatStreamController');
 
 function createChatRoutes(container) {
   const router = express.Router();
   const chatController = container.get('chatController');
+  const chatStreamController = container.get('chatStreamController');
   const authMiddleware = container.get('authMiddleware');
-  
-  // Create streaming controller
-  const chatStreamController = new ChatStreamController(container.get('chatService'));
 
   // All chat routes require authentication
   router.use(authMiddleware.authenticate());

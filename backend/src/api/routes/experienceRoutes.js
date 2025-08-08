@@ -1,4 +1,5 @@
 const express = require('express');
+const ErrorHandler = require('../middleware/errorHandler');
 const { validate, schemas } = require('../middleware/validation');
 
 function createExperienceRoutes(container) {

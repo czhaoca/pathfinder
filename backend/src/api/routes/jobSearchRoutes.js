@@ -1,15 +1,15 @@
 const express = require('express');
+const ErrorHandler = require('../middleware/errorHandler');
 const { body, query, param } = require('express-validator');
-const authenticate = require('../middleware/authenticate');
-const validate = require('../middleware/validate');
 
-const router = express.Router();
-
-module.exports = (container) => {
-    const jobSearchController = container.resolve('jobSearchController');
+function createJobSearchRoutes(container) {
+    const router = express.Router();
+    const jobSearchController = container.get('jobSearchController');
+    const authMiddleware = container.get('authMiddleware');
+    const validate = container.get('validationMiddleware');
 
     // Apply authentication to all routes
-    router.use(authenticate);
+    router.use(authMiddleware.authenticate());
 
     // Job Search Routes
     router.get('/jobs/search',
@@ -30,7 +30,7 @@ module.exports = (container) => {
             query('offset').optional().isInt({ min: 0 })
         ],
         validate,
-        jobSearchController.searchJobs.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.searchJobs(req, res, next))
     );
 
     router.get('/jobs/recommended',
@@ -38,7 +38,7 @@ module.exports = (container) => {
             query('limit').optional().isInt({ min: 1, max: 50 })
         ],
         validate,
-        jobSearchController.getRecommendedJobs.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getRecommendedJobs(req, res, next))
     );
 
     router.get('/jobs/:jobId',
@@ -46,7 +46,7 @@ module.exports = (container) => {
             param('jobId').isString().notEmpty()
         ],
         validate,
-        jobSearchController.getJobDetails.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getJobDetails(req, res, next))
     );
 
     router.post('/jobs/match-scores',
@@ -55,7 +55,7 @@ module.exports = (container) => {
             body('jobIds.*').isString()
         ],
         validate,
-        jobSearchController.calculateMatchScores.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.calculateMatchScores(req, res, next))
     );
 
     router.post('/jobs/import',
@@ -67,12 +67,12 @@ module.exports = (container) => {
             body('description').optional().isString()
         ],
         validate,
-        jobSearchController.importJob.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.importJob(req, res, next))
     );
 
     // Job Preferences Routes
     router.get('/job-preferences',
-        jobSearchController.getJobPreferences.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getJobPreferences(req, res, next))
     );
 
     router.put('/job-preferences',
@@ -92,7 +92,7 @@ module.exports = (container) => {
             body('urgencyLevel').optional().isIn(['immediate', '3_months', '6_months', 'exploring'])
         ],
         validate,
-        jobSearchController.updateJobPreferences.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.updateJobPreferences(req, res, next))
     );
 
     // Saved Searches Routes
@@ -103,11 +103,11 @@ module.exports = (container) => {
             body('notificationFrequency').optional().isIn(['daily', 'weekly', 'instant'])
         ],
         validate,
-        jobSearchController.saveSearch.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.saveSearch(req, res, next))
     );
 
     router.get('/saved-searches',
-        jobSearchController.getSavedSearches.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getSavedSearches(req, res, next))
     );
 
     router.delete('/saved-searches/:searchId',
@@ -115,7 +115,7 @@ module.exports = (container) => {
             param('searchId').isString().notEmpty()
         ],
         validate,
-        jobSearchController.deleteSavedSearch.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.deleteSavedSearch(req, res, next))
     );
 
     // Application Routes
@@ -131,7 +131,7 @@ module.exports = (container) => {
             query('offset').optional().isInt({ min: 0 })
         ],
         validate,
-        jobSearchController.getApplications.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getApplications(req, res, next))
     );
 
     router.get('/applications/:applicationId',
@@ -139,7 +139,7 @@ module.exports = (container) => {
             param('applicationId').isString().notEmpty()
         ],
         validate,
-        jobSearchController.getApplicationDetails.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getApplicationDetails(req, res, next))
     );
 
     router.post('/applications',
@@ -158,7 +158,7 @@ module.exports = (container) => {
             body('salaryExpectationMax').optional().isInt({ min: 0 })
         ],
         validate,
-        jobSearchController.createApplication.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.createApplication(req, res, next))
     );
 
     router.put('/applications/:applicationId',
@@ -174,7 +174,7 @@ module.exports = (container) => {
             body('salaryExpectationMax').optional().isInt({ min: 0 })
         ],
         validate,
-        jobSearchController.updateApplication.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.updateApplication(req, res, next))
     );
 
     router.delete('/applications/:applicationId',
@@ -183,7 +183,7 @@ module.exports = (container) => {
             body('reason').optional().isString()
         ],
         validate,
-        jobSearchController.withdrawApplication.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.withdrawApplication(req, res, next))
     );
 
     router.get('/applications/:applicationId/timeline',
@@ -191,7 +191,7 @@ module.exports = (container) => {
             param('applicationId').isString().notEmpty()
         ],
         validate,
-        jobSearchController.getApplicationTimeline.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getApplicationTimeline(req, res, next))
     );
 
     router.get('/applications/stats',
@@ -199,7 +199,7 @@ module.exports = (container) => {
             query('timeframe').optional().isInt({ min: 1, max: 365 })
         ],
         validate,
-        jobSearchController.getApplicationStats.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getApplicationStats(req, res, next))
     );
 
     router.post('/applications/bulk-update',
@@ -210,7 +210,7 @@ module.exports = (container) => {
             body('notes').optional().isString()
         ],
         validate,
-        jobSearchController.bulkUpdateStatus.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.bulkUpdateStatus(req, res, next))
     );
 
     // Interview Preparation Routes
@@ -224,7 +224,7 @@ module.exports = (container) => {
             query('offset').optional().isInt({ min: 0 })
         ],
         validate,
-        jobSearchController.getInterviewQuestions.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getInterviewQuestions(req, res, next))
     );
 
     router.get('/interview-prep/application/:applicationId',
@@ -232,7 +232,7 @@ module.exports = (container) => {
             param('applicationId').isString().notEmpty()
         ],
         validate,
-        jobSearchController.getApplicationInterviewPrep.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getApplicationInterviewPrep(req, res, next))
     );
 
     router.post('/interview-prep/responses',
@@ -245,7 +245,7 @@ module.exports = (container) => {
             body('requestFeedback').optional().isBoolean()
         ],
         validate,
-        jobSearchController.saveInterviewResponse.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.saveInterviewResponse(req, res, next))
     );
 
     router.put('/interview-prep/responses/:responseId',
@@ -256,7 +256,7 @@ module.exports = (container) => {
             body('needsImprovement').optional().isBoolean()
         ],
         validate,
-        jobSearchController.updateInterviewResponse.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.updateInterviewResponse(req, res, next))
     );
 
     router.get('/interview-prep/responses',
@@ -268,7 +268,7 @@ module.exports = (container) => {
             query('offset').optional().isInt({ min: 0 })
         ],
         validate,
-        jobSearchController.getUserResponses.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getUserResponses(req, res, next))
     );
 
     router.post('/interview-prep/questions',
@@ -283,11 +283,11 @@ module.exports = (container) => {
             body('tips').optional().isString()
         ],
         validate,
-        jobSearchController.addCustomQuestion.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.addCustomQuestion(req, res, next))
     );
 
     router.get('/interview-prep/insights',
-        jobSearchController.getInterviewInsights.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getInterviewInsights(req, res, next))
     );
 
     // Company Routes
@@ -298,7 +298,7 @@ module.exports = (container) => {
             query('size').optional().isString()
         ],
         validate,
-        jobSearchController.searchCompanies.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.searchCompanies(req, res, next))
     );
 
     router.get('/companies/:companyId',
@@ -306,7 +306,7 @@ module.exports = (container) => {
             param('companyId').isString().notEmpty()
         ],
         validate,
-        jobSearchController.getCompanyDetails.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.getCompanyDetails(req, res, next))
     );
 
     router.put('/companies/:companyId',
@@ -327,8 +327,10 @@ module.exports = (container) => {
             body('logoUrl').optional().isURL()
         ],
         validate,
-        jobSearchController.updateCompany.bind(jobSearchController)
+        ErrorHandler.asyncWrapper((req, res, next) => jobSearchController.updateCompany(req, res, next))
     );
 
     return router;
-};
+}
+
+module.exports = createJobSearchRoutes;
