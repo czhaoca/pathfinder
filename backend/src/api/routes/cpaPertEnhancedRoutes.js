@@ -1,14 +1,25 @@
 /**
  * Enhanced CPA PERT Routes with EVR Support
- * Implements comprehensive PERT reporting with soft delete protection
+ * Refactored to align with repository middleware + DI patterns
  */
 
 const express = require('express');
-const router = express.Router();
-const { authenticate } = require('../middleware/auth');
-const { validateRequest } = require('../middleware/validation');
-const { rateLimiter } = require('../middleware/rateLimiter');
 const Joi = require('joi');
+
+// Local validation helper using Joi
+const validateBody = (schema) => (req, res, next) => {
+  if (!schema) return next();
+  const { error, value } = schema.validate(req.body, { abortEarly: false, stripUnknown: true });
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors: error.details.map(d => ({ field: d.path.join('.'), message: d.message }))
+    });
+  }
+  req.body = value;
+  next();
+};
 
 // Validation schemas
 const schemas = {
@@ -93,8 +104,9 @@ const schemas = {
 };
 
 // Initialize controller with dependencies
-function initializeRoutes(container) {
-    const controller = container.resolve('cpaPertControllerEnhanced');
+function createCPAPertEnhancedRoutes(container) {
+    const controller = container.get('cpaPertControllerEnhanced');
+    const authMiddleware = container.get('authMiddleware');
     
     // ========================================
     // REPORT MANAGEMENT ROUTES
@@ -104,10 +116,15 @@ function initializeRoutes(container) {
      * Create new PERT report
      * POST /api/cpa-pert/enhanced/reports
      */
-    router.post('/reports',
-        authenticate,
-        validateRequest(schemas.createReport),
-        rateLimiter.aiRateLimit({ maxRequests: 10, windowMs: 3600000 }), // 10 per hour
+    const router = express.Router();
+
+    // All routes require authentication
+    router.use(authMiddleware.authenticate());
+
+    router.post(
+        '/reports',
+        validateBody(schemas.createReport),
+        authMiddleware.rateLimitByUser({ windowMs: 3600000, max: 60 }),
         controller.createReport
     );
 
@@ -115,18 +132,15 @@ function initializeRoutes(container) {
      * Get user's PERT reports
      * GET /api/cpa-pert/enhanced/reports
      */
-    router.get('/reports',
-        authenticate,
-        controller.getReports
-    );
+    router.get('/reports', controller.getReports);
 
     /**
      * Export PERT report
      * GET /api/cpa-pert/enhanced/reports/:reportId/export
      */
-    router.get('/reports/:reportId/export',
-        authenticate,
-        rateLimiter.heavyOperationLimit(),
+    router.get(
+        '/reports/:reportId/export',
+        authMiddleware.rateLimitByUser({ windowMs: 300000, max: 5 }),
         controller.exportReport
     );
 
@@ -138,10 +152,10 @@ function initializeRoutes(container) {
      * Add experience to report (Append-only)
      * POST /api/cpa-pert/enhanced/reports/:reportId/experiences
      */
-    router.post('/reports/:reportId/experiences',
-        authenticate,
-        validateRequest(schemas.addExperience),
-        rateLimiter.aiRateLimit({ maxRequests: 30, windowMs: 3600000 }), // 30 per hour
+    router.post(
+        '/reports/:reportId/experiences',
+        validateBody(schemas.addExperience),
+        authMiddleware.rateLimitByUser({ windowMs: 3600000, max: 120 }),
         controller.addExperience
     );
 
@@ -149,18 +163,15 @@ function initializeRoutes(container) {
      * Get experiences for report
      * GET /api/cpa-pert/enhanced/reports/:reportId/experiences
      */
-    router.get('/reports/:reportId/experiences',
-        authenticate,
-        controller.getExperiences
-    );
+    router.get('/reports/:reportId/experiences', controller.getExperiences);
 
     /**
      * Update experience (Creates new version)
      * PUT /api/cpa-pert/enhanced/experiences/:experienceId
      */
-    router.put('/experiences/:experienceId',
-        authenticate,
-        validateRequest(schemas.updateExperience),
+    router.put(
+        '/experiences/:experienceId',
+        validateBody(schemas.updateExperience),
         controller.updateExperience
     );
 
@@ -168,9 +179,9 @@ function initializeRoutes(container) {
      * Soft delete experience
      * DELETE /api/cpa-pert/enhanced/experiences/:experienceId
      */
-    router.delete('/experiences/:experienceId',
-        authenticate,
-        validateRequest(schemas.deleteExperience),
+    router.delete(
+        '/experiences/:experienceId',
+        validateBody(schemas.deleteExperience),
         controller.softDeleteExperience
     );
 
@@ -178,19 +189,13 @@ function initializeRoutes(container) {
      * Restore soft-deleted experience
      * POST /api/cpa-pert/enhanced/experiences/:experienceId/restore
      */
-    router.post('/experiences/:experienceId/restore',
-        authenticate,
-        controller.restoreExperience
-    );
+    router.post('/experiences/:experienceId/restore', controller.restoreExperience);
 
     /**
      * Get experience audit trail
      * GET /api/cpa-pert/enhanced/experiences/:experienceId/audit
      */
-    router.get('/experiences/:experienceId/audit',
-        authenticate,
-        controller.getAuditTrail
-    );
+    router.get('/experiences/:experienceId/audit', controller.getAuditTrail);
 
     // ========================================
     // COMPETENCY & PROGRESS ROUTES
@@ -200,19 +205,13 @@ function initializeRoutes(container) {
      * Get competency progress
      * GET /api/cpa-pert/enhanced/progress
      */
-    router.get('/progress',
-        authenticate,
-        controller.getCompetencyProgress
-    );
+    router.get('/progress', controller.getCompetencyProgress);
 
     /**
      * Get competency framework
      * GET /api/cpa-pert/enhanced/competency-framework
      */
-    router.get('/competency-framework',
-        authenticate,
-        controller.getCompetencyFramework
-    );
+    router.get('/competency-framework', controller.getCompetencyFramework);
 
     // ========================================
     // EVR ASSESSMENT ROUTES
@@ -222,10 +221,10 @@ function initializeRoutes(container) {
      * Create EVR pre-assessment
      * POST /api/cpa-pert/enhanced/evr-assessment
      */
-    router.post('/evr-assessment',
-        authenticate,
-        validateRequest(schemas.createEvrAssessment),
-        rateLimiter.aiRateLimit({ maxRequests: 5, windowMs: 3600000 }), // 5 per hour
+    router.post(
+        '/evr-assessment',
+        validateBody(schemas.createEvrAssessment),
+        authMiddleware.rateLimitByUser({ windowMs: 3600000, max: 20 }),
         controller.createEvrAssessment
     );
 
@@ -233,10 +232,10 @@ function initializeRoutes(container) {
      * Analyze job description for competency mapping
      * POST /api/cpa-pert/enhanced/analyze-job
      */
-    router.post('/analyze-job',
-        authenticate,
-        validateRequest(schemas.analyzeJob),
-        rateLimiter.aiRateLimit({ maxRequests: 10, windowMs: 3600000 }), // 10 per hour
+    router.post(
+        '/analyze-job',
+        validateBody(schemas.analyzeJob),
+        authMiddleware.rateLimitByUser({ windowMs: 3600000, max: 40 }),
         controller.analyzeJobDescription
     );
 
@@ -248,18 +247,15 @@ function initializeRoutes(container) {
      * Get experience templates
      * GET /api/cpa-pert/enhanced/templates
      */
-    router.get('/templates',
-        authenticate,
-        controller.getTemplates
-    );
+    router.get('/templates', controller.getTemplates);
 
     /**
      * Generate experience from template
      * POST /api/cpa-pert/enhanced/templates/:templateId/generate
      */
-    router.post('/templates/:templateId/generate',
-        authenticate,
-        validateRequest(schemas.generateFromTemplate),
+    router.post(
+        '/templates/:templateId/generate',
+        validateBody(schemas.generateFromTemplate),
         controller.generateExperienceFromTemplate
     );
 
@@ -291,4 +287,4 @@ function initializeRoutes(container) {
     return router;
 }
 
-module.exports = initializeRoutes;
+module.exports = createCPAPertEnhancedRoutes;

@@ -62,6 +62,18 @@ class App {
       },
     }));
 
+    // Explicit security headers to match docs
+    this.app.use((req, res, next) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-Frame-Options', 'DENY');
+      res.setHeader('X-XSS-Protection', '1; mode=block');
+      // HSTS only over HTTPS
+      if (req.secure || (req.headers['x-forwarded-proto'] === 'https')) {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+      }
+      next();
+    });
+
     // CORS configuration
     this.app.use(cors({
       origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -128,13 +140,15 @@ class App {
       });
     });
 
-    // API routes
+    // API routes (unversioned)
     this.app.use('/api/auth', createAuthRoutes(container));
     this.app.use('/api/profile', createProfileRoutes(container));
     this.app.use('/api/experiences', createExperienceRoutes(container));
     this.app.use('/api/chat', createChatRoutes(container));
     this.app.use('/api/cpa-pert', createCPAPertRoutes(container));
-    this.app.use('/api/cpa-pert/enhanced', createCPAPertEnhancedRoutes(container));
+    if (process.env.ENHANCED_PERT_ENABLED === 'true') {
+      this.app.use('/api/cpa-pert/enhanced', createCPAPertEnhancedRoutes(container));
+    }
     this.app.use('/api/analytics', createAnalyticsRoutes(container));
     this.app.use('/api/resume', createResumeRoutes(container));
     this.app.use('/api', careerPathRoutes);
@@ -142,8 +156,24 @@ class App {
     this.app.use('/api', createJobSearchRoutes(container));
     this.app.use('/api/learning', createLearningRoutes(container));
 
+    // API routes (v1 aliases) to match docs
+    this.app.use('/api/v1/auth', createAuthRoutes(container));
+    this.app.use('/api/v1/profile', createProfileRoutes(container));
+    this.app.use('/api/v1/experiences', createExperienceRoutes(container));
+    this.app.use('/api/v1/chat', createChatRoutes(container));
+    this.app.use('/api/v1/cpa-pert', createCPAPertRoutes(container));
+    if (process.env.ENHANCED_PERT_ENABLED === 'true') {
+      this.app.use('/api/v1/cpa-pert/enhanced', createCPAPertEnhancedRoutes(container));
+    }
+    this.app.use('/api/v1/analytics', createAnalyticsRoutes(container));
+    this.app.use('/api/v1/resume', createResumeRoutes(container));
+    this.app.use('/api/v1', careerPathRoutes);
+    this.app.use('/api/v1', networkingRoutes);
+    this.app.use('/api/v1', createJobSearchRoutes(container));
+    this.app.use('/api/v1/learning', createLearningRoutes(container));
+
     // API documentation
-    this.app.get('/api', (req, res) => {
+    const infoResponder = (req, res) => {
       res.json({
         message: 'Career Navigator API',
         version: '1.0.0',
@@ -249,7 +279,10 @@ class App {
           }
         }
       });
-    });
+    };
+
+    this.app.get('/api', infoResponder);
+    this.app.get('/api/v1', infoResponder);
   }
 
   setupErrorHandlers() {

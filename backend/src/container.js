@@ -87,7 +87,7 @@ class Container {
       this.register('sessionRepository', () => new SessionRepository(this.get('database')));
       this.register('auditRepository', () => new AuditRepository(this.get('database')));
       this.register('experienceRepository', () => new ExperienceRepository(this.get('database')));
-      this.register('cpaPertRepository', () => new CPaPertRepository(this.get('database'), config));
+      this.register('cpaPertRepository', () => new CPAPertRepository(this.get('database'), config));
       this.register('chatRepository', () => new ChatRepository(this.get('database')));
       this.register('analyticsRepository', () => new AnalyticsRepository(this.get('database')));
 

@@ -5,7 +5,7 @@
  */
 
 const { AppError } = require('../middleware/errorHandler');
-const { ApiResponse } = require('../../utils/apiResponse');
+const ApiResponse = require('../../utils/apiResponse');
 const logger = require('../../utils/logger');
 
 class EnhancedCpaPertController {

@@ -5,8 +5,8 @@ The Pathfinder API is a RESTful service that provides endpoints for all applicat
 ## Base URL
 
 ```
-Development: http://localhost:3000/api
-Production: https://api.pathfinder.app/api
+Development: http://localhost:3000/api (alias: /api/v1)
+Production: https://api.pathfinder.app/api (alias: /api/v1)
 ```
 
 ## Authentication
@@ -197,6 +197,10 @@ All API responses include security headers:
 - `Strict-Transport-Security: max-age=31536000`
 
 ## API Versioning
+
+- Current stable: `v1` (available at `/api/v1/...`).
+- Backward-compatible alias: all endpoints are also available under `/api/...`.
+- Experimental modules (e.g., enhanced CPA PERT) may be feature-flagged and not enabled by default.
 
 The API uses URL versioning. Current version: v1
 Future versions will be available at `/api/v2/...`
