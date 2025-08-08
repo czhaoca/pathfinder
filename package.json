@@ -27,9 +27,6 @@
     "frontend:test": "cd frontend && npm test",
     "frontend:lint": "cd frontend && npm run lint",
     
-    "db:migrate": "cd backend && npm run db:migrate",
-    "db:migrate:dev": "cd backend && npm run db:migrate:dev",
-    "db:migrate:prod": "cd backend && npm run db:migrate:prod",
     "db:seed": "cd backend && npm run db:seed",
     "db:health": "cd backend && npm run db:health",
     

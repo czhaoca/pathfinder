@@ -14,6 +14,7 @@ const UserService = require('./services/userService');
 const ExperienceService = require('./services/experienceService');
 const ChatService = require('./services/chatService');
 const CPAPertService = require('./services/cpaPertService');
+const EnhancedCpaPertService = require('./services/cpaPertServiceEnhanced');
 const OpenAIChatService = require('./services/openaiChatService');
 const AnalyticsService = require('./services/analyticsService');
 const ResumeService = require('./services/resumeService');
@@ -49,6 +50,7 @@ const ProfileController = require('./api/controllers/profileController');
 const ExperienceController = require('./api/controllers/experienceController');
 const ChatController = require('./api/controllers/chatController');
 const CPAPertController = require('./api/controllers/cpaPertController');
+const EnhancedCpaPertController = require('./api/controllers/cpaPertControllerEnhanced');
 const AnalyticsController = require('./api/controllers/analyticsController');
 const ResumeController = require('./api/controllers/resumeController');
 const CareerPathController = require('./api/controllers/careerPathController');
@@ -58,6 +60,9 @@ const LearningController = require('./api/controllers/learningController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
+
+// Utils
+const CacheManager = require('./utils/cache');
 
 class Container {
   constructor() {
@@ -71,6 +76,11 @@ class Container {
       const database = DatabaseManager;
       await database.initialize();
       this.register('database', database, { singleton: true });
+      
+      // Initialize cache manager
+      const cacheManager = new CacheManager();
+      await cacheManager.initialize();
+      this.register('cacheManager', cacheManager, { singleton: true });
 
       // Register repositories
       this.register('userRepository', () => new UserRepository(this.get('database')));
@@ -116,6 +126,11 @@ class Container {
         this.get('experienceRepository'),
         this.get('auditService'),
         this.get('chatService')
+      ));
+      this.register('cpaPertServiceEnhanced', () => new EnhancedCpaPertService(
+        this.get('database'),
+        this.get('cacheManager'),
+        this.get('openaiService')
       ));
       this.register('analyticsService', () => new AnalyticsService(
         this.get('analyticsRepository'),
@@ -226,6 +241,10 @@ class Container {
         this.get('cpaPertService'),
         this.get('authService')
       ));
+      this.register('cpaPertControllerEnhanced', () => new EnhancedCpaPertController(
+        this.get('cpaPertServiceEnhanced'),
+        this.get('auditService')
+      ));
       this.register('analyticsController', () => new AnalyticsController(
         this.get('analyticsService')
       ));
@@ -298,6 +317,11 @@ class Container {
 
   async shutdown() {
     // Cleanup singletons in reverse order
+    const cacheManager = this.singletons.get('cacheManager');
+    if (cacheManager) {
+      await cacheManager.disconnect();
+    }
+    
     const database = this.singletons.get('database');
     if (database) {
       await database.close();

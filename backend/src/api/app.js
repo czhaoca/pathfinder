@@ -13,6 +13,7 @@ const createProfileRoutes = require('./routes/profileRoutes');
 const createExperienceRoutes = require('./routes/experienceRoutes');
 const createChatRoutes = require('./routes/chatRoutes');
 const createCPAPertRoutes = require('./routes/cpaPertRoutes');
+const createCPAPertEnhancedRoutes = require('./routes/cpaPertEnhancedRoutes');
 const createAnalyticsRoutes = require('./routes/analyticsRoutes');
 const createResumeRoutes = require('./routes/resumeRoutes');
 const careerPathRoutes = require('./routes/careerPathRoutes');
@@ -133,6 +134,7 @@ class App {
     this.app.use('/api/experiences', createExperienceRoutes(container));
     this.app.use('/api/chat', createChatRoutes(container));
     this.app.use('/api/cpa-pert', createCPAPertRoutes(container));
+    this.app.use('/api/cpa-pert/enhanced', createCPAPertEnhancedRoutes(container));
     this.app.use('/api/analytics', createAnalyticsRoutes(container));
     this.app.use('/api/resume', createResumeRoutes(container));
     this.app.use('/api', careerPathRoutes);
