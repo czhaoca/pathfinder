@@ -237,6 +237,169 @@ Send message in conversation.
 
 ---
 
+### CPA PERT Module (Enhanced)
+
+#### POST /api/cpa-pert/enhanced/reports
+Create a new PERT report for EVR or PPR route.
+
+**Request Body:**
+```json
+{
+  "report_period_start": "2024-01-01",
+  "report_period_end": "2024-06-30",
+  "submission_deadline": "2024-07-15",
+  "route_type": "EVR",
+  "employer_name": "ABC Company",
+  "position_title": "Senior Accountant",
+  "hours_worked": 900
+}
+```
+
+**Response:** Created report object
+
+---
+
+#### POST /api/cpa-pert/enhanced/reports/:reportId/experiences
+Add a new experience to a PERT report with date range tracking.
+
+**Request Body:**
+```json
+{
+  "sub_competency_id": "uuid",
+  "experience_title": "Financial Analysis Project",
+  "experience_start_date": "2024-01-15",
+  "experience_end_date": "2024-02-28",
+  "proficiency_level": 1,
+  "challenge": "Complex financial analysis required...",
+  "actions": "Developed comprehensive model...",
+  "results": "Identified $500K in savings...",
+  "lessons_learned": "Importance of validation...",
+  "time_spent_hours": 120,
+  "complexity_level": "complex",
+  "collaboration_type": "team"
+}
+```
+
+---
+
+#### POST /api/cpa-pert/enhanced/experiences/:experienceId/breakdown
+Add detailed activity breakdown for an experience.
+
+**Request Body:**
+```json
+{
+  "activity_type": "analysis",
+  "activity_description": "Performed variance analysis",
+  "start_date": "2024-01-20",
+  "end_date": "2024-01-25",
+  "hours_spent": 40,
+  "competencies_demonstrated": ["FR.1.1", "MA.2.3"],
+  "deliverables": ["Variance Report", "Executive Summary"],
+  "stakeholders_involved": ["CFO", "Controller"],
+  "business_impact": "Identified key cost drivers",
+  "skills_applied": ["Excel", "Power BI"]
+}
+```
+
+---
+
+#### GET /api/cpa-pert/enhanced/experiences/:experienceId/breakdown
+Get all activity breakdowns for an experience.
+
+**Response:** Array of breakdown records with timeline
+
+---
+
+#### POST /api/cpa-pert/enhanced/experiences/:experienceId/time-tracking
+Track daily time for an experience.
+
+**Request Body:**
+```json
+{
+  "activity_date": "2024-01-20",
+  "hours_logged": 8.5,
+  "activity_category": "direct_work",
+  "description": "Completed financial analysis",
+  "is_billable": "Y",
+  "is_cpa_eligible": "Y"
+}
+```
+
+---
+
+#### POST /api/cpa-pert/enhanced/progress/milestones
+Record a competency progression milestone.
+
+**Request Body:**
+```json
+{
+  "sub_competency_id": "uuid",
+  "milestone_date": "2024-03-01",
+  "previous_level": 0,
+  "achieved_level": 1,
+  "evidence_count": 5,
+  "hours_accumulated": 200,
+  "key_experiences": ["exp-id-1", "exp-id-2"],
+  "mentor_feedback": "Excellent progress shown",
+  "self_assessment": "Feel confident at this level",
+  "next_steps": "Work towards Level 2"
+}
+```
+
+---
+
+#### GET /api/cpa-pert/enhanced/progress/timeline
+Get user's progress timeline with milestones.
+
+**Query Parameters:**
+- `sub_competency_id` (optional) - Filter by specific competency
+
+**Response:** Array of milestones ordered by date
+
+---
+
+#### POST /api/cpa-pert/enhanced/reports/:reportId/submit-to-cpa
+Submit a completed report to CPA with full tracking.
+
+**Request Body:**
+```json
+{
+  "submission_type": "final",
+  "submission_deadline": "2024-07-15",
+  "cpa_reference_number": "CPA-2024-001",
+  "exported_file_url": "https://storage.example.com/report.pdf",
+  "exported_file_format": "pdf"
+}
+```
+
+**Response:** Submission record with checksum and tracking info
+
+---
+
+#### GET /api/cpa-pert/enhanced/reports/:reportId/submission-history
+Get complete submission history for a report.
+
+**Response:** Array of submission history entries with status transitions
+
+---
+
+#### GET /api/cpa-pert/enhanced/reports/:reportId/export
+Export a PERT report in various formats.
+
+**Query Parameters:**
+- `format` - Export format (pdf, docx, xml, json)
+
+**Response:** File download or URL
+
+---
+
+#### GET /api/cpa-pert/enhanced/competency-progress
+Get user's overall competency progress summary.
+
+**Response:** Progress statistics by competency area
+
+---
+
 ### Career Path Planning
 
 #### GET /career-paths/search

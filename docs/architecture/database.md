@@ -189,29 +189,137 @@ CREATE TABLE pf_user_<username>_skills_progression (
 );
 ```
 
-### CPA PERT Module (Per User)
+### CPA PERT Module (Enhanced)
+
+The CPA PERT module uses shared tables with robust tracking capabilities:
 
 ```sql
--- PERT responses
-CREATE TABLE pf_user_<username>_pert_responses (
-    id VARCHAR2(36) PRIMARY KEY,
-    experience_id VARCHAR2(36),
-    competency_id VARCHAR2(36) NOT NULL,
-    sub_competency_id VARCHAR2(36),
-    situation CLOB NOT NULL,
-    task CLOB NOT NULL,
-    action CLOB NOT NULL,
-    result CLOB NOT NULL,
-    reflection CLOB,
-    evidence_files CLOB,
-    word_count NUMBER(10),
+-- PERT Reports with time periods
+CREATE TABLE pf_cpa_pert_reports (
+    id VARCHAR2(26) PRIMARY KEY,
+    user_id VARCHAR2(26) NOT NULL,
+    report_period_start DATE NOT NULL,
+    report_period_end DATE NOT NULL,
+    submission_deadline DATE,
+    route_type VARCHAR2(5) CHECK (route_type IN ('EVR','PPR')),
     status VARCHAR2(20) DEFAULT 'draft',
-    reviewer_feedback CLOB,
+    employer_name VARCHAR2(255),
+    position_title VARCHAR2(255),
+    hours_worked NUMBER(7,2),
+    version NUMBER(5) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- PERT Experiences with date ranges
+CREATE TABLE pf_cpa_pert_experiences (
+    id VARCHAR2(26) PRIMARY KEY,
+    report_id VARCHAR2(26) NOT NULL,
+    sub_competency_id VARCHAR2(26) NOT NULL,
+    experience_title VARCHAR2(500) NOT NULL,
+    experience_start_date DATE NOT NULL,
+    experience_end_date DATE NOT NULL,
+    duration_days NUMBER(10) GENERATED ALWAYS AS 
+        (experience_end_date - experience_start_date + 1) VIRTUAL,
+    proficiency_level NUMBER(1) CHECK (proficiency_level IN (0,1,2)),
+    challenge CLOB NOT NULL,
+    actions CLOB NOT NULL,
+    results CLOB NOT NULL,
+    lessons_learned CLOB NOT NULL,
+    time_spent_hours NUMBER(7,2),
+    complexity_level VARCHAR2(20),
+    word_count NUMBER(10),
+    approval_status VARCHAR2(20) DEFAULT 'pending',
+    version NUMBER(5) DEFAULT 1,
+    previous_version_id VARCHAR2(26),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Experience Activity Breakdown
+CREATE TABLE pf_cpa_experience_breakdown (
+    id VARCHAR2(26) PRIMARY KEY,
+    experience_id VARCHAR2(26) NOT NULL,
+    activity_type VARCHAR2(50) CHECK (activity_type IN 
+        ('planning','execution','review','documentation',
+         'analysis','presentation','training')),
+    activity_description CLOB NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    hours_spent NUMBER(7,2) NOT NULL,
+    competencies_demonstrated CLOB CHECK (competencies_demonstrated IS JSON),
+    deliverables CLOB CHECK (deliverables IS JSON),
+    business_impact VARCHAR2(1000),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Progress Milestones
+CREATE TABLE pf_cpa_progress_milestones (
+    id VARCHAR2(26) PRIMARY KEY,
+    user_id VARCHAR2(26) NOT NULL,
+    sub_competency_id VARCHAR2(26) NOT NULL,
+    milestone_date DATE NOT NULL,
+    previous_level NUMBER(1),
+    achieved_level NUMBER(1) NOT NULL CHECK (achieved_level IN (0,1,2)),
+    evidence_count NUMBER(10) DEFAULT 0,
+    hours_accumulated NUMBER(10,2) DEFAULT 0,
+    key_experiences CLOB CHECK (key_experiences IS JSON),
+    mentor_feedback CLOB,
+    self_assessment CLOB,
+    next_steps CLOB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CPA Submissions with Complete Tracking
+CREATE TABLE pf_cpa_pert_submissions (
+    id VARCHAR2(26) PRIMARY KEY,
+    report_id VARCHAR2(26) NOT NULL,
+    user_id VARCHAR2(26) NOT NULL,
+    submission_type VARCHAR2(20) CHECK (submission_type IN 
+        ('draft','final','revision')),
+    submission_deadline DATE,
+    submission_status VARCHAR2(20) DEFAULT 'pending',
+    cpa_reference_number VARCHAR2(100),
+    cpa_confirmation_code VARCHAR2(100),
+    reviewer_id VARCHAR2(100),
+    reviewer_comments CLOB,
+    submitted_payload CLOB CHECK (submitted_payload IS JSON),
+    experience_count NUMBER(10),
+    total_word_count NUMBER(10),
+    exported_file_url VARCHAR2(1000),
+    exported_file_format VARCHAR2(20),
+    submission_checksum VARCHAR2(64),
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Submission History Audit Trail
+CREATE TABLE pf_cpa_submission_history (
+    id VARCHAR2(26) PRIMARY KEY,
+    submission_id VARCHAR2(26) NOT NULL,
+    report_id VARCHAR2(26) NOT NULL,
+    user_id VARCHAR2(26) NOT NULL,
+    action VARCHAR2(50) CHECK (action IN 
+        ('created','submitted','reviewed','accepted',
+         'rejected','revised','withdrawn')),
+    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    action_by VARCHAR2(26),
+    action_details CLOB,
+    previous_status VARCHAR2(20),
+    new_status VARCHAR2(20),
+    attachments CLOB CHECK (attachments IS JSON)
+);
+
+-- Time Tracking for Experiences
+CREATE TABLE pf_cpa_experience_time_tracking (
+    id VARCHAR2(26) PRIMARY KEY,
+    experience_id VARCHAR2(26) NOT NULL,
+    user_id VARCHAR2(26) NOT NULL,
+    activity_date DATE NOT NULL,
+    hours_logged NUMBER(4,2) CHECK (hours_logged > 0 AND hours_logged <= 24),
+    activity_category VARCHAR2(50),
+    description VARCHAR2(1000),
+    is_billable CHAR(1) DEFAULT 'Y',
+    is_cpa_eligible CHAR(1) DEFAULT 'Y',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    submitted_at TIMESTAMP,
-    FOREIGN KEY (experience_id) 
-        REFERENCES pf_user_<username>_experiences(id)
+    UNIQUE (experience_id, activity_date)
 );
 ```
 
