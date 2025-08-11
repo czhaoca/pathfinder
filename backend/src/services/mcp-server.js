@@ -133,6 +133,48 @@ const schemas = {
     careerGoals: Joi.object().optional(),
     uniqueValueProps: Joi.object().optional(),
     availability: Joi.string().max(100).optional()
+  }),
+  // CPA PERT: create report
+  pertCreateReport: Joi.object({
+    reportPeriodStart: Joi.string().isoDate().required(),
+    reportPeriodEnd: Joi.string().isoDate().required(),
+    routeType: Joi.string().valid('EVR','PPR').required(),
+    submissionDeadline: Joi.string().isoDate().optional(),
+    employerName: Joi.string().max(255).optional(),
+    positionTitle: Joi.string().max(255).optional(),
+    hoursWorked: Joi.number().min(0).max(10000).optional()
+  }),
+  // CPA PERT: add experience to report
+  pertAddExperience: Joi.object({
+    reportId: Joi.string().required(),
+    subCompetencyCode: Joi.string().max(20).optional(),
+    subCompetencyId: Joi.string().optional(),
+    experienceTitle: Joi.string().max(500).required(),
+    experienceDate: Joi.string().isoDate().required(),
+    proficiencyLevel: Joi.number().integer().min(0).max(2).required(),
+    challenge: Joi.string().min(50).required(),
+    actions: Joi.string().min(50).required(),
+    results: Joi.string().min(50).required(),
+    lessonsLearned: Joi.string().min(20).required(),
+    timeSpentHours: Joi.number().min(0).max(9999).optional(),
+    complexityLevel: Joi.string().valid('simple','moderate','complex').optional(),
+    collaborationType: Joi.string().valid('individual','team','cross-functional').optional(),
+    toolsUsed: Joi.array().items(Joi.string()).max(10).optional(),
+    cpaValues: Joi.object().optional()
+  }).xor('subCompetencyCode','subCompetencyId'),
+  // CPA PERT: list reports
+  pertListReports: Joi.object({
+    status: Joi.string().valid('draft','submitted','approved','rejected','archived').optional(),
+    routeType: Joi.string().valid('EVR','PPR').optional()
+  }),
+  // CPA PERT: get progress
+  pertGetProgress: Joi.object({}),
+  // CPA PERT: submit report snapshot
+  pertSubmitReport: Joi.object({
+    reportId: Joi.string().required(),
+    payload: Joi.object().required(),
+    exportedFileUrl: Joi.string().uri().optional(),
+    ackReference: Joi.string().max(100).optional()
   })
 };
 
@@ -283,6 +325,22 @@ class CareerNavigatorMCP {
             break;
           case 'logout':
             result = await this.logout(user, request.params.arguments);
+            break;
+          // CPA PERT tools
+          case 'pert_create_report':
+            result = await this.pertCreateReport(user, request.params.arguments);
+            break;
+          case 'pert_add_experience':
+            result = await this.pertAddExperience(user, request.params.arguments);
+            break;
+          case 'pert_list_reports':
+            result = await this.pertListReports(user, request.params.arguments);
+            break;
+          case 'pert_get_progress':
+            result = await this.pertGetProgress(user, request.params.arguments);
+            break;
+          case 'pert_submit_report':
+            result = await this.pertSubmitReport(user, request.params.arguments);
             break;
           default:
             throw new Error(`Unknown tool: ${request.params.name}`);
@@ -663,6 +721,81 @@ class CareerNavigatorMCP {
               type: 'object', 
               properties: {},
               description: 'No parameters required - invalidates current session'
+            }
+          },
+          // ========================
+          // CPA PERT tools
+          // ========================
+          {
+            name: 'pert_create_report',
+            description: 'Create a CPA PERT report for a time period (EVR/PPR)',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                reportPeriodStart: { type: 'string', format: 'date' },
+                reportPeriodEnd: { type: 'string', format: 'date' },
+                routeType: { type: 'string', enum: ['EVR','PPR'] },
+                submissionDeadline: { type: 'string', format: 'date' },
+                employerName: { type: 'string' },
+                positionTitle: { type: 'string' },
+                hoursWorked: { type: 'number' }
+              },
+              required: ['reportPeriodStart','reportPeriodEnd','routeType']
+            }
+          },
+          {
+            name: 'pert_add_experience',
+            description: 'Add a CARL experience to a PERT report (append-only)',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                reportId: { type: 'string' },
+                subCompetencyCode: { type: 'string' },
+                subCompetencyId: { type: 'string' },
+                experienceTitle: { type: 'string' },
+                experienceDate: { type: 'string', format: 'date' },
+                proficiencyLevel: { type: 'integer', enum: [0,1,2] },
+                challenge: { type: 'string' },
+                actions: { type: 'string' },
+                results: { type: 'string' },
+                lessonsLearned: { type: 'string' },
+                timeSpentHours: { type: 'number' },
+                complexityLevel: { type: 'string', enum: ['simple','moderate','complex'] },
+                collaborationType: { type: 'string', enum: ['individual','team','cross-functional'] },
+                toolsUsed: { type: 'array', items: { type: 'string' } },
+                cpaValues: { type: 'object' }
+              },
+              required: ['reportId','experienceTitle','experienceDate','proficiencyLevel','challenge','actions','results','lessonsLearned']
+            }
+          },
+          {
+            name: 'pert_list_reports',
+            description: 'List user PERT reports with optional filters',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['draft','submitted','approved','rejected','archived'] },
+                routeType: { type: 'string', enum: ['EVR','PPR'] }
+              }
+            }
+          },
+          {
+            name: 'pert_get_progress',
+            description: 'Get competency progress summary for the authenticated user',
+            inputSchema: { type: 'object', properties: {} }
+          },
+          {
+            name: 'pert_submit_report',
+            description: 'Submit a PERT report snapshot to CPA (stores immutable submission record)',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                reportId: { type: 'string' },
+                payload: { type: 'object' },
+                exportedFileUrl: { type: 'string' },
+                ackReference: { type: 'string' }
+              },
+              required: ['reportId','payload']
             }
           }
         ]
@@ -1248,6 +1381,176 @@ class CareerNavigatorMCP {
       logger.error('Update quick summary failed', { error: error.message, user: user.username, data: value });
       throw new Error(`Failed to update quick summary: ${error.message}`);
     }
+  }
+
+  // ===============================
+  // CPA PERT helpers & tools
+  // ===============================
+  getPrefix() {
+    return (serverInfo.tablePrefix || 'pf_');
+  }
+
+  async pertCreateReport(user, args) {
+    const { error, value } = schemas.pertCreateReport.validate(args);
+    if (error) {
+      throw new Error(`Validation error: ${error.details[0].message}`);
+    }
+
+    const p = this.getPrefix();
+    const sql = `
+      INSERT INTO ${p}cpa_pert_reports (
+        user_id, report_period_start, report_period_end, submission_deadline,
+        route_type, status, employer_name, position_title, hours_worked, version, created_at, updated_at
+      ) VALUES (
+        :user_id, TO_DATE(:start,'YYYY-MM-DD'), TO_DATE(:end,'YYYY-MM-DD'), ${value.submissionDeadline ? "TO_DATE(:deadline,'YYYY-MM-DD')" : 'NULL'},
+        :route_type, 'draft', :employer, :position, :hours, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+      )`;
+
+    const binds = {
+      user_id: user.userId,
+      start: value.reportPeriodStart,
+      end: value.reportPeriodEnd,
+      deadline: value.submissionDeadline,
+      route_type: value.routeType,
+      employer: value.employerName || null,
+      position: value.positionTitle || null,
+      hours: value.hoursWorked || null
+    };
+
+    await DatabaseManager.executeQuery(sql, binds, { autoCommit: true });
+
+    const sel = `
+      SELECT id, user_id, report_period_start, report_period_end, route_type, status,
+             employer_name, position_title, hours_worked, version, created_at, updated_at
+      FROM ${p}cpa_pert_reports
+      WHERE user_id = :user_id
+        AND report_period_start = TO_DATE(:start,'YYYY-MM-DD')
+        AND report_period_end = TO_DATE(:end,'YYYY-MM-DD')
+      ORDER BY created_at DESC FETCH FIRST 1 ROWS ONLY`;
+
+    const res = await DatabaseManager.executeQuery(sel, { user_id: user.userId, start: value.reportPeriodStart, end: value.reportPeriodEnd });
+    return { content: [{ type: 'json', json: res.rows?.[0] || { success: true } }] };
+  }
+
+  async pertAddExperience(user, args) {
+    const { error, value } = schemas.pertAddExperience.validate(args);
+    if (error) {
+      throw new Error(`Validation error: ${error.details[0].message}`);
+    }
+    const p = this.getPrefix();
+
+    let subId = value.subCompetencyId || null;
+    if (!subId && value.subCompetencyCode) {
+      const q = `SELECT id FROM ${p}cpa_sub_competencies WHERE code = :code`;
+      const r = await DatabaseManager.executeQuery(q, { code: value.subCompetencyCode });
+      if (r.rows.length === 0) throw new Error('Unknown sub-competency code');
+      const row = r.rows[0];
+      subId = row.ID || row.id || (Array.isArray(row) ? row[0] : null);
+    }
+
+    const ins = `
+      INSERT INTO ${p}cpa_pert_experiences (
+        report_id, sub_competency_id, experience_title, experience_date,
+        proficiency_level, challenge, actions, results, lessons_learned,
+        time_spent_hours, complexity_level, collaboration_type, tools_used,
+        cpa_values, word_count, character_count, approval_status, version,
+        created_at, updated_at
+      ) VALUES (
+        :report_id, :sub_id, :title, TO_DATE(:date,'YYYY-MM-DD'),
+        :level, :challenge, :actions, :results, :lessons,
+        :hours, :complexity, :collab, :tools,
+        :values, :word_count, :char_count, 'pending', 1,
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+      )`;
+
+    const fields = [value.challenge, value.actions, value.results, value.lessonsLearned];
+    const wordCount = fields.map(t => (t || '').trim().split(/\s+/).filter(Boolean).length).reduce((a,b)=>a+b,0);
+    const charCount = fields.map(t => (t || '').length).reduce((a,b)=>a+b,0);
+
+    await DatabaseManager.executeQuery(ins, {
+      report_id: value.reportId,
+      sub_id: subId,
+      title: value.experienceTitle,
+      date: value.experienceDate,
+      level: value.proficiencyLevel,
+      challenge: value.challenge,
+      actions: value.actions,
+      results: value.results,
+      lessons: value.lessonsLearned,
+      hours: value.timeSpentHours || null,
+      complexity: value.complexityLevel || null,
+      collab: value.collaborationType || null,
+      tools: value.toolsUsed ? JSON.stringify(value.toolsUsed) : null,
+      values: value.cpaValues ? JSON.stringify(value.cpaValues) : null,
+      word_count: wordCount,
+      char_count: charCount
+    }, { autoCommit: true });
+
+    return { content: [{ type: 'text', text: 'Experience added' }] };
+  }
+
+  async pertListReports(user, args) {
+    const { error, value } = schemas.pertListReports.validate(args || {});
+    if (error) {
+      throw new Error(`Validation error: ${error.details[0].message}`);
+    }
+    const p = this.getPrefix();
+
+    let q = `SELECT id, report_period_start, report_period_end, route_type, status, version, created_at, updated_at
+             FROM ${p}cpa_pert_reports WHERE user_id = :uid`;
+    const binds = { uid: user.userId };
+    if (value?.status) { q += ' AND status = :status'; binds.status = value.status; }
+    if (value?.routeType) { q += ' AND route_type = :rtype'; binds.rtype = value.routeType; }
+    q += ' ORDER BY created_at DESC';
+    const r = await DatabaseManager.executeQuery(q, binds);
+    return { content: [{ type: 'json', json: r.rows }] };
+  }
+
+  async pertGetProgress(user) {
+    const p = this.getPrefix();
+    const q = `
+      SELECT cp.id, sc.code as sub_code, sc.name as sub_name,
+             cp.current_level, cp.target_level, cp.experiences_count,
+             cp.last_experience_date, cp.progress_percentage
+      FROM ${p}cpa_competency_progress cp
+      JOIN ${p}cpa_sub_competencies sc ON cp.sub_competency_id = sc.id
+      WHERE cp.user_id = :uid AND cp.deleted_at IS NULL
+      ORDER BY sc.code`;
+    const r = await DatabaseManager.executeQuery(q, { uid: user.userId });
+    return { content: [{ type: 'json', json: r.rows }] };
+  }
+
+  async pertSubmitReport(user, args) {
+    const { error, value } = schemas.pertSubmitReport.validate(args);
+    if (error) {
+      throw new Error(`Validation error: ${error.details[0].message}`);
+    }
+    const p = this.getPrefix();
+
+    const ins = `
+      INSERT INTO ${p}cpa_pert_submissions (
+        report_id, user_id, submission_status, reviewer_comments,
+        submitted_payload, exported_file_url, version, ack_reference
+      ) VALUES (
+        :rid, :uid, 'pending', NULL,
+        :payload, :file_url, 1, :ack
+      )`;
+    await DatabaseManager.executeQuery(ins, {
+      rid: value.reportId,
+      uid: user.userId,
+      payload: JSON.stringify(value.payload),
+      file_url: value.exportedFileUrl || null,
+      ack: value.ackReference || null
+    }, { autoCommit: true });
+
+    // Mark report submitted
+    await DatabaseManager.executeQuery(
+      `UPDATE ${p}cpa_pert_reports SET status = 'submitted', version = NVL(version,1) + 1, updated_at = CURRENT_TIMESTAMP WHERE id = :rid AND user_id = :uid`,
+      { rid: value.reportId, uid: user.userId },
+      { autoCommit: true }
+    );
+
+    return { content: [{ type: 'text', text: 'Report submitted and snapshot saved' }] };
   }
 
   /**

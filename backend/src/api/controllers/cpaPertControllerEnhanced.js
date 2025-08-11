@@ -29,6 +29,14 @@ class EnhancedCpaPertController {
         this.getCompetencyFramework = this.getCompetencyFramework.bind(this);
         this.analyzeJobDescription = this.analyzeJobDescription.bind(this);
         this.exportReport = this.exportReport.bind(this);
+        this.submitReport = this.submitReport.bind(this);
+        this.addExperienceBreakdown = this.addExperienceBreakdown.bind(this);
+        this.recordProgressMilestone = this.recordProgressMilestone.bind(this);
+        this.trackExperienceTime = this.trackExperienceTime.bind(this);
+        this.getExperienceBreakdown = this.getExperienceBreakdown.bind(this);
+        this.getUserProgressTimeline = this.getUserProgressTimeline.bind(this);
+        this.submitReportToCPA = this.submitReportToCPA.bind(this);
+        this.getSubmissionHistory = this.getSubmissionHistory.bind(this);
     }
 
     /**
@@ -533,6 +541,52 @@ class EnhancedCpaPertController {
     }
 
     /**
+     * Submit PERT report snapshot to CPA (immutable record)
+     * @route POST /api/cpa-pert/reports/:reportId/submit
+     */
+    async submitReport(req, res, next) {
+        try {
+            const userId = req.user.id || req.user.userId;
+            const { reportId } = req.params;
+            const { payload, exportedFileUrl, ackReference } = req.body || {};
+
+            if (!payload || typeof payload !== 'object') {
+                throw new AppError('Submission payload (object) is required', 400);
+            }
+
+            // Verify report ownership
+            await this.verifyReportOwnership(reportId, userId);
+
+            // Validate report readiness
+            const validation = await this.cpaPertService.validateReportForSubmission(reportId);
+            if (!validation.isValid) {
+                return ApiResponse.badRequest(res, validation, 'Report has outstanding issues');
+            }
+
+            const submission = await this.cpaPertService.submitReport({
+                report_id: reportId,
+                user_id: userId,
+                payload,
+                exported_file_url: exportedFileUrl,
+                ack_reference: ackReference
+            });
+
+            await this.auditService.logAction({
+                userId,
+                action: 'SUBMIT_PERT_REPORT',
+                resourceType: 'pert_report',
+                resourceId: reportId,
+                details: { submission_id: submission.id }
+            });
+
+            return ApiResponse.created(res, submission, 'Report submitted');
+        } catch (error) {
+            logger.error('Error submitting report:', error);
+            next(error);
+        }
+    }
+
+    /**
      * Get audit trail for an experience
      * @route GET /api/cpa-pert/experiences/:experienceId/audit
      */
@@ -647,9 +701,236 @@ class EnhancedCpaPertController {
         }
     }
 
+    /**
+     * Add experience breakdown for detailed tracking
+     * @route POST /api/cpa-pert/experiences/:experienceId/breakdown
+     */
+    async addExperienceBreakdown(req, res, next) {
+        try {
+            const userId = req.user.id || req.user.userId;
+            const { experienceId } = req.params;
+            
+            // Verify experience ownership
+            const experience = await this.cpaPertService.getExperience(experienceId);
+            if (!experience) {
+                throw new AppError('Experience not found', 404);
+            }
+            
+            const breakdownData = {
+                ...req.body,
+                experience_id: experienceId,
+                report_id: experience.report_id,
+                user_id: userId
+            };
+            
+            // Validate required fields
+            const required = ['activity_type', 'activity_description', 'start_date', 'end_date', 'hours_spent'];
+            const missing = required.filter(field => !breakdownData[field]);
+            if (missing.length > 0) {
+                throw new AppError(`Missing required fields: ${missing.join(', ')}`, 400);
+            }
+            
+            const breakdown = await this.cpaPertService.addExperienceBreakdown(breakdownData);
+            
+            // Log action
+            await this.auditService.logAction({
+                userId,
+                action: 'ADD_EXPERIENCE_BREAKDOWN',
+                resourceType: 'experience_breakdown',
+                resourceId: breakdown.id,
+                details: { experience_id: experienceId }
+            });
+            
+            return ApiResponse.created(res, breakdown, 'Experience breakdown added successfully');
+        } catch (error) {
+            logger.error('Error adding experience breakdown:', error);
+            next(error);
+        }
+    }
+
+    /**
+     * Record progress milestone
+     * @route POST /api/cpa-pert/progress/milestones
+     */
+    async recordProgressMilestone(req, res, next) {
+        try {
+            const userId = req.user.id || req.user.userId;
+            
+            const milestoneData = {
+                ...req.body,
+                user_id: userId,
+                milestone_date: req.body.milestone_date || new Date().toISOString().split('T')[0]
+            };
+            
+            // Validate required fields
+            const required = ['sub_competency_id', 'achieved_level'];
+            const missing = required.filter(field => !milestoneData[field] && milestoneData[field] !== 0);
+            if (missing.length > 0) {
+                throw new AppError(`Missing required fields: ${missing.join(', ')}`, 400);
+            }
+            
+            const milestone = await this.cpaPertService.recordProgressMilestone(milestoneData);
+            
+            // Log action
+            await this.auditService.logAction({
+                userId,
+                action: 'RECORD_PROGRESS_MILESTONE',
+                resourceType: 'progress_milestone',
+                resourceId: milestone.id,
+                details: { 
+                    competency: milestoneData.sub_competency_id,
+                    level: milestoneData.achieved_level 
+                }
+            });
+            
+            return ApiResponse.created(res, milestone, 'Progress milestone recorded successfully');
+        } catch (error) {
+            logger.error('Error recording progress milestone:', error);
+            next(error);
+        }
+    }
+
+    /**
+     * Track time for experience
+     * @route POST /api/cpa-pert/experiences/:experienceId/time-tracking
+     */
+    async trackExperienceTime(req, res, next) {
+        try {
+            const userId = req.user.id || req.user.userId;
+            const { experienceId } = req.params;
+            
+            const timeData = {
+                ...req.body,
+                experience_id: experienceId,
+                user_id: userId
+            };
+            
+            // Validate required fields
+            const required = ['activity_date', 'hours_logged'];
+            const missing = required.filter(field => !timeData[field] && timeData[field] !== 0);
+            if (missing.length > 0) {
+                throw new AppError(`Missing required fields: ${missing.join(', ')}`, 400);
+            }
+            
+            // Validate hours
+            if (timeData.hours_logged <= 0 || timeData.hours_logged > 24) {
+                throw new AppError('Hours logged must be between 0 and 24', 400);
+            }
+            
+            const timeEntry = await this.cpaPertService.trackExperienceTime(timeData);
+            
+            return ApiResponse.created(res, timeEntry, 'Time tracked successfully');
+        } catch (error) {
+            logger.error('Error tracking experience time:', error);
+            next(error);
+        }
+    }
+
+    /**
+     * Get experience breakdown
+     * @route GET /api/cpa-pert/experiences/:experienceId/breakdown
+     */
+    async getExperienceBreakdown(req, res, next) {
+        try {
+            const { experienceId } = req.params;
+            
+            const breakdown = await this.cpaPertService.getExperienceBreakdown(experienceId);
+            
+            return ApiResponse.success(res, breakdown, 'Experience breakdown retrieved successfully');
+        } catch (error) {
+            logger.error('Error getting experience breakdown:', error);
+            next(error);
+        }
+    }
+
+    /**
+     * Get user progress timeline
+     * @route GET /api/cpa-pert/progress/timeline
+     */
+    async getUserProgressTimeline(req, res, next) {
+        try {
+            const userId = req.user.id || req.user.userId;
+            const { sub_competency_id } = req.query;
+            
+            const timeline = await this.cpaPertService.getUserProgressTimeline(userId, sub_competency_id);
+            
+            return ApiResponse.success(res, timeline, 'Progress timeline retrieved successfully');
+        } catch (error) {
+            logger.error('Error getting progress timeline:', error);
+            next(error);
+        }
+    }
+
+    /**
+     * Submit report to CPA
+     * @route POST /api/cpa-pert/reports/:reportId/submit-to-cpa
+     */
+    async submitReportToCPA(req, res, next) {
+        try {
+            const userId = req.user.id || req.user.userId;
+            const { reportId } = req.params;
+            
+            // Verify report ownership
+            await this.verifyReportOwnership(reportId, userId);
+            
+            const submissionData = {
+                ...req.body,
+                submission_type: req.body.submission_type || 'final'
+            };
+            
+            const submission = await this.cpaPertService.submitReportToCPA(reportId, userId, submissionData);
+            
+            // Log action
+            await this.auditService.logAction({
+                userId,
+                action: 'SUBMIT_REPORT_TO_CPA',
+                resourceType: 'pert_submission',
+                resourceId: submission.id,
+                details: { 
+                    report_id: reportId,
+                    experience_count: submission.experience_count,
+                    total_word_count: submission.total_word_count
+                }
+            });
+            
+            return ApiResponse.success(res, submission, 'Report submitted to CPA successfully');
+        } catch (error) {
+            logger.error('Error submitting report to CPA:', error);
+            next(error);
+        }
+    }
+
+    /**
+     * Get submission history
+     * @route GET /api/cpa-pert/reports/:reportId/submission-history
+     */
+    async getSubmissionHistory(req, res, next) {
+        try {
+            const userId = req.user.id || req.user.userId;
+            const { reportId } = req.params;
+            
+            // Verify report ownership
+            await this.verifyReportOwnership(reportId, userId);
+            
+            const query = `
+                SELECT sh.*, s.submission_type, s.submission_status
+                FROM ${this.cpaPertService.tablePrefix}cpa_submission_history sh
+                JOIN ${this.cpaPertService.tablePrefix}cpa_pert_submissions s ON sh.submission_id = s.id
+                WHERE sh.report_id = :report_id
+                ORDER BY sh.action_date DESC`;
+            
+            const result = await this.cpaPertService.database.executeQuery(query, { report_id: reportId });
+            
+            return ApiResponse.success(res, result.rows, 'Submission history retrieved successfully');
+        } catch (error) {
+            logger.error('Error getting submission history:', error);
+            next(error);
+        }
+    }
+
     // ===============================
     // Helper Methods
-    // ===============================
+    // =============================== 
 
     validateReportData(data) {
         const required = ['report_period_start', 'report_period_end', 'route_type'];

@@ -101,6 +101,55 @@ const schemas = {
             collaboration_type: Joi.string().valid('individual', 'team', 'cross-functional').optional()
         }).optional()
     })
+    ,
+    submitReport: Joi.object({
+        payload: Joi.object().required(),
+        exportedFileUrl: Joi.string().uri().optional(),
+        ackReference: Joi.string().max(100).optional()
+    }),
+
+    addExperienceBreakdown: Joi.object({
+        activity_type: Joi.string().valid('planning', 'execution', 'review', 'documentation', 'analysis', 'presentation', 'training').required(),
+        activity_description: Joi.string().min(50).max(2000).required(),
+        start_date: Joi.date().required(),
+        end_date: Joi.date().min(Joi.ref('start_date')).required(),
+        hours_spent: Joi.number().min(0.25).max(999.99).required(),
+        competencies_demonstrated: Joi.array().items(Joi.string()).optional(),
+        deliverables: Joi.array().items(Joi.string()).optional(),
+        stakeholders_involved: Joi.array().items(Joi.string()).optional(),
+        business_impact: Joi.string().max(1000).optional(),
+        skills_applied: Joi.array().items(Joi.string()).optional()
+    }),
+
+    recordProgressMilestone: Joi.object({
+        sub_competency_id: Joi.string().uuid().required(),
+        milestone_date: Joi.date().optional(),
+        previous_level: Joi.number().integer().min(0).max(2).optional(),
+        achieved_level: Joi.number().integer().min(0).max(2).required(),
+        evidence_count: Joi.number().integer().min(0).optional(),
+        hours_accumulated: Joi.number().min(0).optional(),
+        key_experiences: Joi.array().items(Joi.string()).optional(),
+        mentor_feedback: Joi.string().max(2000).optional(),
+        self_assessment: Joi.string().max(2000).optional(),
+        next_steps: Joi.string().max(2000).optional()
+    }),
+
+    trackExperienceTime: Joi.object({
+        activity_date: Joi.date().required(),
+        hours_logged: Joi.number().min(0.25).max(24).required(),
+        activity_category: Joi.string().valid('direct_work', 'supervision', 'training', 'research', 'documentation').optional(),
+        description: Joi.string().max(1000).optional(),
+        is_billable: Joi.string().valid('Y', 'N').optional(),
+        is_cpa_eligible: Joi.string().valid('Y', 'N').optional()
+    }),
+
+    submitReportToCPA: Joi.object({
+        submission_type: Joi.string().valid('draft', 'final', 'revision').optional(),
+        submission_deadline: Joi.date().optional(),
+        cpa_reference_number: Joi.string().max(100).optional(),
+        exported_file_url: Joi.string().uri().optional(),
+        exported_file_format: Joi.string().valid('pdf', 'docx', 'xml', 'json').optional()
+    })
 };
 
 // Initialize controller with dependencies
@@ -142,6 +191,17 @@ function createCPAPertEnhancedRoutes(container) {
         '/reports/:reportId/export',
         authMiddleware.rateLimitByUser({ windowMs: 300000, max: 5 }),
         controller.exportReport
+    );
+
+    /**
+     * Submit PERT report snapshot
+     * POST /api/cpa-pert/enhanced/reports/:reportId/submit
+     */
+    router.post(
+        '/reports/:reportId/submit',
+        validateBody(schemas.submitReport),
+        authMiddleware.rateLimitByUser({ windowMs: 300000, max: 10 }),
+        controller.submitReport
     );
 
     // ========================================
@@ -257,6 +317,78 @@ function createCPAPertEnhancedRoutes(container) {
         '/templates/:templateId/generate',
         validateBody(schemas.generateFromTemplate),
         controller.generateExperienceFromTemplate
+    );
+
+    // ========================================
+    // NEW ENHANCED FEATURES ROUTES
+    // ========================================
+
+    /**
+     * Add experience breakdown
+     * POST /api/cpa-pert/enhanced/experiences/:experienceId/breakdown
+     */
+    router.post(
+        '/experiences/:experienceId/breakdown',
+        validateBody(schemas.addExperienceBreakdown),
+        controller.addExperienceBreakdown
+    );
+
+    /**
+     * Get experience breakdown
+     * GET /api/cpa-pert/enhanced/experiences/:experienceId/breakdown
+     */
+    router.get(
+        '/experiences/:experienceId/breakdown',
+        controller.getExperienceBreakdown
+    );
+
+    /**
+     * Track time for experience
+     * POST /api/cpa-pert/enhanced/experiences/:experienceId/time-tracking
+     */
+    router.post(
+        '/experiences/:experienceId/time-tracking',
+        validateBody(schemas.trackExperienceTime),
+        controller.trackExperienceTime
+    );
+
+    /**
+     * Record progress milestone
+     * POST /api/cpa-pert/enhanced/progress/milestones
+     */
+    router.post(
+        '/progress/milestones',
+        validateBody(schemas.recordProgressMilestone),
+        controller.recordProgressMilestone
+    );
+
+    /**
+     * Get user progress timeline
+     * GET /api/cpa-pert/enhanced/progress/timeline
+     */
+    router.get(
+        '/progress/timeline',
+        controller.getUserProgressTimeline
+    );
+
+    /**
+     * Submit report to CPA
+     * POST /api/cpa-pert/enhanced/reports/:reportId/submit-to-cpa
+     */
+    router.post(
+        '/reports/:reportId/submit-to-cpa',
+        validateBody(schemas.submitReportToCPA),
+        authMiddleware.rateLimitByUser({ windowMs: 3600000, max: 5 }),
+        controller.submitReportToCPA
+    );
+
+    /**
+     * Get submission history
+     * GET /api/cpa-pert/enhanced/reports/:reportId/submission-history
+     */
+    router.get(
+        '/reports/:reportId/submission-history',
+        controller.getSubmissionHistory
     );
 
     // ========================================

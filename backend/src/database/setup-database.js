@@ -95,6 +95,30 @@ async function createIndexes(db, prefix) {
     `CREATE INDEX ${prefix}idx_job_posted ON ${prefix}job_listings(posted_date)`,
     `CREATE INDEX ${prefix}idx_app_user ON ${prefix}applications(user_id)`,
     `CREATE INDEX ${prefix}idx_app_status ON ${prefix}applications(status)`
+    ,
+    // CPA PERT (enhanced) indexes
+    `CREATE INDEX ${prefix}idx_pert_reports_user ON ${prefix}cpa_pert_reports(user_id)` ,
+    `CREATE INDEX ${prefix}idx_pert_reports_status ON ${prefix}cpa_pert_reports(status)` ,
+    `CREATE INDEX ${prefix}idx_pert_reports_period ON ${prefix}cpa_pert_reports(report_period_start, report_period_end)` ,
+    `CREATE INDEX ${prefix}idx_pert_exp_report ON ${prefix}cpa_pert_experiences(report_id)` ,
+    `CREATE INDEX ${prefix}idx_pert_exp_sub ON ${prefix}cpa_pert_experiences(sub_competency_id)` ,
+    `CREATE INDEX ${prefix}idx_pert_exp_status ON ${prefix}cpa_pert_experiences(approval_status)` ,
+    `CREATE INDEX ${prefix}idx_comp_progress_user ON ${prefix}cpa_competency_progress(user_id)` ,
+    `CREATE INDEX ${prefix}idx_comp_progress_sub ON ${prefix}cpa_competency_progress(sub_competency_id)` ,
+    `CREATE INDEX ${prefix}idx_pert_templates_public ON ${prefix}cpa_pert_templates(is_public)` ,
+    `CREATE INDEX ${prefix}idx_pert_submissions_report ON ${prefix}cpa_pert_submissions(report_id)` ,
+    `CREATE INDEX ${prefix}idx_pert_submissions_status ON ${prefix}cpa_pert_submissions(submission_status)`,
+    
+    // New enhanced CPA PERT indexes
+    `CREATE INDEX ${prefix}idx_pert_exp_dates ON ${prefix}cpa_pert_experiences(experience_start_date, experience_end_date)`,
+    `CREATE INDEX ${prefix}idx_breakdown_exp ON ${prefix}cpa_experience_breakdown(experience_id)`,
+    `CREATE INDEX ${prefix}idx_breakdown_dates ON ${prefix}cpa_experience_breakdown(start_date, end_date)`,
+    `CREATE INDEX ${prefix}idx_progress_milestone_user ON ${prefix}cpa_progress_milestones(user_id, milestone_date)`,
+    `CREATE INDEX ${prefix}idx_submission_history ON ${prefix}cpa_submission_history(submission_id, action_date)`,
+    `CREATE INDEX ${prefix}idx_time_tracking_exp ON ${prefix}cpa_experience_time_tracking(experience_id)`,
+    `CREATE INDEX ${prefix}idx_time_tracking_date ON ${prefix}cpa_experience_time_tracking(activity_date)`,
+    `CREATE INDEX ${prefix}idx_evr_assess_user ON ${prefix}cpa_evr_assessments(user_id)`,
+    `CREATE INDEX ${prefix}idx_evr_assess_dates ON ${prefix}cpa_evr_assessments(start_date, end_date)`
   ];
   
   for (const indexSql of indexes) {
@@ -135,6 +159,74 @@ async function seedReferenceData(db, prefix) {
   }
   
   logger.info('Reference data seeded successfully');
+
+  // Seed CPA competency areas (minimal)
+  const areas = [
+    { code: 'FR', name: 'Financial Reporting', category: 'technical' },
+    { code: 'MA', name: 'Management Accounting', category: 'technical' },
+    { code: 'AA', name: 'Audit and Assurance', category: 'technical' },
+    { code: 'TX', name: 'Taxation', category: 'technical' },
+    { code: 'FN', name: 'Finance', category: 'technical' },
+    { code: 'PS', name: 'Professionalism and Ethics', category: 'enabling' },
+    { code: 'CM', name: 'Problem Solving and Decision-Making', category: 'enabling' },
+    { code: 'CO', name: 'Communication', category: 'enabling' },
+    { code: 'SE', name: 'Self-Management', category: 'enabling' },
+    { code: 'TW', name: 'Teamwork and Leadership', category: 'enabling' }
+  ];
+
+  for (const area of areas) {
+    const sql = `
+      INSERT INTO ${prefix}cpa_competency_areas (id, code, name, category, requirements, created_at)
+      SELECT SYS_GUID(), :code, :name, :category, :requirements, CURRENT_TIMESTAMP FROM DUAL
+      WHERE NOT EXISTS (
+        SELECT 1 FROM ${prefix}cpa_competency_areas WHERE code = :code
+      )
+    `;
+    await db.execute(sql, {
+      code: area.code,
+      name: area.name,
+      category: area.category,
+      requirements: JSON.stringify({ core: false })
+    });
+  }
+
+  // Seed minimal sub-competencies
+  const subs = [
+    { area: 'FR', code: 'FR1', name: 'Financial Reporting Needs and Systems' },
+    { area: 'FR', code: 'FR2', name: 'Accounting Policies and Transactions' },
+    { area: 'MA', code: 'MA1', name: 'Management Information Needs' },
+    { area: 'MA', code: 'MA2', name: 'Cost Management' },
+    { area: 'AA', code: 'AA1', name: 'Internal Control' },
+    { area: 'AA', code: 'AA2', name: 'Assurance Engagement Planning' },
+    { area: 'TX', code: 'TX1', name: 'Corporate Taxation' },
+    { area: 'FN', code: 'FN1', name: 'Financial Analysis' },
+    { area: 'CO', code: 'CO1', name: 'Communication Effectiveness' },
+    { area: 'TW', code: 'TW1', name: 'Team Collaboration' }
+  ];
+
+  for (const sc of subs) {
+    // Lookup area id by code
+    const areaResult = await db.execute(
+      `SELECT id FROM ${prefix}cpa_competency_areas WHERE code = :code`,
+      { code: sc.area }
+    );
+    if (!areaResult.rows || areaResult.rows.length === 0) continue;
+    const areaId = areaResult.rows[0].ID || areaResult.rows[0].id || (Array.isArray(areaResult.rows[0]) ? areaResult.rows[0][0] : null);
+
+    const sql = `
+      INSERT INTO ${prefix}cpa_sub_competencies (id, competency_area_id, code, name, created_at)
+      SELECT SYS_GUID(), :area_id, :code, :name, CURRENT_TIMESTAMP FROM DUAL
+      WHERE NOT EXISTS (
+        SELECT 1 FROM ${prefix}cpa_sub_competencies WHERE code = :code
+      )
+    `;
+    await db.execute(sql, {
+      area_id: areaId,
+      code: sc.code,
+      name: sc.name
+    });
+  }
+  logger.info('CPA competency areas and sub-competencies seeded');
 }
 
 // Run if called directly

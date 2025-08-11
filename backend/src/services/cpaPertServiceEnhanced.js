@@ -21,21 +21,33 @@ class EnhancedCpaPertService {
     async createReport(reportData) {
         try {
             const reportId = uuidv4();
-            const query = `
+            const insertSql = `
                 INSERT INTO ${this.tablePrefix}cpa_pert_reports (
                     id, user_id, report_period_start, report_period_end,
                     submission_deadline, route_type, status, employer_name,
                     position_title, hours_worked, version, created_at, updated_at
                 ) VALUES (
-                    :id, :user_id, :report_period_start, :report_period_end,
-                    :submission_deadline, :route_type, :status, :employer_name,
+                    :id, :user_id, TO_DATE(:start,'YYYY-MM-DD'), TO_DATE(:end,'YYYY-MM-DD'),
+                    ${reportData.submission_deadline ? "TO_DATE(:deadline,'YYYY-MM-DD')" : 'NULL'}, :route_type, :status, :employer_name,
                     :position_title, :hours_worked, :version, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-                ) RETURNING *`;
+                )`;
 
-            const result = await this.database.executeQuery(query, {
+            await this.database.executeQuery(insertSql, {
                 id: reportId,
-                ...reportData
-            });
+                user_id: reportData.user_id,
+                start: reportData.report_period_start,
+                end: reportData.report_period_end,
+                deadline: reportData.submission_deadline,
+                route_type: reportData.route_type,
+                status: reportData.status || 'draft',
+                employer_name: reportData.employer_name || null,
+                position_title: reportData.position_title || null,
+                hours_worked: reportData.hours_worked || null,
+                version: reportData.version || 1
+            }, { autoCommit: true });
+
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_pert_reports WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: reportId });
 
             // Invalidate user's report cache
             await this.cache.invalidate(`user_reports_${reportData.user_id}`);
@@ -59,25 +71,30 @@ class EnhancedCpaPertService {
 
             const query = `
                 INSERT INTO ${this.tablePrefix}cpa_pert_experiences (
-                    id, report_id, sub_competency_id, experience_title, experience_date,
+                    id, report_id, sub_competency_id, experience_title, 
+                    experience_start_date, experience_end_date,
                     proficiency_level, challenge, actions, results, lessons_learned,
                     time_spent_hours, complexity_level, collaboration_type, tools_used,
                     cpa_values, word_count, character_count, approval_status, version,
                     created_at, updated_at
                 ) VALUES (
-                    :id, :report_id, :sub_competency_id, :experience_title, :experience_date,
+                    :id, :report_id, :sub_competency_id, :experience_title, 
+                    TO_DATE(:experience_start_date,'YYYY-MM-DD'), TO_DATE(:experience_end_date,'YYYY-MM-DD'),
                     :proficiency_level, :challenge, :actions, :results, :lessons_learned,
                     :time_spent_hours, :complexity_level, :collaboration_type, :tools_used,
                     :cpa_values, :word_count, :character_count, :approval_status, :version,
                     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-                ) RETURNING *`;
+                )`;
 
-            const result = await this.database.executeQuery(query, {
+            await this.database.executeQuery(query, {
                 id: experienceId,
                 ...experienceData,
                 tools_used: experienceData.tools_used ? JSON.stringify(experienceData.tools_used) : null,
                 cpa_values: JSON.stringify(experienceData.cpa_values || {})
-            });
+            }, { autoCommit: true });
+
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_pert_experiences WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: experienceId });
 
             // Invalidate report cache
             await this.cache.invalidate(`report_experiences_${experienceData.report_id}`);
@@ -107,25 +124,30 @@ class EnhancedCpaPertService {
             // Create new version
             const query = `
                 INSERT INTO ${this.tablePrefix}cpa_pert_experiences (
-                    id, report_id, sub_competency_id, experience_title, experience_date,
+                    id, report_id, sub_competency_id, experience_title, 
+                    experience_start_date, experience_end_date,
                     proficiency_level, challenge, actions, results, lessons_learned,
                     time_spent_hours, complexity_level, collaboration_type, tools_used,
                     cpa_values, word_count, character_count, approval_status, version,
                     previous_version_id, last_edited_by, created_at, updated_at
                 ) VALUES (
-                    :id, :report_id, :sub_competency_id, :experience_title, :experience_date,
+                    :id, :report_id, :sub_competency_id, :experience_title, 
+                    TO_DATE(:experience_start_date,'YYYY-MM-DD'), TO_DATE(:experience_end_date,'YYYY-MM-DD'),
                     :proficiency_level, :challenge, :actions, :results, :lessons_learned,
                     :time_spent_hours, :complexity_level, :collaboration_type, :tools_used,
                     :cpa_values, :word_count, :character_count, :approval_status, :version,
                     :previous_version_id, :last_edited_by, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-                ) RETURNING *`;
+                )`;
 
-            const result = await this.database.executeQuery(query, {
+            await this.database.executeQuery(query, {
                 id: newId,
                 ...updatedData,
                 tools_used: updatedData.tools_used ? JSON.stringify(updatedData.tools_used) : null,
                 cpa_values: JSON.stringify(updatedData.cpa_values || {})
-            });
+            }, { autoCommit: true });
+
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_pert_experiences WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: newId });
 
             // Invalidate caches
             await this.cache.invalidate(`experience_${originalId}`);
@@ -150,18 +172,17 @@ class EnhancedCpaPertService {
                     deletion_reason = :reason,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = :id 
-                AND deleted_at IS NULL
-                RETURNING *`;
+                AND deleted_at IS NULL`;
 
-            const result = await this.database.executeQuery(query, {
+            await this.database.executeQuery(query, {
                 id: experienceId,
                 deleted_by: userId,
                 reason
-            });
+            }, { autoCommit: true });
 
-            if (result.rows.length === 0) {
-                throw new Error('Experience not found or already deleted');
-            }
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_pert_experiences WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: experienceId });
+            if (result.rows.length === 0) throw new Error('Experience not found or already deleted');
 
             // Invalidate caches
             await this.cache.invalidate(`experience_${experienceId}`);
@@ -187,17 +208,16 @@ class EnhancedCpaPertService {
                     updated_at = CURRENT_TIMESTAMP,
                     last_edited_by = :user_id
                 WHERE id = :id 
-                AND deleted_at IS NOT NULL
-                RETURNING *`;
+                AND deleted_at IS NOT NULL`;
 
-            const result = await this.database.executeQuery(query, {
+            await this.database.executeQuery(query, {
                 id: experienceId,
                 user_id: userId
-            });
+            }, { autoCommit: true });
 
-            if (result.rows.length === 0) {
-                throw new Error('Experience not found or not deleted');
-            }
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_pert_experiences WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: experienceId });
+            if (result.rows.length === 0) throw new Error('Experience not found or not deleted');
 
             // Invalidate caches
             await this.cache.invalidate(`experience_${experienceId}`);
@@ -218,12 +238,16 @@ class EnhancedCpaPertService {
         
         return await this.cache.getOrSet(cacheKey, async () => {
             let query = `
-                SELECT r.*, 
-                       COUNT(DISTINCT e.id) as experience_count,
-                       SUM(e.time_spent_hours) as total_hours
+                SELECT 
+                  r.id, r.user_id, r.report_period_start, r.report_period_end,
+                  r.submission_deadline, r.route_type, r.status, r.employer_name,
+                  r.position_title, r.hours_worked, r.version, r.deleted_at,
+                  r.created_at, r.updated_at,
+                  COUNT(DISTINCT e.id) AS experience_count,
+                  SUM(e.time_spent_hours) AS total_hours
                 FROM ${this.tablePrefix}cpa_pert_reports r
                 LEFT JOIN ${this.tablePrefix}cpa_pert_experiences e 
-                    ON r.id = e.report_id AND e.deleted_at IS NULL
+                  ON r.id = e.report_id AND e.deleted_at IS NULL
                 WHERE r.user_id = :user_id`;
 
             const params = { user_id: userId };
@@ -242,7 +266,7 @@ class EnhancedCpaPertService {
                 params.route_type = filters.route_type;
             }
 
-            query += ' GROUP BY r.id ORDER BY r.created_at DESC';
+            query += ' GROUP BY r.id, r.user_id, r.report_period_start, r.report_period_end, r.submission_deadline, r.route_type, r.status, r.employer_name, r.position_title, r.hours_worked, r.version, r.deleted_at, r.created_at, r.updated_at ORDER BY r.created_at DESC';
 
             const result = await this.database.executeQuery(query, params);
             return result.rows;
@@ -294,25 +318,27 @@ class EnhancedCpaPertService {
             if (filters.include_versions) {
                 query += ' ORDER BY e.experience_date, e.version DESC';
             } else {
-                // Get only latest version of each experience
+                // Only latest version per chain using analytic row_number
                 query = `
-                    WITH latest_versions AS (
-                        SELECT DISTINCT ON (COALESCE(previous_version_id, id)) 
-                            e.*,
-                            c.name as competency_name,
-                            c.code as competency_code,
-                            ca.name as competency_area_name,
-                            ca.code as competency_area_code,
-                            ca.category as competency_category
-                        FROM ${this.tablePrefix}cpa_pert_experiences e
-                        JOIN ${this.tablePrefix}cpa_sub_competencies c ON e.sub_competency_id = c.id
-                        JOIN ${this.tablePrefix}cpa_competency_areas ca ON c.competency_area_id = ca.id
-                        WHERE e.report_id = :report_id
-                        ${!filters.include_deleted ? 'AND e.deleted_at IS NULL' : ''}
-                        ORDER BY COALESCE(previous_version_id, id), version DESC
-                    )
-                    SELECT * FROM latest_versions
-                    ORDER BY experience_date DESC`;
+                  SELECT * FROM (
+                    SELECT e.*,
+                           c.name AS competency_name,
+                           c.code AS competency_code,
+                           ca.name AS competency_area_name,
+                           ca.code AS competency_area_code,
+                           ca.category AS competency_category,
+                           ROW_NUMBER() OVER (
+                             PARTITION BY NVL(e.previous_version_id, e.id)
+                             ORDER BY e.version DESC
+                           ) AS rn
+                    FROM ${this.tablePrefix}cpa_pert_experiences e
+                    JOIN ${this.tablePrefix}cpa_sub_competencies c ON e.sub_competency_id = c.id
+                    JOIN ${this.tablePrefix}cpa_competency_areas ca ON c.competency_area_id = ca.id
+                    WHERE e.report_id = :report_id
+                    ${!filters.include_deleted ? 'AND e.deleted_at IS NULL' : ''}
+                  )
+                  WHERE rn = 1
+                  ORDER BY experience_date DESC`;
             }
 
             const result = await this.database.executeQuery(query, params);
@@ -336,12 +362,11 @@ class EnhancedCpaPertService {
                     ca.name as area_name,
                     ca.category,
                     ca.requirements,
-                    COALESCE(cp.current_level, 0) as current_level,
+                    NVL(cp.current_level, 0) as current_level,
                     cp.target_level,
                     cp.experiences_count,
                     cp.last_experience_date,
                     cp.progress_percentage,
-                    ca.requirements->>'core' = 'true' as is_core,
                     COUNT(e.id) as total_experiences,
                     MAX(e.proficiency_level) as highest_level_achieved
                 FROM ${this.tablePrefix}cpa_sub_competencies c
@@ -392,31 +417,38 @@ class EnhancedCpaPertService {
                         last_experience_date = CURRENT_DATE,
                         progress_percentage = CASE 
                             WHEN target_level IS NULL THEN 0
-                            ELSE LEAST(100, (GREATEST(current_level, :new_level)::float / target_level) * 100)
+                            ELSE LEAST(100, (GREATEST(current_level, :new_level) / NULLIF(target_level,0)) * 100)
                         END,
                         updated_at = CURRENT_TIMESTAMP
                     WHERE user_id = :user_id 
                     AND sub_competency_id = :sub_competency_id
-                    AND deleted_at IS NULL
-                    RETURNING *`;
+                    AND deleted_at IS NULL`;
             } else {
                 // Create new progress record
-                query = `
-                    INSERT INTO ${this.tablePrefix}cpa_competency_progress (
-                        id, user_id, sub_competency_id, current_level, 
-                        experiences_count, last_experience_date, progress_percentage,
-                        created_at, updated_at
-                    ) VALUES (
-                        gen_random_uuid(), :user_id, :sub_competency_id, :new_level,
-                        1, CURRENT_DATE, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-                    ) RETURNING *`;
+                const insertId = uuidv4();
+                await this.database.executeQuery(
+                  `INSERT INTO ${this.tablePrefix}cpa_competency_progress (
+                    id, user_id, sub_competency_id, current_level, experiences_count, last_experience_date, progress_percentage, created_at, updated_at
+                  ) VALUES (
+                    :id, :user_id, :sub_competency_id, :new_level, 1, CURRENT_DATE, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                  )`,
+                  { id: insertId, user_id: userId, sub_competency_id: subCompetencyId, new_level: newLevel },
+                  { autoCommit: true }
+                );
+                const sel = `SELECT * FROM ${this.tablePrefix}cpa_competency_progress WHERE id = :id`;
+                const inserted = await this.database.executeQuery(sel, { id: insertId });
+                await this.cache.invalidate(`competency_progress_${userId}`);
+                return inserted.rows[0];
             }
 
-            const result = await this.database.executeQuery(query, {
+            await this.database.executeQuery(query, {
                 user_id: userId,
                 sub_competency_id: subCompetencyId,
                 new_level: newLevel
-            });
+            }, { autoCommit: true });
+
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_competency_progress WHERE user_id = :user_id AND sub_competency_id = :sub_competency_id`;
+            const result = await this.database.executeQuery(sel, { user_id: userId, sub_competency_id: subCompetencyId });
 
             // Invalidate progress cache
             await this.cache.invalidate(`competency_progress_${userId}`);
@@ -433,20 +465,27 @@ class EnhancedCpaPertService {
      */
     async createReviewHistory(historyData) {
         try {
-            const query = `
-                INSERT INTO ${this.tablePrefix}cpa_pert_review_history (
+            const id = uuidv4();
+            await this.database.executeQuery(
+                `INSERT INTO ${this.tablePrefix}cpa_pert_review_history (
                     id, experience_id, report_id, reviewer_id, action,
                     previous_status, new_status, comments, changes_made, created_at
                 ) VALUES (
-                    gen_random_uuid(), :experience_id, :report_id, :reviewer_id, :action,
+                    :id, :experience_id, :report_id, :reviewer_id, :action,
                     :previous_status, :new_status, :comments, :changes_made, CURRENT_TIMESTAMP
-                ) RETURNING *`;
+                )`,
+                {
+                    id,
+                    ...historyData,
+                    changes_made: historyData.changes_made ? JSON.stringify(historyData.changes_made) : null
+                },
+                { autoCommit: true }
+            );
 
-            const result = await this.database.executeQuery(query, {
-                ...historyData,
-                changes_made: historyData.changes_made ? 
-                    JSON.stringify(historyData.changes_made) : null
-            });
+            const result = await this.database.executeQuery(
+                `SELECT * FROM ${this.tablePrefix}cpa_pert_review_history WHERE id = :id`,
+                { id }
+            );
 
             return result.rows[0];
         } catch (error) {
@@ -545,6 +584,269 @@ class EnhancedCpaPertService {
     }
 
     /**
+     * Add experience breakdown for detailed tracking
+     */
+    async addExperienceBreakdown(breakdownData) {
+        try {
+            const breakdownId = uuidv4();
+            const query = `
+                INSERT INTO ${this.tablePrefix}cpa_experience_breakdown (
+                    id, experience_id, report_id, user_id, activity_type,
+                    activity_description, start_date, end_date, hours_spent,
+                    competencies_demonstrated, deliverables, stakeholders_involved,
+                    business_impact, skills_applied, created_at, updated_at
+                ) VALUES (
+                    :id, :experience_id, :report_id, :user_id, :activity_type,
+                    :activity_description, TO_DATE(:start_date,'YYYY-MM-DD'), 
+                    TO_DATE(:end_date,'YYYY-MM-DD'), :hours_spent,
+                    :competencies_demonstrated, :deliverables, :stakeholders_involved,
+                    :business_impact, :skills_applied, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                )`;
+
+            await this.database.executeQuery(query, {
+                id: breakdownId,
+                ...breakdownData,
+                competencies_demonstrated: JSON.stringify(breakdownData.competencies_demonstrated || []),
+                deliverables: JSON.stringify(breakdownData.deliverables || []),
+                stakeholders_involved: JSON.stringify(breakdownData.stakeholders_involved || []),
+                skills_applied: JSON.stringify(breakdownData.skills_applied || [])
+            }, { autoCommit: true });
+
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_experience_breakdown WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: breakdownId });
+            return result.rows[0];
+        } catch (error) {
+            logger.error('Error adding experience breakdown:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Record progress milestone
+     */
+    async recordProgressMilestone(milestoneData) {
+        try {
+            const milestoneId = uuidv4();
+            const query = `
+                INSERT INTO ${this.tablePrefix}cpa_progress_milestones (
+                    id, user_id, sub_competency_id, milestone_date,
+                    previous_level, achieved_level, evidence_count,
+                    hours_accumulated, key_experiences, mentor_feedback,
+                    self_assessment, next_steps, created_at
+                ) VALUES (
+                    :id, :user_id, :sub_competency_id, TO_DATE(:milestone_date,'YYYY-MM-DD'),
+                    :previous_level, :achieved_level, :evidence_count,
+                    :hours_accumulated, :key_experiences, :mentor_feedback,
+                    :self_assessment, :next_steps, CURRENT_TIMESTAMP
+                )`;
+
+            await this.database.executeQuery(query, {
+                id: milestoneId,
+                ...milestoneData,
+                key_experiences: JSON.stringify(milestoneData.key_experiences || [])
+            }, { autoCommit: true });
+
+            // Update competency progress
+            await this.updateCompetencyProgress(
+                milestoneData.user_id, 
+                milestoneData.sub_competency_id,
+                milestoneData.achieved_level
+            );
+
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_progress_milestones WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: milestoneId });
+            return result.rows[0];
+        } catch (error) {
+            logger.error('Error recording progress milestone:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Submit report to CPA
+     */
+    async submitReportToCPA(reportId, userId, submissionData) {
+        try {
+            const submissionId = uuidv4();
+            
+            // Get all experiences for the report
+            const experiences = await this.getReportExperiences(reportId);
+            
+            // Calculate totals
+            const experienceCount = experiences.length;
+            const totalWordCount = experiences.reduce((sum, exp) => sum + (exp.word_count || 0), 0);
+            
+            // Generate submission checksum
+            const crypto = require('crypto');
+            const checksum = crypto.createHash('sha256')
+                .update(JSON.stringify({ reportId, experiences, submissionData }))
+                .digest('hex');
+            
+            const query = `
+                INSERT INTO ${this.tablePrefix}cpa_pert_submissions (
+                    id, report_id, user_id, submission_type, submitted_at,
+                    submission_deadline, submission_status, cpa_reference_number,
+                    submitted_payload, experience_count, total_word_count,
+                    exported_file_url, exported_file_format, version,
+                    submission_checksum
+                ) VALUES (
+                    :id, :report_id, :user_id, :submission_type, CURRENT_TIMESTAMP,
+                    ${submissionData.submission_deadline ? "TO_DATE(:submission_deadline,'YYYY-MM-DD')" : 'NULL'},
+                    :submission_status, :cpa_reference_number,
+                    :submitted_payload, :experience_count, :total_word_count,
+                    :exported_file_url, :exported_file_format, :version,
+                    :submission_checksum
+                )`;
+
+            await this.database.executeQuery(query, {
+                id: submissionId,
+                report_id: reportId,
+                user_id: userId,
+                submission_type: submissionData.submission_type || 'final',
+                submission_deadline: submissionData.submission_deadline,
+                submission_status: 'pending',
+                cpa_reference_number: submissionData.cpa_reference_number || null,
+                submitted_payload: JSON.stringify({ experiences, metadata: submissionData }),
+                experience_count: experienceCount,
+                total_word_count: totalWordCount,
+                exported_file_url: submissionData.exported_file_url || null,
+                exported_file_format: submissionData.exported_file_format || 'pdf',
+                version: submissionData.version || 1,
+                submission_checksum: checksum
+            }, { autoCommit: true });
+
+            // Update report status
+            await this.updateReportStatus(reportId, 'submitted');
+
+            // Add to submission history
+            await this.addSubmissionHistory({
+                submission_id: submissionId,
+                report_id: reportId,
+                user_id: userId,
+                action: 'submitted',
+                action_details: `Report submitted to CPA with ${experienceCount} experiences`
+            });
+
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_pert_submissions WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: submissionId });
+            return result.rows[0];
+        } catch (error) {
+            logger.error('Error submitting report to CPA:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Add submission history entry
+     */
+    async addSubmissionHistory(historyData) {
+        try {
+            const historyId = uuidv4();
+            const query = `
+                INSERT INTO ${this.tablePrefix}cpa_submission_history (
+                    id, submission_id, report_id, user_id, action,
+                    action_date, action_by, action_details, previous_status,
+                    new_status, attachments, created_at
+                ) VALUES (
+                    :id, :submission_id, :report_id, :user_id, :action,
+                    CURRENT_TIMESTAMP, :action_by, :action_details, :previous_status,
+                    :new_status, :attachments, CURRENT_TIMESTAMP
+                )`;
+
+            await this.database.executeQuery(query, {
+                id: historyId,
+                ...historyData,
+                attachments: historyData.attachments ? JSON.stringify(historyData.attachments) : null
+            }, { autoCommit: true });
+
+            return { id: historyId, ...historyData };
+        } catch (error) {
+            logger.error('Error adding submission history:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Track time for experience
+     */
+    async trackExperienceTime(timeData) {
+        try {
+            const timeId = uuidv4();
+            const query = `
+                INSERT INTO ${this.tablePrefix}cpa_experience_time_tracking (
+                    id, experience_id, user_id, activity_date, hours_logged,
+                    activity_category, description, is_billable, is_cpa_eligible,
+                    created_at
+                ) VALUES (
+                    :id, :experience_id, :user_id, TO_DATE(:activity_date,'YYYY-MM-DD'),
+                    :hours_logged, :activity_category, :description, :is_billable,
+                    :is_cpa_eligible, CURRENT_TIMESTAMP
+                )`;
+
+            await this.database.executeQuery(query, {
+                id: timeId,
+                ...timeData,
+                is_billable: timeData.is_billable || 'Y',
+                is_cpa_eligible: timeData.is_cpa_eligible || 'Y'
+            }, { autoCommit: true });
+
+            const sel = `SELECT * FROM ${this.tablePrefix}cpa_experience_time_tracking WHERE id = :id`;
+            const result = await this.database.executeQuery(sel, { id: timeId });
+            return result.rows[0];
+        } catch (error) {
+            logger.error('Error tracking experience time:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get experience breakdown details
+     */
+    async getExperienceBreakdown(experienceId) {
+        try {
+            const query = `
+                SELECT * FROM ${this.tablePrefix}cpa_experience_breakdown
+                WHERE experience_id = :experience_id
+                ORDER BY start_date, end_date`;
+
+            const result = await this.database.executeQuery(query, { 
+                experience_id: experienceId 
+            });
+            
+            return result.rows;
+        } catch (error) {
+            logger.error('Error getting experience breakdown:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get progress timeline for user
+     */
+    async getUserProgressTimeline(userId, subCompetencyId = null) {
+        try {
+            let query = `
+                SELECT * FROM ${this.tablePrefix}cpa_progress_milestones
+                WHERE user_id = :user_id`;
+            
+            const params = { user_id: userId };
+            
+            if (subCompetencyId) {
+                query += ` AND sub_competency_id = :sub_competency_id`;
+                params.sub_competency_id = subCompetencyId;
+            }
+            
+            query += ` ORDER BY milestone_date DESC`;
+
+            const result = await this.database.executeQuery(query, params);
+            return result.rows;
+        } catch (error) {
+            logger.error('Error getting user progress timeline:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Analyze job description for competency mapping using AI
      */
     async analyzeJobDescription(jobDescription, positionTitle) {
@@ -610,11 +912,9 @@ class EnhancedCpaPertService {
             let query = `
                 SELECT t.*, 
                        c.name as competency_name,
-                       c.code as competency_code,
-                       u.username as created_by_name
+                       c.code as competency_code
                 FROM ${this.tablePrefix}cpa_pert_templates t
                 JOIN ${this.tablePrefix}cpa_sub_competencies c ON t.sub_competency_id = c.id
-                LEFT JOIN ${this.tablePrefix}users u ON t.created_by = u.user_id
                 WHERE t.deleted_at IS NULL`;
 
             const params = {};
@@ -635,18 +935,20 @@ class EnhancedCpaPertService {
             }
 
             if (filters.search) {
+                // Oracle-friendly search across text templates
                 query += ` AND (
-                    t.template_name ILIKE :search OR
-                    t.keywords @> ARRAY[:search_exact]
+                    LOWER(t.challenge_template) LIKE :search OR
+                    LOWER(t.actions_template) LIKE :search OR
+                    LOWER(t.results_template) LIKE :search OR
+                    LOWER(t.lessons_template) LIKE :search
                 )`;
-                params.search = `%${filters.search}%`;
-                params.search_exact = filters.search;
+                params.search = `%${filters.search.toLowerCase()}%`;
             }
 
             if (filters.route_type) {
                 // Filter templates suitable for specific route
                 if (filters.route_type === 'EVR') {
-                    query += ' AND t.is_public = true';
+                    query += " AND t.is_public = 'Y'";
                 }
             }
 
@@ -897,6 +1199,40 @@ class EnhancedCpaPertService {
             logger.error('Error exporting report:', error);
             throw error;
         }
+    }
+
+    /**
+     * Submit report snapshot and update status
+     */
+    async submitReport({ report_id, user_id, payload, exported_file_url, ack_reference }) {
+        const id = uuidv4();
+        await this.database.executeQuery(
+            `INSERT INTO ${this.tablePrefix}cpa_pert_submissions (
+              id, report_id, user_id, submission_status, reviewer_comments,
+              submitted_payload, exported_file_url, version, ack_reference
+            ) VALUES (
+              :id, :report_id, :user_id, 'pending', NULL,
+              :payload, :file_url, 1, :ack
+            )`,
+            {
+                id,
+                report_id,
+                user_id,
+                payload: JSON.stringify(payload),
+                file_url: exported_file_url || null,
+                ack: ack_reference || null
+            },
+            { autoCommit: true }
+        );
+
+        await this.database.executeQuery(
+            `UPDATE ${this.tablePrefix}cpa_pert_reports SET status = 'submitted', version = NVL(version,1) + 1, updated_at = CURRENT_TIMESTAMP WHERE id = :id AND user_id = :uid`,
+            { id: report_id, uid: user_id },
+            { autoCommit: true }
+        );
+
+        const r = await this.database.executeQuery(`SELECT * FROM ${this.tablePrefix}cpa_pert_submissions WHERE id = :id`, { id });
+        return r.rows[0];
     }
 
     /**
