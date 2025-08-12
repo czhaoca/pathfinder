@@ -7,24 +7,46 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
+    setupFiles: './tests/setup.ts',
     css: true,
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
         'node_modules/',
+        'tests/',
         'src/test/',
         '*.config.ts',
+        '*.config.js',
+        'src/main.tsx',
+        'src/vite-env.d.ts',
         '**/*.d.ts',
         '**/*.test.ts',
         '**/*.test.tsx',
+        '**/*.spec.ts',
+        '**/*.spec.tsx',
         '**/index.ts',
       ],
+      thresholds: {
+        branches: 60,
+        functions: 60,
+        lines: 60,
+        statements: 60
+      }
     },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@services': path.resolve(__dirname, './src/services'),
+      '@stores': path.resolve(__dirname, './src/stores'),
+      '@types': path.resolve(__dirname, './src/types'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@lib': path.resolve(__dirname, './src/lib'),
+      '@config': path.resolve(__dirname, './src/config')
     },
   },
 });

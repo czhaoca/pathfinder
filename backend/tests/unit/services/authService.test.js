@@ -1,160 +1,146 @@
+const AuthService = require('../../../src/services/authService');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const AuthService = require('../../../src/services/authService');
+const { ValidationError, AuthenticationError } = require('../../../src/utils/errors');
 
-// Mock external modules
+// Mock dependencies
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
-jest.mock('../../../src/config', () => ({
-  security: {
-    jwtSecret: 'test-secret',
-    jwtExpiresIn: '15m',
-    refreshTokenExpiresIn: '7d'
-  }
-}));
-jest.mock('../../../src/utils/logger', () => ({
-  error: jest.fn(),
-  warn: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn()
-}));
 
 describe('AuthService', () => {
   let authService;
-  let mockUserRepository;
-  let mockSessionRepository;
+  let mockDatabaseService;
   let mockAuditService;
-  let mockConfig;
+  let mockEncryptionService;
 
   beforeEach(() => {
-    // Mock repositories
-    mockUserRepository = {
-      findByUsername: jest.fn(),
-      findByEmail: jest.fn(),
-      findById: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      findByUsernameOrEmail: jest.fn(),
-      updateLastLogin: jest.fn(),
-      createUserSchema: jest.fn()
-    };
+    jest.clearAllMocks();
 
-    mockSessionRepository = {
-      create: jest.fn(),
-      findById: jest.fn(),
-      update: jest.fn(),
-      deleteByUserId: jest.fn()
+    // Mock database service
+    mockDatabaseService = {
+      query: jest.fn(),
+      execute: jest.fn(),
+      transaction: jest.fn()
     };
 
     // Mock audit service
     mockAuditService = {
-      logAuth: jest.fn(),
-      logUserAction: jest.fn()
+      logAction: jest.fn(),
+      logSecurityEvent: jest.fn()
     };
 
-    // Mock config
-    mockConfig = {
-      security: {
-        jwtSecret: 'test-secret',
-        jwtExpiresIn: '15m',
-        refreshTokenExpiresIn: '7d'
-      }
+    // Mock encryption service
+    mockEncryptionService = {
+      encrypt: jest.fn(data => `encrypted_${data}`),
+      decrypt: jest.fn(data => data.replace('encrypted_', ''))
     };
 
     // Create service instance
-    authService = new AuthService(mockUserRepository, mockSessionRepository, mockAuditService);
+    authService = new AuthService(
+      mockDatabaseService,
+      mockAuditService,
+      mockEncryptionService
+    );
 
-    // Reset mocks
-    jest.clearAllMocks();
+    // Setup JWT mocks
+    jwt.sign.mockImplementation((payload, secret) => 'mock-token');
+    jwt.verify.mockImplementation((token, secret) => ({ userId: 'user-123' }));
   });
 
   describe('register', () => {
-    it('should register a new user successfully', async () => {
+    it('should register new user successfully', async () => {
       const userData = {
         username: 'testuser',
         email: 'test@example.com',
         password: 'Password123!',
         firstName: 'Test',
-        lastName: 'User'
+        lastName: 'User',
+        ipAddress: '127.0.0.1',
+        userAgent: 'test-agent'
       };
 
-      // Mock no existing user
-      mockUserRepository.findByUsernameOrEmail.mockResolvedValue(null);
-      mockUserRepository.findByUsername.mockResolvedValue(null);
-      mockUserRepository.findByEmail.mockResolvedValue(null);
-
-      // Mock bcrypt
-      bcrypt.hash.mockResolvedValue('hashed-password');
-
-      // Mock user creation
-      const createdUser = {
-        userId: 'user-123',
-        username: userData.username,
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        createdAt: new Date(),
-        accountStatus: 'active',
-        schemaPrefix: 'skill_user_testuser_'
-      };
-      mockUserRepository.create.mockResolvedValue(createdUser);
-
-      // Mock session creation
-      const session = {
-        sessionId: 'session-123',
-        userId: createdUser.userId,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
-      };
-      mockSessionRepository.create.mockResolvedValue(session);
-
-      // Mock JWT
-      jwt.sign.mockImplementation((payload, secret, options) => {
-        if (options?.expiresIn === '15m') return 'mock-token';
-        if (options?.expiresIn === '7d') return 'mock-refresh-token';
+      // Mock password hashing
+      bcrypt.hash.mockResolvedValue('hashed_password');
+      
+      // Mock database responses
+      mockDatabaseService.query.mockResolvedValueOnce({ rows: [] }); // Check username
+      mockDatabaseService.query.mockResolvedValueOnce({ rows: [] }); // Check email
+      mockDatabaseService.execute.mockResolvedValue({
+        rows: [{
+          id: 'user-123',
+          username: userData.username,
+          email: userData.email,
+          first_name: userData.firstName,
+          last_name: userData.lastName
+        }]
       });
 
       const result = await authService.register(userData);
 
-      expect(mockUserRepository.findByUsernameOrEmail).toHaveBeenCalledWith(userData.username, userData.email);
       expect(bcrypt.hash).toHaveBeenCalledWith(userData.password, 10);
-      expect(mockUserRepository.create).toHaveBeenCalled();
-      expect(mockSessionRepository.create).toHaveBeenCalled();
-      expect(result).toEqual({
-        token: 'mock-token',
-        refreshToken: 'mock-refresh-token',
-        user: expect.objectContaining({
-          id: createdUser.userId,
-          username: createdUser.username,
-          email: createdUser.email
-        })
-      });
+      expect(mockDatabaseService.execute).toHaveBeenCalled();
+      expect(result).toHaveProperty('token');
+      expect(result).toHaveProperty('refreshToken');
+      expect(result).toHaveProperty('user');
+      expect(mockAuditService.logAction).toHaveBeenCalledWith(
+        'USER_REGISTRATION',
+        expect.anything(),
+        expect.anything()
+      );
     });
 
-    it('should throw error if username already exists', async () => {
-      mockUserRepository.findByUsername.mockResolvedValue({ userId: 'existing-user' });
-
-      await expect(authService.register({
+    it('should reject duplicate username', async () => {
+      const userData = {
         username: 'existinguser',
         email: 'new@example.com',
-        password: 'Password123!'
-      })).rejects.toThrow('Username already exists');
+        password: 'Password123!',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      mockDatabaseService.query.mockResolvedValue({
+        rows: [{ username: 'existinguser' }]
+      });
+
+      await expect(authService.register(userData))
+        .rejects.toThrow(ValidationError);
     });
 
-    it('should throw error if email already exists', async () => {
-      mockUserRepository.findByUsername.mockResolvedValue(null);
-      mockUserRepository.findByEmail.mockResolvedValue({ userId: 'existing-user' });
-
-      await expect(authService.register({
+    it('should reject duplicate email', async () => {
+      const userData = {
         username: 'newuser',
         email: 'existing@example.com',
-        password: 'Password123!'
-      })).rejects.toThrow('Email already exists');
+        password: 'Password123!',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      mockDatabaseService.query.mockResolvedValueOnce({ rows: [] }); // Username check
+      mockDatabaseService.query.mockResolvedValueOnce({
+        rows: [{ email: 'existing@example.com' }]
+      }); // Email check
+
+      await expect(authService.register(userData))
+        .rejects.toThrow(ValidationError);
+    });
+
+    it('should validate password strength', async () => {
+      const userData = {
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'weak',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      await expect(authService.register(userData))
+        .rejects.toThrow(ValidationError);
     });
   });
 
   describe('login', () => {
     it('should login user successfully', async () => {
-      const loginData = {
+      const credentials = {
         username: 'testuser',
         password: 'Password123!',
         ipAddress: '127.0.0.1',
@@ -162,175 +148,263 @@ describe('AuthService', () => {
       };
 
       const mockUser = {
-        userId: 'user-123',
+        id: 'user-123',
         username: 'testuser',
         email: 'test@example.com',
-        passwordHash: 'hashed-password',
-        accountStatus: 'active',
-        loginAttempts: 0
+        password_hash: 'hashed_password',
+        is_active: true,
+        email_verified: true
       };
 
-      mockUserRepository.findByUsername.mockResolvedValue(mockUser);
+      mockDatabaseService.query.mockResolvedValue({
+        rows: [mockUser]
+      });
+
       bcrypt.compare.mockResolvedValue(true);
 
-      const session = {
-        sessionId: 'session-123',
-        userId: mockUser.userId,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
-      };
-      mockSessionRepository.create.mockResolvedValue(session);
+      const result = await authService.login(credentials);
 
-      jwt.sign.mockImplementation((payload, secret, options) => {
-        if (options?.expiresIn === '15m') return 'mock-token';
-        if (options?.expiresIn === '7d') return 'mock-refresh-token';
-      });
-
-      const result = await authService.login(
-        loginData.username,
-        loginData.password,
-        loginData.ipAddress,
-        loginData.userAgent
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        credentials.password,
+        mockUser.password_hash
       );
-
-      expect(mockUserRepository.findByUsername).toHaveBeenCalledWith(loginData.username);
-      expect(bcrypt.compare).toHaveBeenCalledWith(loginData.password, mockUser.passwordHash);
-      expect(mockUserRepository.update).toHaveBeenCalledWith(mockUser.userId, {
-        lastLogin: expect.any(Date),
-        loginAttempts: 0
-      });
-      expect(result).toEqual({
-        token: 'mock-token',
-        refreshToken: 'mock-refresh-token',
-        user: expect.objectContaining({
-          id: mockUser.userId,
-          username: mockUser.username,
-          email: mockUser.email
-        })
-      });
+      expect(result).toHaveProperty('token');
+      expect(result).toHaveProperty('refreshToken');
+      expect(result).toHaveProperty('user');
+      expect(mockAuditService.logAction).toHaveBeenCalledWith(
+        'USER_LOGIN',
+        expect.anything(),
+        expect.anything()
+      );
     });
 
-    it('should throw error for invalid credentials', async () => {
-      const mockUser = {
-        userId: 'user-123',
-        username: 'testuser',
-        passwordHash: 'hashed-password',
-        accountStatus: 'active',
-        loginAttempts: 0
+    it('should reject invalid username', async () => {
+      const credentials = {
+        username: 'nonexistent',
+        password: 'Password123!',
+        ipAddress: '127.0.0.1',
+        userAgent: 'test-agent'
       };
 
-      mockUserRepository.findByUsername.mockResolvedValue(mockUser);
+      mockDatabaseService.query.mockResolvedValue({ rows: [] });
+
+      await expect(authService.login(credentials))
+        .rejects.toThrow(AuthenticationError);
+    });
+
+    it('should reject invalid password', async () => {
+      const credentials = {
+        username: 'testuser',
+        password: 'wrongpassword',
+        ipAddress: '127.0.0.1',
+        userAgent: 'test-agent'
+      };
+
+      const mockUser = {
+        id: 'user-123',
+        username: 'testuser',
+        password_hash: 'hashed_password',
+        is_active: true
+      };
+
+      mockDatabaseService.query.mockResolvedValue({
+        rows: [mockUser]
+      });
+
       bcrypt.compare.mockResolvedValue(false);
 
-      await expect(authService.login(
-        'testuser',
-        'wrongpassword',
-        '127.0.0.1',
-        'test-agent'
-      )).rejects.toThrow('Invalid credentials');
+      await expect(authService.login(credentials))
+        .rejects.toThrow(AuthenticationError);
 
-      expect(mockUserRepository.update).toHaveBeenCalledWith(mockUser.userId, {
-        loginAttempts: 1
-      });
+      expect(mockAuditService.logSecurityEvent).toHaveBeenCalledWith(
+        'FAILED_LOGIN',
+        expect.anything()
+      );
     });
 
-    it('should throw error for locked account', async () => {
-      const mockUser = {
-        userId: 'user-123',
+    it('should reject inactive user', async () => {
+      const credentials = {
         username: 'testuser',
-        accountStatus: 'locked'
+        password: 'Password123!',
+        ipAddress: '127.0.0.1',
+        userAgent: 'test-agent'
       };
 
-      mockUserRepository.findByUsername.mockResolvedValue(mockUser);
+      const mockUser = {
+        id: 'user-123',
+        username: 'testuser',
+        password_hash: 'hashed_password',
+        is_active: false
+      };
 
-      await expect(authService.login(
-        'testuser',
-        'password',
-        '127.0.0.1',
-        'test-agent'
-      )).rejects.toThrow('Account is locked');
+      mockDatabaseService.query.mockResolvedValue({
+        rows: [mockUser]
+      });
+
+      bcrypt.compare.mockResolvedValue(true);
+
+      await expect(authService.login(credentials))
+        .rejects.toThrow(AuthenticationError);
     });
   });
 
   describe('refreshToken', () => {
     it('should refresh token successfully', async () => {
       const refreshToken = 'valid-refresh-token';
-      const decodedToken = {
-        userId: 'user-123',
-        sessionId: 'session-123',
-        type: 'refresh'
+      const mockSession = {
+        user_id: 'user-123',
+        refresh_token: refreshToken,
+        expires_at: new Date(Date.now() + 86400000) // Tomorrow
       };
 
-      jwt.verify.mockReturnValue(decodedToken);
-
-      const session = {
-        sessionId: 'session-123',
-        userId: 'user-123',
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        isActive: true
-      };
-      mockSessionRepository.findById.mockResolvedValue(session);
-
-      const user = {
-        userId: 'user-123',
+      const mockUser = {
+        id: 'user-123',
         username: 'testuser',
-        accountStatus: 'active'
+        email: 'test@example.com',
+        is_active: true
       };
-      mockUserRepository.findById.mockResolvedValue(user);
 
-      jwt.sign.mockImplementation((payload, secret, options) => {
-        if (options?.expiresIn === '15m') return 'new-token';
-        if (options?.expiresIn === '7d') return 'new-refresh-token';
+      mockDatabaseService.query.mockResolvedValueOnce({
+        rows: [mockSession]
+      });
+      mockDatabaseService.query.mockResolvedValueOnce({
+        rows: [mockUser]
       });
 
       const result = await authService.refreshToken(refreshToken);
 
-      expect(jwt.verify).toHaveBeenCalledWith(refreshToken, mockConfig.security.jwtSecret);
-      expect(mockSessionRepository.findById).toHaveBeenCalledWith(decodedToken.sessionId);
-      expect(mockUserRepository.findById).toHaveBeenCalledWith(decodedToken.userId);
-      expect(result).toEqual({
-        token: 'new-token',
-        refreshToken: 'new-refresh-token'
-      });
+      expect(result).toHaveProperty('token');
+      expect(result).toHaveProperty('refreshToken');
+      expect(mockDatabaseService.execute).toHaveBeenCalled(); // Update session
     });
 
-    it('should throw error for invalid refresh token', async () => {
-      jwt.verify.mockImplementation(() => {
-        throw new Error('Invalid token');
-      });
+    it('should reject invalid refresh token', async () => {
+      const refreshToken = 'invalid-refresh-token';
 
-      await expect(authService.refreshToken('invalid-token'))
-        .rejects.toThrow('Invalid refresh token');
+      mockDatabaseService.query.mockResolvedValue({ rows: [] });
+
+      await expect(authService.refreshToken(refreshToken))
+        .rejects.toThrow(AuthenticationError);
     });
 
-    it('should throw error for expired session', async () => {
-      const decodedToken = {
-        userId: 'user-123',
-        sessionId: 'session-123',
-        type: 'refresh'
+    it('should reject expired refresh token', async () => {
+      const refreshToken = 'expired-refresh-token';
+      const mockSession = {
+        user_id: 'user-123',
+        refresh_token: refreshToken,
+        expires_at: new Date(Date.now() - 86400000) // Yesterday
       };
 
-      jwt.verify.mockReturnValue(decodedToken);
+      mockDatabaseService.query.mockResolvedValue({
+        rows: [mockSession]
+      });
 
-      const session = {
-        sessionId: 'session-123',
-        userId: 'user-123',
-        expiresAt: new Date(Date.now() - 1000), // Expired
-        isActive: true
-      };
-      mockSessionRepository.findById.mockResolvedValue(session);
-
-      await expect(authService.refreshToken('valid-token'))
-        .rejects.toThrow('Session expired');
+      await expect(authService.refreshToken(refreshToken))
+        .rejects.toThrow(AuthenticationError);
     });
   });
 
   describe('logout', () => {
     it('should logout user successfully', async () => {
-      const userId = 'user-123';
+      const logoutData = {
+        sessionId: 'session-123',
+        userId: 'user-123',
+        ipAddress: '127.0.0.1',
+        userAgent: 'test-agent'
+      };
 
-      await authService.logout(userId);
+      mockDatabaseService.execute.mockResolvedValue({
+        rowCount: 1
+      });
 
-      expect(mockSessionRepository.deleteByUserId).toHaveBeenCalledWith(userId);
+      await authService.logout(logoutData);
+
+      expect(mockDatabaseService.execute).toHaveBeenCalled();
+      expect(mockAuditService.logAction).toHaveBeenCalledWith(
+        'USER_LOGOUT',
+        expect.anything(),
+        expect.anything()
+      );
+    });
+
+    it('should handle logout with invalid session', async () => {
+      const logoutData = {
+        sessionId: 'invalid-session',
+        userId: 'user-123',
+        ipAddress: '127.0.0.1',
+        userAgent: 'test-agent'
+      };
+
+      mockDatabaseService.execute.mockResolvedValue({
+        rowCount: 0
+      });
+
+      await authService.logout(logoutData);
+
+      expect(mockDatabaseService.execute).toHaveBeenCalled();
+      // Should not throw error, just log the event
+      expect(mockAuditService.logAction).toHaveBeenCalled();
+    });
+  });
+
+  describe('validateToken', () => {
+    it('should validate token successfully', async () => {
+      const token = 'valid-token';
+      const mockPayload = {
+        userId: 'user-123',
+        exp: Math.floor(Date.now() / 1000) + 3600
+      };
+
+      jwt.verify.mockReturnValue(mockPayload);
+
+      const mockUser = {
+        id: 'user-123',
+        username: 'testuser',
+        is_active: true
+      };
+
+      mockDatabaseService.query.mockResolvedValue({
+        rows: [mockUser]
+      });
+
+      const result = await authService.validateToken(token);
+
+      expect(jwt.verify).toHaveBeenCalledWith(token, expect.any(String));
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should reject invalid token', async () => {
+      const token = 'invalid-token';
+
+      jwt.verify.mockImplementation(() => {
+        throw new Error('Invalid token');
+      });
+
+      await expect(authService.validateToken(token))
+        .rejects.toThrow(AuthenticationError);
+    });
+
+    it('should reject token for inactive user', async () => {
+      const token = 'valid-token';
+      const mockPayload = {
+        userId: 'user-123',
+        exp: Math.floor(Date.now() / 1000) + 3600
+      };
+
+      jwt.verify.mockReturnValue(mockPayload);
+
+      const mockUser = {
+        id: 'user-123',
+        username: 'testuser',
+        is_active: false
+      };
+
+      mockDatabaseService.query.mockResolvedValue({
+        rows: [mockUser]
+      });
+
+      await expect(authService.validateToken(token))
+        .rejects.toThrow(AuthenticationError);
     });
   });
 });

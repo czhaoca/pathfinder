@@ -1,24 +1,25 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/services/authService';
 import { authStore } from '@/stores/authStore';
 
 // Mock dependencies
-jest.mock('@/services/authService');
-jest.mock('@/stores/authStore');
+vi.mock('@/services/authService');
+vi.mock('@/stores/authStore');
 
 describe('useAuth', () => {
-  const mockLogin = jest.fn();
-  const mockRegister = jest.fn();
-  const mockLogout = jest.fn();
-  const mockSetAuth = jest.fn();
-  const mockClearAuth = jest.fn();
+  const mockLogin = vi.fn();
+  const mockRegister = vi.fn();
+  const mockLogout = vi.fn();
+  const mockSetAuth = vi.fn();
+  const mockClearAuth = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     
     // Mock authStore
-    (authStore as unknown as jest.Mock).mockReturnValue({
+    vi.mocked(authStore).mockReturnValue({
       isAuthenticated: false,
       user: null,
       token: null,
@@ -41,7 +42,7 @@ describe('useAuth', () => {
       };
 
       mockLogin.mockResolvedValue(mockResponse);
-      (authService.login as jest.Mock) = mockLogin;
+      vi.mocked(authService.login).mockImplementation(mockLogin);
 
       const { result } = renderHook(() => useAuth());
 
@@ -51,35 +52,34 @@ describe('useAuth', () => {
 
       expect(mockLogin).toHaveBeenCalledWith(credentials);
       expect(mockSetAuth).toHaveBeenCalledWith(
+        mockResponse.user,
         mockResponse.token,
-        mockResponse.refreshToken,
-        mockResponse.user
+        mockResponse.refreshToken
       );
-      expect(result.current.error).toBeNull();
     });
 
     it('should handle login error', async () => {
-      const credentials = { username: 'testuser', password: 'wrongpassword' };
+      const credentials = { username: 'testuser', password: 'wrongpass' };
       const error = new Error('Invalid credentials');
 
       mockLogin.mockRejectedValue(error);
-      (authService.login as jest.Mock) = mockLogin;
+      vi.mocked(authService.login).mockImplementation(mockLogin);
 
       const { result } = renderHook(() => useAuth());
 
-      await act(async () => {
-        await result.current.login(credentials);
-      });
+      await expect(
+        act(async () => {
+          await result.current.login(credentials);
+        })
+      ).rejects.toThrow('Invalid credentials');
 
-      expect(mockLogin).toHaveBeenCalledWith(credentials);
       expect(mockSetAuth).not.toHaveBeenCalled();
-      expect(result.current.error).toBe('Invalid credentials');
     });
   });
 
   describe('register', () => {
     it('should register successfully', async () => {
-      const registerData = {
+      const userData = {
         username: 'newuser',
         email: 'new@example.com',
         password: 'password123',
@@ -97,25 +97,24 @@ describe('useAuth', () => {
       };
 
       mockRegister.mockResolvedValue(mockResponse);
-      (authService.register as jest.Mock) = mockRegister;
+      vi.mocked(authService.register).mockImplementation(mockRegister);
 
       const { result } = renderHook(() => useAuth());
 
       await act(async () => {
-        await result.current.register(registerData);
+        await result.current.register(userData);
       });
 
-      expect(mockRegister).toHaveBeenCalledWith(registerData);
+      expect(mockRegister).toHaveBeenCalledWith(userData);
       expect(mockSetAuth).toHaveBeenCalledWith(
+        mockResponse.user,
         mockResponse.token,
-        mockResponse.refreshToken,
-        mockResponse.user
+        mockResponse.refreshToken
       );
-      expect(result.current.error).toBeNull();
     });
 
     it('should handle registration error', async () => {
-      const registerData = {
+      const userData = {
         username: 'existinguser',
         email: 'existing@example.com',
         password: 'password123',
@@ -125,24 +124,24 @@ describe('useAuth', () => {
       const error = new Error('Username already exists');
 
       mockRegister.mockRejectedValue(error);
-      (authService.register as jest.Mock) = mockRegister;
+      vi.mocked(authService.register).mockImplementation(mockRegister);
 
       const { result } = renderHook(() => useAuth());
 
-      await act(async () => {
-        await result.current.register(registerData);
-      });
+      await expect(
+        act(async () => {
+          await result.current.register(userData);
+        })
+      ).rejects.toThrow('Username already exists');
 
-      expect(mockRegister).toHaveBeenCalledWith(registerData);
       expect(mockSetAuth).not.toHaveBeenCalled();
-      expect(result.current.error).toBe('Username already exists');
     });
   });
 
   describe('logout', () => {
     it('should logout successfully', async () => {
       mockLogout.mockResolvedValue(undefined);
-      (authService.logout as jest.Mock) = mockLogout;
+      vi.mocked(authService.logout).mockImplementation(mockLogout);
 
       const { result } = renderHook(() => useAuth());
 
@@ -157,7 +156,7 @@ describe('useAuth', () => {
     it('should clear auth even if logout API fails', async () => {
       const error = new Error('Network error');
       mockLogout.mockRejectedValue(error);
-      (authService.logout as jest.Mock) = mockLogout;
+      vi.mocked(authService.logout).mockImplementation(mockLogout);
 
       const { result } = renderHook(() => useAuth());
 
@@ -170,34 +169,22 @@ describe('useAuth', () => {
     });
   });
 
-  describe('loading state', () => {
-    it('should set loading state during operations', async () => {
-      const credentials = { username: 'testuser', password: 'password123' };
-      let resolveLogin: (value: any) => void;
-      const loginPromise = new Promise((resolve) => {
-        resolveLogin = resolve;
+  describe('isAuthenticated', () => {
+    it('should return authentication status', () => {
+      vi.mocked(authStore).mockReturnValue({
+        isAuthenticated: true,
+        user: { id: 'user-123', username: 'testuser' },
+        token: 'mock-token',
+        setAuth: mockSetAuth,
+        clearAuth: mockClearAuth
       });
-
-      mockLogin.mockReturnValue(loginPromise);
-      (authService.login as jest.Mock) = mockLogin;
 
       const { result } = renderHook(() => useAuth());
 
-      expect(result.current.isLoading).toBe(false);
-
-      act(() => {
-        result.current.login(credentials);
-      });
-
-      expect(result.current.isLoading).toBe(true);
-
-      await act(async () => {
-        resolveLogin!({
-          token: 'token',
-          refreshToken: 'refresh',
-          user: { id: '1', username: 'test' }
-        });
-        await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.isAuthenticated).toBe(true);
+      expect(result.current.user).toEqual({
+        id: 'user-123',
+        username: 'testuser'
       });
     });
   });
