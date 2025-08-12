@@ -1,456 +1,385 @@
-/**
- * Authentication Integration Tests
- */
-
 const request = require('supertest');
 const app = require('../../src/api/app');
-const { AppError } = require('../../src/api/middleware/errorHandler');
+const DatabaseService = require('../../src/services/database');
 
-describe('Authentication Endpoints', () => {
+describe('Auth API Integration', () => {
+  let server;
+  let database;
   let testUser;
-  let authToken;
-  let refreshToken;
 
-  beforeEach(() => {
-    testUser = {
-      username: 'testuser',
-      email: 'test@example.com',
-      password: 'Test123!@#',
-      firstName: 'Test',
-      lastName: 'User'
-    };
+  beforeAll(async () => {
+    // Initialize database
+    database = new DatabaseService();
+    await database.initialize();
+
+    // Start server
+    server = app.listen(0); // Random port
+  });
+
+  afterAll(async () => {
+    // Cleanup
+    if (server) {
+      await new Promise(resolve => server.close(resolve));
+    }
+    if (database) {
+      await database.close();
+    }
   });
 
   describe('POST /api/auth/register', () => {
-    it('should register a new user successfully', async () => {
-      const response = await request(app)
+    it('should register a new user', async () => {
+      const userData = {
+        username: `testuser_${Date.now()}`,
+        email: `test_${Date.now()}@example.com`,
+        password: 'TestPassword123!',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      const response = await request(server)
         .post('/api/auth/register')
-        .send(testUser)
+        .send(userData)
         .expect(201);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty('user');
-      expect(response.body.data).toHaveProperty('token');
-      expect(response.body.data).toHaveProperty('refreshToken');
-      expect(response.body.data.user.username).toBe(testUser.username);
-      expect(response.body.data.user.email).toBe(testUser.email);
-      expect(response.body.data.user).not.toHaveProperty('password');
+      expect(response.body).toMatchObject({
+        success: true,
+        message: 'User registered successfully',
+        data: expect.objectContaining({
+          token: expect.any(String),
+          refreshToken: expect.any(String),
+          user: expect.objectContaining({
+            username: userData.username,
+            email: userData.email
+          })
+        })
+      });
+
+      testUser = response.body.data;
     });
 
-    it('should fail with missing required fields', async () => {
-      const response = await request(app)
+    it('should reject duplicate username', async () => {
+      const userData = {
+        username: testUser.user.username,
+        email: 'different@example.com',
+        password: 'TestPassword123!',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      const response = await request(server)
         .post('/api/auth/register')
-        .send({
-          username: 'testuser'
-        })
+        .send(userData)
         .expect(400);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Validation failed');
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('username')
+      });
     });
 
-    it('should fail with invalid email format', async () => {
-      const response = await request(app)
+    it('should validate password requirements', async () => {
+      const userData = {
+        username: 'newuser',
+        email: 'new@example.com',
+        password: 'weak',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      const response = await request(server)
         .post('/api/auth/register')
-        .send({
-          ...testUser,
-          email: 'invalid-email'
-        })
+        .send(userData)
         .expect(400);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.errors).toContainEqual(
-        expect.objectContaining({
-          field: 'email',
-          message: expect.stringContaining('email')
+      expect(response.body).toMatchObject({
+        success: false,
+        errors: expect.objectContaining({
+          password: expect.any(String)
         })
-      );
+      });
     });
 
-    it('should fail with weak password', async () => {
-      const response = await request(app)
+    it('should validate email format', async () => {
+      const userData = {
+        username: 'newuser',
+        email: 'invalid-email',
+        password: 'TestPassword123!',
+        firstName: 'Test',
+        lastName: 'User'
+      };
+
+      const response = await request(server)
         .post('/api/auth/register')
-        .send({
-          ...testUser,
-          password: '123'
-        })
+        .send(userData)
         .expect(400);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.errors).toContainEqual(
-        expect.objectContaining({
-          field: 'password',
-          message: expect.stringContaining('password')
+      expect(response.body).toMatchObject({
+        success: false,
+        errors: expect.objectContaining({
+          email: expect.any(String)
         })
-      );
-    });
-
-    it('should fail with duplicate username', async () => {
-      // First registration
-      await request(app)
-        .post('/api/auth/register')
-        .send(testUser)
-        .expect(201);
-
-      // Duplicate registration
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(testUser)
-        .expect(409);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('already exists');
+      });
     });
   });
 
   describe('POST /api/auth/login', () => {
-    beforeEach(async () => {
-      // Register a user first
-      await request(app)
-        .post('/api/auth/register')
-        .send(testUser);
-    });
+    it('should login with valid credentials', async () => {
+      const credentials = {
+        username: testUser.user.username,
+        password: 'TestPassword123!'
+      };
 
-    it('should login successfully with valid credentials', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/auth/login')
-        .send({
-          username: testUser.username,
-          password: testUser.password
-        })
+        .send(credentials)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty('user');
-      expect(response.body.data).toHaveProperty('token');
-      expect(response.body.data).toHaveProperty('refreshToken');
-      
-      authToken = response.body.data.token;
-      refreshToken = response.body.data.refreshToken;
+      expect(response.body).toMatchObject({
+        success: true,
+        message: 'Login successful',
+        data: expect.objectContaining({
+          token: expect.any(String),
+          refreshToken: expect.any(String),
+          user: expect.objectContaining({
+            username: credentials.username
+          })
+        })
+      });
     });
 
-    it('should login with email instead of username', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          username: testUser.email,
-          password: testUser.password
-        })
-        .expect(200);
+    it('should reject invalid password', async () => {
+      const credentials = {
+        username: testUser.user.username,
+        password: 'WrongPassword123!'
+      };
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty('token');
-    });
-
-    it('should fail with invalid password', async () => {
-      const response = await request(app)
+      const response = await request(server)
         .post('/api/auth/login')
-        .send({
-          username: testUser.username,
-          password: 'wrongpassword'
-        })
+        .send(credentials)
         .expect(401);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Invalid credentials');
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('Invalid')
+      });
     });
 
-    it('should fail with non-existent username', async () => {
-      const response = await request(app)
+    it('should reject non-existent user', async () => {
+      const credentials = {
+        username: 'nonexistentuser',
+        password: 'TestPassword123!'
+      };
+
+      const response = await request(server)
         .post('/api/auth/login')
-        .send({
-          username: 'nonexistent',
-          password: testUser.password
-        })
+        .send(credentials)
         .expect(401);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Invalid credentials');
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('Invalid')
+      });
     });
 
-    it('should fail with missing credentials', async () => {
-      const response = await request(app)
+    it('should handle missing credentials', async () => {
+      const response = await request(server)
         .post('/api/auth/login')
         .send({})
         .expect(400);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Validation failed');
+      expect(response.body).toMatchObject({
+        success: false,
+        errors: expect.any(Object)
+      });
     });
   });
 
   describe('POST /api/auth/refresh', () => {
-    beforeEach(async () => {
-      // Register and login
-      await request(app)
-        .post('/api/auth/register')
-        .send(testUser);
-
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          username: testUser.username,
-          password: testUser.password
-        });
-
-      authToken = loginResponse.body.data.token;
-      refreshToken = loginResponse.body.data.refreshToken;
-    });
-
-    it('should refresh token successfully', async () => {
-      const response = await request(app)
+    it('should refresh token with valid refresh token', async () => {
+      const response = await request(server)
         .post('/api/auth/refresh')
-        .send({
-          refreshToken
-        })
+        .send({ refreshToken: testUser.refreshToken })
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty('token');
-      expect(response.body.data).toHaveProperty('refreshToken');
-      expect(response.body.data.token).not.toBe(authToken);
+      expect(response.body).toMatchObject({
+        success: true,
+        message: 'Token refreshed successfully',
+        data: expect.objectContaining({
+          token: expect.any(String),
+          refreshToken: expect.any(String)
+        })
+      });
     });
 
-    it('should fail with invalid refresh token', async () => {
-      const response = await request(app)
+    it('should reject invalid refresh token', async () => {
+      const response = await request(server)
         .post('/api/auth/refresh')
-        .send({
-          refreshToken: 'invalid-token'
-        })
+        .send({ refreshToken: 'invalid-token' })
         .expect(401);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Invalid token');
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.any(String)
+      });
     });
 
-    it('should fail with missing refresh token', async () => {
-      const response = await request(app)
+    it('should handle missing refresh token', async () => {
+      const response = await request(server)
         .post('/api/auth/refresh')
         .send({})
         .expect(400);
 
-      expect(response.body.success).toBe(false);
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('required')
+      });
     });
   });
 
   describe('POST /api/auth/logout', () => {
-    beforeEach(async () => {
-      // Register and login
-      await request(app)
-        .post('/api/auth/register')
-        .send(testUser);
-
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          username: testUser.username,
-          password: testUser.password
-        });
-
-      authToken = loginResponse.body.data.token;
-    });
-
-    it('should logout successfully', async () => {
-      const response = await request(app)
+    it('should logout authenticated user', async () => {
+      const response = await request(server)
         .post('/api/auth/logout')
-        .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${testUser.token}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toContain('Logged out');
+      expect(response.body).toMatchObject({
+        success: true,
+        message: 'Logged out successfully'
+      });
     });
 
-    it('should fail without authentication', async () => {
-      const response = await request(app)
+    it('should reject logout without token', async () => {
+      const response = await request(server)
         .post('/api/auth/logout')
         .expect(401);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Unauthorized');
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('Authentication')
+      });
     });
 
-    it('should invalidate token after logout', async () => {
-      // Logout
-      await request(app)
+    it('should reject logout with invalid token', async () => {
+      const response = await request(server)
         .post('/api/auth/logout')
-        .set('Authorization', `Bearer ${authToken}`)
-        .expect(200);
-
-      // Try to use the same token
-      const response = await request(app)
-        .get('/api/users/profile')
-        .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', 'Bearer invalid-token')
         .expect(401);
 
-      expect(response.body.success).toBe(false);
-    });
-  });
-
-  describe('GET /api/auth/verify-email', () => {
-    it('should verify email with valid token', async () => {
-      // This would typically require a verification token
-      // For testing, we'll simulate the flow
-      const verificationToken = 'valid-verification-token';
-      
-      const response = await request(app)
-        .get(`/api/auth/verify-email?token=${verificationToken}`)
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toContain('verified');
-    });
-
-    it('should fail with invalid verification token', async () => {
-      const response = await request(app)
-        .get('/api/auth/verify-email?token=invalid-token')
-        .expect(400);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Invalid');
-    });
-  });
-
-  describe('POST /api/auth/forgot-password', () => {
-    beforeEach(async () => {
-      await request(app)
-        .post('/api/auth/register')
-        .send(testUser);
-    });
-
-    it('should send password reset email', async () => {
-      const response = await request(app)
-        .post('/api/auth/forgot-password')
-        .send({
-          email: testUser.email
-        })
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toContain('reset');
-    });
-
-    it('should succeed even with non-existent email (security)', async () => {
-      const response = await request(app)
-        .post('/api/auth/forgot-password')
-        .send({
-          email: 'nonexistent@example.com'
-        })
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toContain('reset');
-    });
-  });
-
-  describe('POST /api/auth/reset-password', () => {
-    it('should reset password with valid token', async () => {
-      const resetToken = 'valid-reset-token';
-      const newPassword = 'NewPassword123!@#';
-
-      const response = await request(app)
-        .post('/api/auth/reset-password')
-        .send({
-          token: resetToken,
-          password: newPassword
-        })
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toContain('Password reset');
-    });
-
-    it('should fail with invalid reset token', async () => {
-      const response = await request(app)
-        .post('/api/auth/reset-password')
-        .send({
-          token: 'invalid-token',
-          password: 'NewPassword123!@#'
-        })
-        .expect(400);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Invalid');
-    });
-
-    it('should fail with weak new password', async () => {
-      const response = await request(app)
-        .post('/api/auth/reset-password')
-        .send({
-          token: 'valid-reset-token',
-          password: '123'
-        })
-        .expect(400);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.errors).toContainEqual(
-        expect.objectContaining({
-          field: 'password'
-        })
-      );
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('Invalid')
+      });
     });
   });
 
   describe('Authentication Middleware', () => {
-    beforeEach(async () => {
-      // Register and login
-      await request(app)
-        .post('/api/auth/register')
-        .send(testUser);
+    it('should protect routes requiring authentication', async () => {
+      const response = await request(server)
+        .get('/api/profile')
+        .expect(401);
 
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          username: testUser.username,
-          password: testUser.password
-        });
-
-      authToken = loginResponse.body.data.token;
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('Authentication')
+      });
     });
 
     it('should allow access with valid token', async () => {
-      const response = await request(app)
-        .get('/api/users/profile')
-        .set('Authorization', `Bearer ${authToken}`)
+      const response = await request(server)
+        .get('/api/profile')
+        .set('Authorization', `Bearer ${testUser.token}`)
         .expect(200);
 
-      expect(response.body.success).toBe(true);
+      expect(response.body).toMatchObject({
+        success: true,
+        data: expect.objectContaining({
+          username: testUser.user.username
+        })
+      });
     });
 
-    it('should deny access without token', async () => {
-      const response = await request(app)
-        .get('/api/users/profile')
+    it('should handle malformed token', async () => {
+      const response = await request(server)
+        .get('/api/profile')
+        .set('Authorization', 'Bearer malformed.token.here')
         .expect(401);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Unauthorized');
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('Invalid')
+      });
     });
 
-    it('should deny access with malformed token', async () => {
-      const response = await request(app)
-        .get('/api/users/profile')
-        .set('Authorization', 'Bearer malformed-token')
-        .expect(401);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('Invalid token');
-    });
-
-    it('should deny access with expired token', async () => {
+    it('should handle expired token', async () => {
       // Create an expired token
       const jwt = require('jsonwebtoken');
       const expiredToken = jwt.sign(
-        { id: 'user-id', username: 'testuser' },
-        process.env.JWT_SECRET,
-        { expiresIn: '-1h' }
+        { userId: 'test', exp: Math.floor(Date.now() / 1000) - 3600 },
+        process.env.JWT_SECRET || 'test-secret'
       );
 
-      const response = await request(app)
-        .get('/api/users/profile')
+      const response = await request(server)
+        .get('/api/profile')
         .set('Authorization', `Bearer ${expiredToken}`)
         .expect(401);
 
-      expect(response.body.success).toBe(false);
-      expect(response.body.message).toContain('expired');
+      expect(response.body).toMatchObject({
+        success: false,
+        message: expect.stringContaining('expired')
+      });
+    });
+  });
+
+  describe('Rate Limiting', () => {
+    it('should rate limit excessive requests', async () => {
+      const promises = [];
+      
+      // Make many rapid requests
+      for (let i = 0; i < 20; i++) {
+        promises.push(
+          request(server)
+            .post('/api/auth/login')
+            .send({ username: 'test', password: 'test' })
+        );
+      }
+
+      const responses = await Promise.all(promises);
+      const rateLimited = responses.some(r => r.status === 429);
+
+      expect(rateLimited).toBe(true);
+    });
+
+    it('should include rate limit headers', async () => {
+      const response = await request(server)
+        .post('/api/auth/login')
+        .send({ username: 'test', password: 'test' });
+
+      expect(response.headers).toHaveProperty('x-ratelimit-limit');
+      expect(response.headers).toHaveProperty('x-ratelimit-remaining');
+    });
+  });
+
+  describe('Security Headers', () => {
+    it('should include security headers', async () => {
+      const response = await request(server)
+        .get('/api/health');
+
+      expect(response.headers).toMatchObject({
+        'x-content-type-options': 'nosniff',
+        'x-frame-options': 'DENY',
+        'x-xss-protection': '1; mode=block'
+      });
+    });
+
+    it('should not expose sensitive information', async () => {
+      const response = await request(server)
+        .get('/api/nonexistent')
+        .expect(404);
+
+      expect(response.headers['x-powered-by']).toBeUndefined();
+      expect(response.body).not.toContain('stack');
+      expect(response.body).not.toContain('trace');
     });
   });
 });

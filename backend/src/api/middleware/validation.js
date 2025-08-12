@@ -8,19 +8,29 @@ const { REGEX, LIMITS } = require('../../utils/constants');
 class Validator {
   // Common field validators
   static email(email) {
-    if (!email || !REGEX.EMAIL.test(email)) {
+    if (!email) {
       throw new ValidationError('Invalid email format', { email: 'Must be a valid email address' });
     }
-    return email.toLowerCase().trim();
+    const normalized = email.toLowerCase().trim();
+    if (!REGEX.EMAIL.test(normalized)) {
+      throw new ValidationError('Invalid email format', { email: 'Must be a valid email address' });
+    }
+    return normalized;
   }
   
   static username(username) {
-    if (!username || !REGEX.USERNAME.test(username)) {
+    if (!username) {
       throw new ValidationError('Invalid username', { 
         username: 'Must be 3-30 characters, alphanumeric with underscores and hyphens' 
       });
     }
-    return username.toLowerCase().trim();
+    const normalized = username.toLowerCase().trim();
+    if (!REGEX.USERNAME.test(normalized)) {
+      throw new ValidationError('Invalid username', { 
+        username: 'Must be 3-30 characters, alphanumeric with underscores and hyphens' 
+      });
+    }
+    return normalized;
   }
   
   static password(password) {

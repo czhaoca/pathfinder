@@ -7,7 +7,6 @@
 const oracledb = require('oracledb');
 const winston = require('winston');
 const config = require('../config');
-const { createUserSchema, getUserTableTemplates } = require('../scripts/deploy-schema');
 
 // Configure logger
 const logger = winston.createLogger({

@@ -110,10 +110,14 @@ afterAll(async () => {
     await dbManager.close();
   }
 
-  // Close Redis connections
-  const redis = require('../src/services/redis');
-  if (redis && redis.quit) {
-    await redis.quit();
+  // Close Redis connections if redis service exists
+  try {
+    const redis = require('../src/services/redis');
+    if (redis && redis.quit) {
+      await redis.quit();
+    }
+  } catch (error) {
+    // Redis service not available, skip cleanup
   }
 });
 
