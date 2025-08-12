@@ -1,5 +1,10 @@
 # Pathfinder - AI-Powered Career Navigation Platform
 
+![Version](https://img.shields.io/badge/version-0.1.0--beta.1-blue.svg)
+![Status](https://img.shields.io/badge/status-beta-orange.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-green.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 ## 🚀 Overview
 
 Pathfinder is a comprehensive AI-powered career navigation and experience management system designed to help professionals plan their career paths, manage their experiences, and achieve their professional goals. The platform leverages advanced AI capabilities to provide personalized career guidance, skill development recommendations, and professional networking opportunities.

@@ -1,0 +1,103 @@
+name: Version Check
+
+on:
+  pull_request:
+    paths:
+      - 'VERSION'
+      - 'package.json'
+      - 'backend/package.json'
+      - 'frontend/package.json'
+
+jobs:
+  check-version-sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Check version consistency
+        run: |
+          VERSION=$(cat VERSION)
+          echo "VERSION file: $VERSION"
+          
+          # Check root package.json
+          ROOT_VERSION=$(node -p "require('./package.json').version")
+          echo "Root package.json: $ROOT_VERSION"
+          
+          # Check backend package.json
+          BACKEND_VERSION=$(node -p "require('./backend/package.json').version")
+          echo "Backend package.json: $BACKEND_VERSION"
+          
+          # Check frontend package.json
+          FRONTEND_VERSION=$(node -p "require('./frontend/package.json').version")
+          echo "Frontend package.json: $FRONTEND_VERSION"
+          
+          # Verify all versions match
+          if [ "$VERSION" != "$ROOT_VERSION" ]; then
+            echo "❌ Version mismatch: VERSION ($VERSION) != package.json ($ROOT_VERSION)"
+            exit 1
+          fi
+          
+          if [ "$VERSION" != "$BACKEND_VERSION" ]; then
+            echo "❌ Version mismatch: VERSION ($VERSION) != backend/package.json ($BACKEND_VERSION)"
+            exit 1
+          fi
+          
+          if [ "$VERSION" != "$FRONTEND_VERSION" ]; then
+            echo "❌ Version mismatch: VERSION ($VERSION) != frontend/package.json ($FRONTEND_VERSION)"
+            exit 1
+          fi
+          
+          echo "✅ All version files are in sync: $VERSION"
+      
+      - name: Check version format
+        run: |
+          VERSION=$(cat VERSION)
+          
+          # Check semantic versioning format
+          if ! echo "$VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$'; then
+            echo "❌ Invalid version format: $VERSION"
+            echo "Expected format: MAJOR.MINOR.PATCH[-PRERELEASE]"
+            exit 1
+          fi
+          
+          # Check if pre-1.0 version includes appropriate prerelease tag
+          if echo "$VERSION" | grep -E '^0\.[0-9]+\.[0-9]+$'; then
+            echo "⚠️  Warning: Pre-1.0 version without prerelease tag"
+            echo "Consider using -beta.X or -rc.X suffix"
+          fi
+          
+          echo "✅ Version format is valid: $VERSION"
+      
+      - name: Comment PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const version = fs.readFileSync('VERSION', 'utf8').trim();
+            
+            const comment = `### Version Check Results
+            
+            **Current Version:** \`${version}\`
+            
+            ${context.job.status === 'success' ? '✅ All version files are synchronized' : '❌ Version files are out of sync'}
+            
+            Please ensure all version files are updated using:
+            \`\`\`bash
+            node scripts/version.js set ${version}
+            \`\`\`
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

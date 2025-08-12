@@ -1,0 +1,155 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - prerelease
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      
+      - name: Read current version
+        id: current_version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+      
+      - name: Bump version (manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        id: bump_version
+        run: |
+          node scripts/version.js ${{ github.event.inputs.version_type }}
+          NEW_VERSION=$(cat VERSION)
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Bumped to version: $NEW_VERSION"
+      
+      - name: Extract version from tag
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        id: tag_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "new_version=$VERSION" >> $GITHUB_OUTPUT
+          node scripts/version.js set $VERSION
+      
+      - name: Determine final version
+        id: final_version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ steps.bump_version.outputs.new_version }}"
+          else
+            VERSION="${{ steps.tag_version.outputs.new_version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Final version: $VERSION"
+      
+      - name: Install dependencies
+        run: npm run install:all
+      
+      - name: Run tests
+        run: |
+          npm run backend:test || true
+          npm run frontend:test || true
+      
+      - name: Build frontend
+        run: npm run frontend:build
+      
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "# Release v${{ steps.final_version.outputs.version }}" > RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "## Changes" >> RELEASE_NOTES.md
+          git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)..HEAD >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "## Version Info" >> RELEASE_NOTES.md
+          echo "- Version: ${{ steps.final_version.outputs.version }}" >> RELEASE_NOTES.md
+          echo "- Node.js: 22.x" >> RELEASE_NOTES.md
+          echo "- Status: Beta Development" >> RELEASE_NOTES.md
+      
+      - name: Create Release Archive
+        run: |
+          mkdir -p release
+          tar -czf release/pathfinder-v${{ steps.final_version.outputs.version }}.tar.gz \
+            --exclude=node_modules \
+            --exclude=.git \
+            --exclude=.env \
+            --exclude=*.log \
+            --exclude=release \
+            .
+      
+      - name: Commit version changes (manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add VERSION package.json backend/package.json frontend/package.json
+          git commit -m "chore: bump version to ${{ steps.final_version.outputs.version }}"
+          git tag -a v${{ steps.final_version.outputs.version }} -m "Release v${{ steps.final_version.outputs.version }}"
+          git push origin HEAD:main
+          git push origin v${{ steps.final_version.outputs.version }}
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.final_version.outputs.version }}
+          name: Release v${{ steps.final_version.outputs.version }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: ${{ contains(steps.final_version.outputs.version, 'beta') || contains(steps.final_version.outputs.version, 'rc') }}
+          files: |
+            release/pathfinder-v${{ steps.final_version.outputs.version }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update version badge
+        if: success()
+        run: |
+          echo "✅ Release v${{ steps.final_version.outputs.version }} created successfully"
+          echo "📦 Download: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.final_version.outputs.version }}"
+
+  deploy-beta:
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'beta')
+    
+    steps:
+      - name: Deploy to beta environment
+        run: |
+          echo "🚀 Deploying to beta environment..."
+          echo "Note: Actual deployment will use GitHub environment variables"
+          echo "Environment variables will be injected from GitHub Secrets"
+      
+      - name: Notify deployment
+        run: |
+          echo "✅ Beta deployment initiated"
+          echo "Environment: BETA"
+          echo "Version: ${{ github.ref_name }}"

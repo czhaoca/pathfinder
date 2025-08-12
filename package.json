@@ -1,6 +1,6 @@
 {
   "name": "pathfinder",
-  "version": "1.0.0",
+  "version": "0.1.0-beta.1",
   "description": "Pathfinder - AI-powered career navigation and experience management system",
   "private": true,
   "workspaces": [

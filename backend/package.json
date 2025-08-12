@@ -1,6 +1,6 @@
 {
   "name": "pathfinder-backend",
-  "version": "1.0.0",
+  "version": "0.1.0-beta.1",
   "description": "Backend API and services for Pathfinder",
   "main": "src/api/server.js",
   "scripts": {
