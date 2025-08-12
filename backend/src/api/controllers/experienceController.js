@@ -297,6 +297,116 @@ class ExperienceController {
       next(error);
     }
   }
+
+  async searchExperiences(req, res, next) {
+    try {
+      const searchParams = {
+        q: req.query.q,
+        skills: req.query.skills ? req.query.skills.split(',') : undefined,
+        startDate: req.query.startDate,
+        endDate: req.query.endDate,
+        type: req.query.type,
+        limit: req.query.limit ? parseInt(req.query.limit) : 20,
+        offset: req.query.offset ? parseInt(req.query.offset) : 0
+      };
+
+      const results = await this.experienceService.searchExperiences(
+        req.user.userId,
+        searchParams
+      );
+
+      res.json({
+        success: true,
+        data: results.experiences,
+        pagination: {
+          total: results.total,
+          limit: searchParams.limit,
+          offset: searchParams.offset
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSkillsSummary(req, res, next) {
+    try {
+      const summary = await this.experienceService.getSkillsSummary(req.user.userId);
+
+      res.json({
+        success: true,
+        data: {
+          topSkills: summary.topSkills,
+          skillCategories: summary.categories,
+          skillGrowth: summary.growth,
+          totalSkills: summary.total
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSkillsRecommendations(req, res, next) {
+    try {
+      const { targetRole } = req.query;
+      
+      const recommendations = await this.experienceService.getSkillsRecommendations(
+        req.user.userId,
+        targetRole
+      );
+
+      res.json({
+        success: true,
+        data: {
+          recommended: recommendations.recommended,
+          trending: recommendations.trending,
+          complementary: recommendations.complementary
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async exportExperiences(req, res, next) {
+    try {
+      const format = req.query.format || 'json';
+      const filters = {
+        type: req.query.type,
+        startDate: req.query.startDate,
+        endDate: req.query.endDate
+      };
+
+      const exportData = await this.experienceService.exportExperiences(
+        req.user.userId,
+        format,
+        filters
+      );
+
+      if (format === 'pdf') {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=experiences.pdf');
+        res.send(exportData);
+      } else if (format === 'csv') {
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=experiences.csv');
+        res.send(exportData);
+      } else {
+        // JSON format
+        res.json({
+          experiences: exportData.experiences,
+          metadata: {
+            exportDate: new Date().toISOString(),
+            totalExperiences: exportData.experiences.length,
+            filters: filters
+          }
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = ExperienceController;

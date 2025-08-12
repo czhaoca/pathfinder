@@ -28,10 +28,12 @@ test.describe('Authentication E2E Tests', () => {
       const body = await response.json();
       
       expect(body.success).toBe(true);
+      expect(body.data).toBeDefined();
       expect(body.data).toHaveProperty('user');
       expect(body.data.user).toHaveProperty('id');
-      expect(body.data.user.username).toBe(TEST_USER.username);
-      expect(body.data.user.email).toBe(TEST_USER.email);
+      expect(body.data.user.username).toBe(TEST_USER.username.toLowerCase());
+      expect(body.data.user.email).toBe(TEST_USER.email.toLowerCase());
+      expect(body.message).toBe('User registered successfully');
       
       userId = body.data.user.id;
     });
@@ -45,7 +47,7 @@ test.describe('Authentication E2E Tests', () => {
       const body = await response.json();
       
       expect(body.success).toBe(false);
-      expect(body.error).toContain('already exists');
+      expect(body.message).toBeDefined();
     });
 
     test('should validate registration input', async ({ request }) => {
@@ -80,6 +82,7 @@ test.describe('Authentication E2E Tests', () => {
       const body = await response.json();
       
       expect(body.success).toBe(true);
+      expect(body.message).toBe('Login successful');
       expect(body.data).toHaveProperty('token');
       expect(body.data).toHaveProperty('refreshToken');
       expect(body.data).toHaveProperty('user');

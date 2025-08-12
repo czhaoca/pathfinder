@@ -218,6 +218,19 @@ const schemas = {
     changePassword: {
       currentPassword: { required: true, type: 'string' },
       newPassword: { required: true, type: 'password' }
+    },
+    forgotPassword: {
+      email: { required: true, type: 'email' }
+    },
+    resetPassword: {
+      token: { required: true, type: 'string' },
+      newPassword: { required: true, type: 'password' }
+    },
+    resendVerification: {
+      email: { required: true, type: 'email' }
+    },
+    refreshToken: {
+      refreshToken: { required: true, type: 'string' }
     }
   },
   
@@ -257,6 +270,29 @@ const schemas = {
       location: { required: false, type: 'string', max: 100 },
       employmentType: { required: false, type: 'string', max: 50 }
     }
+  },
+
+  experienceSearch: {
+    q: { required: false, type: 'string', min: 1, max: 200 },
+    skills: { required: false, type: 'string' },
+    startDate: { required: false, type: 'date' },
+    endDate: { required: false, type: 'date' },
+    type: { required: false, type: 'string' },
+    limit: { required: false, type: 'number' },
+    offset: { required: false, type: 'number' }
+  },
+
+  experienceExport: {
+    format: { required: false, type: 'string', custom: (value) => {
+      const validFormats = ['json', 'csv', 'pdf'];
+      if (!validFormats.includes(value)) {
+        throw new ValidationError('Invalid format', { format: 'Must be json, csv, or pdf' });
+      }
+      return value;
+    }},
+    type: { required: false, type: 'string' },
+    startDate: { required: false, type: 'date' },
+    endDate: { required: false, type: 'date' }
   },
   
   chat: {

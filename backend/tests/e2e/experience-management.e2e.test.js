@@ -43,19 +43,22 @@ test.describe('Experience Management E2E Tests', () => {
       const experience = {
         title: 'Senior Software Engineer',
         description: 'Led development of microservices architecture, mentored junior developers, and improved system performance by 40%',
-        organization: 'Tech Corp',
+        company: 'Tech Corp', // Changed from 'organization' to 'company' to match schema
         startDate: '2022-01-15',
         endDate: '2023-12-31',
-        isCurrent: false,
-        experienceType: 'work',
-        skills: ['JavaScript', 'Node.js', 'AWS', 'Microservices', 'Team Leadership'],
-        highlights: [
+        responsibilities: [
+          'Lead development team',
+          'Design microservices architecture',
+          'Mentor junior developers'
+        ],
+        achievements: [
           'Reduced API response time by 40%',
           'Mentored team of 5 developers',
           'Implemented CI/CD pipeline'
         ],
+        skills: ['JavaScript', 'Node.js', 'AWS', 'Microservices', 'Team Leadership'],
         location: 'San Francisco, CA',
-        roleCategory: 'Engineering'
+        employmentType: 'Full-time'
       };
 
       const response = await request.post(`${API_URL}/experiences`, {
@@ -68,12 +71,12 @@ test.describe('Experience Management E2E Tests', () => {
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
       
-      expect(body.success).toBe(true);
-      expect(body.data).toHaveProperty('id');
-      expect(body.data.title).toBe(experience.title);
-      expect(body.data.skills).toEqual(expect.arrayContaining(experience.skills));
+      expect(body.message).toBe('Experience created successfully');
+      expect(body.experience).toHaveProperty('id');
+      expect(body.experience.title).toBe(experience.title);
+      expect(body.experience.skills).toEqual(expect.arrayContaining(experience.skills));
       
-      experienceId = body.data.id;
+      experienceId = body.experience.id;
     });
 
     test('should create an education experience', async ({ request }) => {

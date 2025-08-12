@@ -14,12 +14,14 @@ module.exports = {
   ],
   testMatch: [
     '**/tests/**/*.test.js',
-    '**/tests/**/*.spec.js'
+    '**/tests/**/*.spec.js',
+    '!**/tests/e2e/**'  // Exclude E2E tests from Jest
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',
-    '/coverage/'
+    '/coverage/',
+    '/tests/e2e/'  // Exclude E2E directory
   ],
   verbose: true,
   testTimeout: 10000,

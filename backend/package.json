@@ -24,7 +24,9 @@
     "test": "jest",
     "test:unit": "jest --testPathPattern=tests/unit",
     "test:integration": "jest --testPathPattern=tests/integration",
-    "test:e2e": "jest --testPathPattern=tests/e2e",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:e2e:debug": "npx playwright test --debug",
     "test:security": "node src/utils/security/test-security-features.js",
     "test:coverage": "jest --coverage --coverageReporters=text --coverageReporters=lcov --coverageReporters=html",
     "test:watch": "jest --watch",
@@ -62,6 +64,8 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
+    "2": "^3.0.0",
+    "@playwright/test": "^1.54.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.2.1",
     "@types/node-fetch": "^2.6.9",

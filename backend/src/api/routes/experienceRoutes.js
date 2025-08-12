@@ -25,6 +25,27 @@ function createExperienceRoutes(container) {
     experienceController.getExperienceTemplates
   );
 
+  // Search route must come before /:id to avoid route conflicts
+  router.get('/search',
+    validate(schemas.experienceSearch),
+    experienceController.searchExperiences
+  );
+
+  // Skills analytics routes
+  router.get('/skills/summary',
+    experienceController.getSkillsSummary
+  );
+
+  router.get('/skills/recommendations',
+    experienceController.getSkillsRecommendations
+  );
+
+  // Export route
+  router.get('/export',
+    validate(schemas.experienceExport),
+    experienceController.exportExperiences
+  );
+
   router.post('/',
     validate(schemas.experience.create),
     experienceController.createExperience
