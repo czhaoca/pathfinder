@@ -3,7 +3,7 @@
  * Environment-based configuration for Oracle Autonomous Database connections
  */
 
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 
 const environment = process.env.NODE_ENV || 'development';
 const activeDatabases = process.env.ACTIVE_DATABASES || environment; // 'development', 'production', or 'both'

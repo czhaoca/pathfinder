@@ -80,7 +80,7 @@ services:
 
   # Frontend Development Server
   frontend-dev:
-    image: node:20-alpine
+    image: node:22-alpine
     container_name: pathfinder-frontend-dev
     working_dir: /app
     command: npm run dev -- --host

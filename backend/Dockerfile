@@ -1,7 +1,7 @@
 # Backend Dockerfile for Pathfinder
 
 # Development stage
-FROM node:20-oracle-instantclient AS development
+FROM node:22-oracle-instantclient AS development
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ EXPOSE 3000
 CMD ["npm", "run", "dev"]
 
 # Production stage
-FROM node:20-oracle-instantclient AS production
+FROM node:22-oracle-instantclient AS production
 
 WORKDIR /app
 

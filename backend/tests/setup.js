@@ -6,7 +6,7 @@
 const dotenv = require('dotenv');
 
 // Load test environment variables
-dotenv.config({ path: '.env.test' });
+dotenv.config({ path: '.env.test', quiet: true });
 
 // Set test environment
 process.env.NODE_ENV = 'test';
