@@ -218,7 +218,7 @@ CREATE TABLE pf_password_tokens (
 **Token Properties:**
 - Single-use only
 - Cryptographically random (256 bits)
-- Short expiry (1 hour for retrieval, 24 hours for reset)
+- Short expiry (1 hour for retrieval, 3 hours for reset)
 - Logged for audit trail
 
 ### Token Security
@@ -269,8 +269,8 @@ const rateLimits = {
     },
     passwordReset: {
         attempts: 3,
-        window: '1 hour',
-        lockout: '2 hours'
+        window: '30 minutes',
+        lockout: '1 hour'
     },
     tokenRetrieval: {
         attempts: 3,

@@ -241,7 +241,7 @@ All authentication endpoints are prefixed with `/api/auth`.
 
 ### POST /auth/password/reset-request
 
-**Description:** Admin initiates password reset for a user. Generates a unique reset token.
+**Description:** Admin initiates password reset for a user. Generates a unique reset token that expires in 3 hours.
 
 **Authentication:** Required (Admin or Site Admin)
 
@@ -250,8 +250,7 @@ All authentication endpoints are prefixed with `/api/auth`.
 {
   "user_id": "uuid",
   "reason": "User forgot password",
-  "notify_user": true, // Send email notification
-  "expires_in_hours": 24 // Default: 24 hours
+  "notify_user": true // Send email notification
 }
 ```
 
@@ -261,11 +260,13 @@ All authentication endpoints are prefixed with `/api/auth`.
   "success": true,
   "data": {
     "reset_token": "reset_token_xyz789",
-    "expires_at": "2025-08-14T10:00:00Z",
+    "expires_at": "2025-08-13T13:00:00Z", // 3 hours from generation
     "user_notified": true
   }
 }
 ```
+
+**Note:** Reset tokens automatically expire 3 hours after generation for security.
 
 ### POST /auth/password/reset
 
