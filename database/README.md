@@ -26,6 +26,7 @@ database/
 ### 1. Core Tables (`/core`)
 Primary system tables shared across all users:
 - **users.sql**: User accounts, sessions, preferences, profiles
+- **configuration.sql**: System configuration, feature flags, rate limits
 
 ### 2. Security Tables (`/security`)
 Authentication, authorization, and audit:
@@ -48,6 +49,7 @@ Shared reference data and lookups (future)
 | Schema File | Description | Key Tables |
 |------------|-------------|------------|
 | [core/users.sql](./core/users.sql) | User management | `pf_users`, `pf_user_sessions`, `pf_user_preferences` |
+| [core/configuration.sql](./core/configuration.sql) | System configuration | `pf_system_config`, `pf_feature_flags`, `pf_rate_limits` |
 | [security/authentication.sql](./security/authentication.sql) | Authentication & authorization | `pf_user_roles`, `pf_user_passwords`, `pf_password_tokens` |
 | [security/audit.sql](./security/audit.sql) | Audit & compliance | `pf_audit_log`, `pf_security_events`, `pf_compliance_audit` |
 | [user-data/experiences.sql](./user-data/experiences.sql) | Career data | `pf_user_<username>_experiences`, `pf_user_<username>_skills` |
