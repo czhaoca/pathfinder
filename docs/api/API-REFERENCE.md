@@ -8,8 +8,10 @@ The Pathfinder API is a RESTful API that provides comprehensive career navigatio
 
 ```
 Development: http://localhost:3000/api
-Production: https://api.pathfinder.ai/api
+Production: {PRODUCTION_HOST}/api
 ```
+
+**Note:** The production URL is configured through environment variables. See the deployment configuration documentation for details on setting `PRODUCTION_HOST`.
 
 ## Authentication
 
