@@ -83,20 +83,22 @@ All API responses follow this structure:
 ### Authentication
 
 #### POST /auth/register
-Create a new user account.
+Create a new user account with system-generated password.
 
 **Request Body:**
 ```json
 {
   "username": "string",
   "email": "string",
-  "password": "string",
   "firstName": "string",
-  "lastName": "string"
+  "lastName": "string",
+  "role": "user" // Optional: "user" or "admin"
 }
 ```
 
-**Response:** User object with tokens
+**Note:** No password in request. System generates secure temporary password.
+
+**Response:** User object with one-time password retrieval token
 
 ---
 
@@ -107,9 +109,12 @@ Authenticate user and receive tokens.
 ```json
 {
   "username": "string",
-  "password": "string"
+  "password_hash": "string", // SHA256(password + client_salt)
+  "client_salt": "string"
 }
 ```
+
+**Note:** Password is hashed client-side before transmission.
 
 **Response:**
 ```json
@@ -136,6 +141,51 @@ Refresh access token.
 
 #### POST /auth/logout
 Logout user and invalidate tokens.
+
+---
+
+#### POST /auth/password/retrieve
+Retrieve temporary password using one-time token.
+
+**Request Body:**
+```json
+{
+  "password_token": "string"
+}
+```
+
+**Response:** Temporary password (valid for 24 hours)
+
+---
+
+#### POST /auth/password/reset-request
+Admin initiates password reset for user.
+
+**Authentication:** Required (Admin or Site Admin)
+
+**Request Body:**
+```json
+{
+  "user_id": "uuid",
+  "reason": "string"
+}
+```
+
+**Response:** Reset token for user
+
+---
+
+#### POST /auth/password/reset
+Reset password using admin-generated token.
+
+**Request Body:**
+```json
+{
+  "reset_token": "string",
+  "new_password_hash": "string",
+  "salt": "string"
+}
+```
 
 ---
 

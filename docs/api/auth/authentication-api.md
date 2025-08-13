@@ -45,7 +45,7 @@ All authentication endpoints are prefixed with `/api/auth`.
 
 ### POST /auth/register
 
-**Description:** Create a new user account. Only Admins and Site Admins can use this endpoint.
+**Description:** Create a new user account. Only Admins and Site Admins can use this endpoint. System generates a secure temporary password that must be retrieved separately.
 
 **Authentication:** Required (Admin or Site Admin)
 
@@ -54,13 +54,15 @@ All authentication endpoints are prefixed with `/api/auth`.
 {
   "username": "string",
   "email": "string",
-  "password": "string",
   "firstName": "string",
   "lastName": "string",
   "role": "user", // "user" | "admin" (site_admin requires separate promotion)
-  "send_welcome_email": true
+  "send_welcome_email": true,
+  "require_password_change": true // Default: true
 }
 ```
+
+**Note:** No password is included in the request. System generates a secure temporary password.
 
 **Response:**
 ```json
@@ -75,7 +77,9 @@ All authentication endpoints are prefixed with `/api/auth`.
       "lastName": "string",
       "roles": ["user"],
       "created_at": "2025-08-13T10:00:00Z"
-    }
+    },
+    "password_token": "secure_token_abc123", // One-time token to retrieve password
+    "token_expires_at": "2025-08-13T11:00:00Z" // 1 hour expiry
   }
 }
 ```
@@ -83,7 +87,6 @@ All authentication endpoints are prefixed with `/api/auth`.
 **Validation Rules:**
 - Username: 3-30 characters, alphanumeric and underscores only
 - Email: Valid email format
-- Password: Must meet role-specific requirements
 - Role: Only "user" or "admin" allowed (site_admin requires promotion)
 
 **Error Responses:**
@@ -95,16 +98,23 @@ All authentication endpoints are prefixed with `/api/auth`.
 
 ### POST /auth/login
 
-**Description:** Authenticate user and receive tokens.
+**Description:** Authenticate user and receive tokens. Password must be salted client-side before transmission.
 
 **Request Body:**
 ```json
 {
   "username": "string",
-  "password": "string",
+  "password_hash": "string", // Client-salted password hash (SHA256)
+  "client_salt": "string", // Random salt used by client
   "mfa_code": "string" // Optional, required if MFA enabled
 }
 ```
+
+**Password Hashing:**
+- Client generates random salt (minimum 32 bytes)
+- Client creates hash: SHA256(password + client_salt)
+- Server never receives or stores plain text password
+- Server applies additional hashing before storage
 
 **Response:**
 ```json
@@ -166,15 +176,17 @@ All authentication endpoints are prefixed with `/api/auth`.
 
 ### POST /auth/change-password
 
-**Description:** Change user password.
+**Description:** Change user password. All passwords must be salted client-side.
 
 **Authentication:** Required
 
 **Request Body:**
 ```json
 {
-  "current_password": "string",
-  "new_password": "string"
+  "current_password_hash": "string", // SHA256(current_password + current_salt)
+  "current_salt": "string",
+  "new_password_hash": "string", // SHA256(new_password + new_salt)
+  "new_salt": "string"
 }
 ```
 
@@ -182,7 +194,153 @@ All authentication endpoints are prefixed with `/api/auth`.
 ```json
 {
   "success": true,
-  "message": "Password changed successfully"
+  "message": "Password changed successfully",
+  "data": {
+    "password_expires_at": "2025-11-13T10:00:00Z", // Based on role
+    "must_change_password": false
+  }
+}
+```
+
+**Note:** If user had a temporary password, the 24-hour expiry is removed upon successful change.
+
+## Password Management
+
+### POST /auth/password/retrieve
+
+**Description:** Retrieve the temporary password using a one-time token. This endpoint can only be used once per token.
+
+**Request Body:**
+```json
+{
+  "password_token": "secure_token_abc123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "username": "john_doe",
+    "temporary_password": "TempPass#2024$Secure",
+    "expires_at": "2025-08-14T10:00:00Z", // 24 hours from retrieval
+    "must_change": true
+  }
+}
+```
+
+**Important:**
+- Token is single-use and expires after retrieval
+- Temporary password expires 24 hours after retrieval
+- User must change password before expiry
+
+**Error Responses:**
+- `404 Not Found` - Invalid or expired token
+- `410 Gone` - Token already used
+
+### POST /auth/password/reset-request
+
+**Description:** Admin initiates password reset for a user. Generates a unique reset token.
+
+**Authentication:** Required (Admin or Site Admin)
+
+**Request Body:**
+```json
+{
+  "user_id": "uuid",
+  "reason": "User forgot password",
+  "notify_user": true, // Send email notification
+  "expires_in_hours": 24 // Default: 24 hours
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "reset_token": "reset_token_xyz789",
+    "expires_at": "2025-08-14T10:00:00Z",
+    "user_notified": true
+  }
+}
+```
+
+### POST /auth/password/reset
+
+**Description:** User resets password using admin-generated reset token.
+
+**Request Body:**
+```json
+{
+  "reset_token": "reset_token_xyz789",
+  "new_password_hash": "string", // SHA256(new_password + salt)
+  "salt": "string"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Password reset successfully",
+  "data": {
+    "must_login": true
+  }
+}
+```
+
+### POST /auth/password/force-reset
+
+**Description:** Site Admin forces immediate password reset without token.
+
+**Authentication:** Required (Site Admin only)
+
+**Request Body:**
+```json
+{
+  "user_id": "uuid",
+  "generate_temporary": true // Generate new temporary password
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "password_token": "secure_token_def456",
+    "token_expires_at": "2025-08-13T11:00:00Z"
+  }
+}
+```
+
+### GET /auth/password/policy
+
+**Description:** Get password policy requirements for the current user's role.
+
+**Authentication:** Required
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "role": "user",
+    "requirements": {
+      "min_length": 8,
+      "require_uppercase": true,
+      "require_lowercase": true,
+      "require_numbers": true,
+      "require_special": true,
+      "special_characters": "!@#$%^&*()_+-=[]{}|;:,.<>?"
+    },
+    "expiry_days": 90,
+    "history_count": 3,
+    "current_password_age_days": 45,
+    "expires_at": "2025-10-28T10:00:00Z"
+  }
 }
 ```
 
@@ -422,7 +580,8 @@ All authentication endpoints are prefixed with `/api/auth`.
 **Request Body:**
 ```json
 {
-  "password": "string" // Current password for verification
+  "password_hash": "string", // SHA256(password + salt) for verification
+  "salt": "string"
 }
 ```
 
@@ -471,7 +630,8 @@ All authentication endpoints are prefixed with `/api/auth`.
 **Request Body:**
 ```json
 {
-  "password": "string",
+  "password_hash": "string", // SHA256(password + salt)
+  "salt": "string",
   "code": "123456" // Current MFA code
 }
 ```
