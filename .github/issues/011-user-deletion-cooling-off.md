@@ -710,7 +710,7 @@ None - New functionality that doesn't affect existing features.
 
 ## 🔗 Dependencies
 - Depends on:
-  - #1 (RBAC for site admin permissions)
+  - #8 (RBAC for site admin permissions)
 - Blocks:
   - GDPR compliance certification
   - User data management features

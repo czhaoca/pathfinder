@@ -589,8 +589,8 @@ app.use('/api/users', require('./routes/users.v2'));
 - API versioning introduced
 
 ## 🔗 Dependencies
-- Depends on: #1, #2, #3, #4, #5, #6, #7
-- Blocks: #11 (Frontend implementation)
+- Depends on: #8, #9, #10, #11, #12, #13, #14
+- Blocks: #18 (Frontend implementation)
 
 ## 📊 Success Metrics
 - All endpoints migrated to v2: 100%

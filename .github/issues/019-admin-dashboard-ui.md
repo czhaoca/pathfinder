@@ -834,8 +834,8 @@ export const useWebSocket = (type: string, callback: (data: any) => void) => {
 - [ ] Troubleshooting guide
 
 ## 🔗 Dependencies
-- Depends on: #8, #11 (API and auth ready)
-- Blocks: #13 (E2E testing)
+- Depends on: #15, #18 (API and auth ready)
+- Blocks: #20 (E2E testing)
 
 ## 📊 Success Metrics
 - Page load time < 2 seconds

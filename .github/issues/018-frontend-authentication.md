@@ -788,8 +788,8 @@ const PasswordStrengthIndicator: React.FC<{ strength: number }> = ({ strength })
 - [ ] Integration examples
 
 ## 🔗 Dependencies
-- Depends on: #8 (API endpoints ready)
-- Blocks: #13 (E2E testing)
+- Depends on: #15 (API endpoints ready)
+- Blocks: #20 (E2E testing)
 
 ## 📊 Success Metrics
 - Zero plain text passwords in memory/storage

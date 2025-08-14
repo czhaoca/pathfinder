@@ -626,7 +626,7 @@ describe('GDPR Compliance', () => {
 - Line coverage: > 95%
 
 ## 🔗 Dependencies
-- Depends on: #1-#8 (All features implemented)
+- Depends on: #8-#15 (All features implemented)
 - Blocks: Production deployment
 
 ## 📈 Success Metrics

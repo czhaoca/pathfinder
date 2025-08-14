@@ -503,10 +503,10 @@ router.post('/login', async (req, res) => {
 ```
 
 ## 🔗 Dependencies
-- Depends on: #1 (RBAC system for roles)
+- Depends on: #8 (RBAC system for roles)
 - Blocks: 
-  - #3 (Site admin provisioning needs password system)
-  - #11 (Frontend password hashing implementation)
+  - #10 (Site admin provisioning needs password system)
+  - #18 (Frontend password hashing implementation)
 
 ## 📈 Success Metrics
 - **Security Metrics:**

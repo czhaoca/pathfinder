@@ -520,7 +520,7 @@ class PathfinderClient:
 - Support ticket reduction by 50%
 
 ## 🔗 Dependencies
-- Depends on: #8 (API implementation complete)
+- Depends on: #15 (API implementation complete)
 - Blocks: External API consumers
 
 ---

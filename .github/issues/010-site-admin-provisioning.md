@@ -508,8 +508,8 @@ None - This is initial provisioning functionality.
 
 ## 🔗 Dependencies
 - Depends on: 
-  - #1 (RBAC system for site_admin role)
-  - #2 (Password system for secure storage)
+  - #8 (RBAC system for site_admin role)
+  - #9 (Password system for secure storage)
 - Blocks:
   - Initial production deployment
   - Admin user creation

@@ -868,7 +868,7 @@ describe('Configuration Management', () => {
 
 ## 🔗 Dependencies
 - Related to: All features using configuration
-- Depends on: #5 (Database reorganization)
+- Depends on: #12 (Database reorganization)
 - Blocks: Dynamic system behavior features
 
 ## 📊 Success Metrics

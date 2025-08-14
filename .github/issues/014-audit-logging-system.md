@@ -801,7 +801,7 @@ describe('Audit Logging System', () => {
 
 ## 🔗 Dependencies
 - Related to: All security features
-- Depends on: #5 (Database reorganization for audit tables)
+- Depends on: #12 (Database reorganization for audit tables)
 - Blocks: Compliance certification
 
 ## 📊 Success Metrics
