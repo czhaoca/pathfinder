@@ -1,0 +1,40 @@
+{
+  "name": "pathfinder-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end testing suite for Pathfinder application",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:auth": "playwright test e2e/tests/auth",
+    "test:rbac": "playwright test e2e/tests/rbac",
+    "test:admin": "playwright test e2e/tests/admin",
+    "test:security": "playwright test e2e/tests/security",
+    "test:a11y": "playwright test e2e/tests/accessibility",
+    "test:perf": "playwright test e2e/tests/performance",
+    "test:deletion": "playwright test e2e/tests/deletion",
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:mobile": "playwright test --project='Mobile Chrome' --project='Mobile Safari'",
+    "report": "playwright show-report",
+    "codegen": "playwright codegen",
+    "install:browsers": "playwright install",
+    "wait-for-services": "wait-on tcp:3000 tcp:4000 tcp:5432 -t 60000",
+    "wait-for-app": "wait-on http://localhost:3000 -t 30000"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.8.0",
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "@types/speakeasy": "^2.0.7",
+    "dotenv": "^16.3.1",
+    "junit-report-merger": "^6.0.2",
+    "speakeasy": "^2.0.0",
+    "typescript": "^5.3.0",
+    "wait-on": "^7.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
