@@ -7,7 +7,7 @@ const logger = require('../utils/logger');
 const ErrorHandler = require('./middleware/errorHandler');
 const container = require('../container');
 
-// Route imports
+// Route imports - V1 (Legacy)
 const createAuthRoutes = require('./routes/authRoutes');
 const createProfileRoutes = require('./routes/profileRoutes');
 const createExperienceRoutes = require('./routes/experienceRoutes');
@@ -20,6 +20,11 @@ const careerPathRoutes = require('./routes/careerPathRoutes');
 const networkingRoutes = require('./routes/networkingRoutes');
 const createJobSearchRoutes = require('./routes/jobSearchRoutes');
 const createLearningRoutes = require('./routes/learningRoutes');
+
+// Route imports - V2 (New Authentication System)
+const authV2Routes = require('../routes/auth.v2');
+const usersV2Routes = require('../routes/users.v2');
+const adminV2Routes = require('../routes/admin.v2');
 
 class App {
   constructor() {
@@ -140,23 +145,21 @@ class App {
       });
     });
 
-    // API routes (unversioned)
-    this.app.use('/api/auth', createAuthRoutes(container));
-    this.app.use('/api/profile', createProfileRoutes(container));
-    this.app.use('/api/experiences', createExperienceRoutes(container));
-    this.app.use('/api/chat', createChatRoutes(container));
-    this.app.use('/api/cpa-pert', createCPAPertRoutes(container));
-    if (process.env.ENHANCED_PERT_ENABLED === 'true') {
-      this.app.use('/api/cpa-pert/enhanced', createCPAPertEnhancedRoutes(container));
+    // API Version 2 routes (New Authentication System with RBAC)
+    this.app.use('/api/v2/auth', authV2Routes);
+    this.app.use('/api/v2/users', usersV2Routes);
+    if (adminV2Routes) {
+      this.app.use('/api/v2/admin', adminV2Routes);
     }
-    this.app.use('/api/analytics', createAnalyticsRoutes(container));
-    this.app.use('/api/resume', createResumeRoutes(container));
-    this.app.use('/api', careerPathRoutes);
-    this.app.use('/api', networkingRoutes);
-    this.app.use('/api', createJobSearchRoutes(container));
-    this.app.use('/api/learning', createLearningRoutes(container));
-
-    // API routes (v1 aliases) to match docs
+    
+    // API Version 1 routes (Legacy - with deprecation warning)
+    this.app.use('/api/v1/*', (req, res, next) => {
+      res.set('X-API-Deprecation-Warning', 'API v1 is deprecated. Please migrate to v2 by June 1, 2024.');
+      res.set('X-API-Deprecation-Date', '2024-06-01');
+      res.set('X-API-Deprecation-Info', 'https://docs.pathfinder.com/api/migration');
+      next();
+    });
+    
     this.app.use('/api/v1/auth', createAuthRoutes(container));
     this.app.use('/api/v1/profile', createProfileRoutes(container));
     this.app.use('/api/v1/experiences', createExperienceRoutes(container));
@@ -171,6 +174,31 @@ class App {
     this.app.use('/api/v1', networkingRoutes);
     this.app.use('/api/v1', createJobSearchRoutes(container));
     this.app.use('/api/v1/learning', createLearningRoutes(container));
+    
+    // Default unversioned routes (forward to v2)
+    this.app.use('/api/auth', authV2Routes);
+    this.app.use('/api/users', usersV2Routes);
+    if (adminV2Routes) {
+      this.app.use('/api/admin', adminV2Routes);
+    }
+    
+    // Legacy unversioned routes (forward to v1 with deprecation warning)
+    this.app.use('/api/profile', (req, res, next) => {
+      res.set('X-API-Warning', 'Unversioned endpoints are deprecated. Please use /api/v2/* endpoints.');
+      next();
+    }, createProfileRoutes(container));
+    this.app.use('/api/experiences', createExperienceRoutes(container));
+    this.app.use('/api/chat', createChatRoutes(container));
+    this.app.use('/api/cpa-pert', createCPAPertRoutes(container));
+    if (process.env.ENHANCED_PERT_ENABLED === 'true') {
+      this.app.use('/api/cpa-pert/enhanced', createCPAPertEnhancedRoutes(container));
+    }
+    this.app.use('/api/analytics', createAnalyticsRoutes(container));
+    this.app.use('/api/resume', createResumeRoutes(container));
+    this.app.use('/api', careerPathRoutes);
+    this.app.use('/api', networkingRoutes);
+    this.app.use('/api', createJobSearchRoutes(container));
+    this.app.use('/api/learning', createLearningRoutes(container));
 
     // API documentation
     const infoResponder = (req, res) => {

@@ -1,5 +1,9 @@
+const jwt = require('jsonwebtoken');
 const { getRoleService } = require('../services/roleService');
-const { auditService } = require('../services/auditService');
+const { AuditService } = require('../services/auditService');
+
+// Initialize audit service
+const auditService = new AuditService(require('../config/database'));
 
 /**
  * Role hierarchy definition
