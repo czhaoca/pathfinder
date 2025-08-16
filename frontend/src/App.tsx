@@ -26,6 +26,12 @@ import JobSearch from '@/pages/JobSearch'
 import InterviewPrep from '@/pages/InterviewPrep'
 import Learning from '@/pages/Learning'
 
+// Admin Pages
+import AdminDashboard from '@/pages/admin/AdminDashboard'
+import UserManagement from '@/pages/admin/UserManagement'
+import AuditLogViewer from '@/pages/admin/AuditLogViewer'
+import DeletionQueue from '@/pages/admin/DeletionQueue'
+
 // Layouts
 import AuthLayout from '@/components/layout/AuthLayout'
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -80,6 +86,12 @@ function App() {
             <Route path="cpa-pert/response/:responseId" element={<PertResponseDetail />} />
             <Route path="cpa-pert/progress" element={<CPAPertProgress />} />
             <Route path="profile" element={<Profile />} />
+            
+            {/* Admin routes */}
+            <Route path="admin" element={<AdminDashboard />} />
+            <Route path="admin/users" element={<UserManagement />} />
+            <Route path="admin/audit-logs" element={<AuditLogViewer />} />
+            <Route path="admin/deletion-queue" element={<DeletionQueue />} />
           </Route>
           
           {/* Catch all */}
