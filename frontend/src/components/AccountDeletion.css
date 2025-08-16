@@ -1,0 +1,227 @@
+.account-deletion {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.deletion-header {
+  margin-bottom: 30px;
+}
+
+.deletion-header h3 {
+  color: #dc3545;
+  margin-bottom: 10px;
+}
+
+.deletion-warning {
+  padding: 20px;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  margin-bottom: 20px;
+}
+
+.deletion-info-box {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.deletion-info-box h4 {
+  color: #495057;
+  margin-bottom: 15px;
+}
+
+.deletion-info-box ul {
+  list-style: none;
+  padding: 0;
+}
+
+.deletion-info-box li {
+  padding: 8px 0;
+  padding-left: 25px;
+  position: relative;
+}
+
+.deletion-info-box li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #28a745;
+  font-weight: bold;
+}
+
+.deletion-consequences {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.deletion-consequences h4 {
+  color: #721c24;
+  margin-bottom: 15px;
+}
+
+.deletion-consequences ul {
+  list-style: none;
+  padding: 0;
+}
+
+.deletion-consequences li {
+  padding: 8px 0;
+  padding-left: 25px;
+  position: relative;
+  color: #721c24;
+}
+
+.deletion-consequences li:before {
+  content: "×";
+  position: absolute;
+  left: 0;
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 16px;
+}
+
+.deletion-action {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deletion-warning {
+  margin: 20px 0;
+}
+
+.deletion-details {
+  margin: 20px 0;
+}
+
+.deletion-countdown {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.days-remaining {
+  font-size: 32px;
+  font-weight: bold;
+  color: #dc3545;
+  display: inline-block;
+  padding: 0 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.deletion-date {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.deletion-reason {
+  font-style: italic;
+  color: #6c757d;
+  margin-top: 10px;
+}
+
+.deletion-actions {
+  margin-top: 20px;
+}
+
+.btn-cancel-deletion {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-weight: bold;
+}
+
+.btn-cancel-deletion:hover:not(:disabled) {
+  background: #218838;
+}
+
+.btn-cancel-deletion:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deletion-info {
+  background: #e7f3ff;
+  border: 1px solid #b3d9ff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.deletion-info h4 {
+  color: #004085;
+  margin-bottom: 15px;
+}
+
+.deletion-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.deletion-info li {
+  padding: 8px 0;
+  padding-left: 25px;
+  position: relative;
+  color: #004085;
+}
+
+.deletion-info li:before {
+  content: "ℹ";
+  position: absolute;
+  left: 0;
+  color: #007bff;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 4px;
+  margin: 15px 0;
+  border: 1px solid #f5c6cb;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-size: 16px;
+}

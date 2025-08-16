@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Account Deletion Reminder</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .countdown {
+            background: white;
+            border: 2px solid #f5576c;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .countdown .days {
+            font-size: 48px;
+            font-weight: bold;
+            color: #f5576c;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .button:hover {
+            background: #218838;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Deletion Reminder</h1>
+    </div>
+    
+    <div class="content">
+        <p>Hi {{name}},</p>
+        
+        <p>This is a reminder that your Pathfinder account is scheduled for permanent deletion.</p>
+        
+        <div class="countdown">
+            <div class="days">{{daysRemaining}}</div>
+            <div>days remaining</div>
+        </div>
+        
+        <p>Your account and all associated data will be permanently deleted in <strong>{{daysRemaining}} days</strong>.</p>
+        
+        <h3>Still want to keep your account?</h3>
+        <p>It's not too late! You can cancel the deletion request and keep all your data.</p>
+        
+        <center>
+            <a href="{{cancellationUrl}}" class="button">Cancel Deletion Request</a>
+        </center>
+        
+        <h3>What will be deleted?</h3>
+        <ul>
+            <li>Your profile and account information</li>
+            <li>All your experiences and career data</li>
+            <li>Your preferences and settings</li>
+            <li>Session history and activity logs</li>
+            <li>Any custom data you've created</li>
+        </ul>
+        
+        <p><strong>Remember:</strong> Once deleted, your data cannot be recovered after 30 days.</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated reminder from Pathfinder.</p>
+        <p>If you didn't request this deletion, please cancel it immediately.</p>
+        <p>&copy; 2024 Pathfinder. All rights reserved.</p>
+    </div>
+</body>
+</html>

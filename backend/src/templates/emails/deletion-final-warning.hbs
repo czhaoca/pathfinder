@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FINAL WARNING: Account Deletion Imminent</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+        .urgent-banner {
+            background: #dc3545;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .critical-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .timer {
+            font-size: 36px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .button-urgent {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .button-urgent:hover {
+            background: #218838;
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="urgent-banner">
+        ⚠️ URGENT: ACTION REQUIRED ⚠️
+    </div>
+    
+    <div class="header">
+        <h1>FINAL WARNING</h1>
+        <h2>Account Deletion in 24 Hours</h2>
+    </div>
+    
+    <div class="content">
+        <p>Hi {{name}},</p>
+        
+        <div class="critical-box">
+            <div class="timer">⏰ {{hoursRemaining}} HOURS</div>
+            <div>until your account is permanently deleted</div>
+        </div>
+        
+        <p><strong>This is your FINAL reminder.</strong> Your Pathfinder account and all associated data will be permanently deleted tomorrow.</p>
+        
+        <h3>🚨 Last Chance to Cancel</h3>
+        <p>If you want to keep your account, you must act now. Once the deletion is processed, your data cannot be recovered after 30 days.</p>
+        
+        <center>
+            <a href="{{cancellationUrl}}" class="button-urgent">
+                CANCEL DELETION NOW
+            </a>
+        </center>
+        
+        <h3>What happens in 24 hours?</h3>
+        <ul>
+            <li>✗ Your account will be permanently deleted</li>
+            <li>✗ All your experiences and career data will be removed</li>
+            <li>✗ Your profile and preferences will be erased</li>
+            <li>✗ You will lose access to all your saved information</li>
+            <li>✗ Recovery will only be possible for 30 days (requires admin assistance)</li>
+        </ul>
+        
+        <div class="critical-box" style="background: #fff3cd; border-color: #ffc107;">
+            <strong>⚠️ No Further Reminders</strong><br>
+            This is the last email you will receive before your account is deleted.
+        </div>
+        
+        <p>If you did not request this deletion, please cancel it immediately and contact our support team.</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated FINAL WARNING from Pathfinder.</p>
+        <p><strong>Act now if you want to keep your account.</strong></p>
+        <p>&copy; 2024 Pathfinder. All rights reserved.</p>
+    </div>
+</body>
+</html>

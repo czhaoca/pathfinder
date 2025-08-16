@@ -1,0 +1,217 @@
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dialog-content {
+  background: white;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.dialog-content h2 {
+  color: #dc3545;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.dialog-warning {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+.dialog-warning strong {
+  font-size: 18px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-control[type="text"] {
+  font-family: monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.checkbox-group {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  margin: 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 10px;
+  margin-top: 4px;
+  cursor: pointer;
+  transform: scale(1.2);
+}
+
+.checkbox-group span {
+  flex: 1;
+  line-height: 1.5;
+  color: #495057;
+}
+
+.dialog-timeline {
+  background: #e7f3ff;
+  border: 1px solid #b3d9ff;
+  border-radius: 5px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.dialog-timeline h4 {
+  color: #004085;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.dialog-timeline ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dialog-timeline li {
+  padding: 10px 0;
+  border-bottom: 1px solid #d1e7ff;
+  color: #004085;
+}
+
+.dialog-timeline li:last-child {
+  border-bottom: none;
+}
+
+.dialog-timeline li strong {
+  color: #003d7a;
+  display: inline-block;
+  min-width: 100px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #dee2e6;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dialog-actions .btn-danger {
+  font-weight: bold;
+}
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  padding-right: 40px;
+}
+
+@media (max-width: 600px) {
+  .dialog-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .dialog-timeline li strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+  }
+
+  .dialog-actions button {
+    width: 100%;
+  }
+}
