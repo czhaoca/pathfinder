@@ -1,0 +1,1347 @@
+openapi: 3.0.3
+info:
+  title: Pathfinder API
+  description: |
+    Comprehensive career navigation and experience management API.
+    
+    ## Authentication
+    This API uses JWT Bearer tokens with 15-minute expiry. Tokens must be
+    refreshed using the refresh endpoint before expiry.
+    
+    ## Security Features
+    - Client-side password hashing (SHA-256) required
+    - Role-Based Access Control (RBAC) with three tiers: user, admin, site_admin
+    - Field-level encryption for sensitive data
+    - Comprehensive audit logging
+    - Rate limiting on all endpoints
+    
+    ## Base URL
+    - Production: `https://api.pathfinder.app/api`
+    - Staging: `https://staging-api.pathfinder.app/api`
+    - Development: `http://localhost:3000/api`
+    
+  version: 1.0.0
+  contact:
+    email: api@pathfinder.app
+  license:
+    name: Proprietary
+    
+servers:
+  - url: https://api.pathfinder.app/api
+    description: Production
+  - url: https://staging-api.pathfinder.app/api
+    description: Staging
+  - url: http://localhost:3000/api
+    description: Development
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Authentication
+    description: Authentication and authorization endpoints
+  - name: Users
+    description: User management operations
+  - name: Admin
+    description: Administrative operations (requires admin/site_admin role)
+  - name: Profile
+    description: User profile and preferences
+  - name: Experiences
+    description: Experience management operations
+  - name: Chat
+    description: AI-powered chat interactions
+  - name: CPA-PERT
+    description: CPA PERT reporting and competency management
+  - name: Analytics
+    description: Analytics and reporting
+  - name: Resume
+    description: Resume generation and management
+  - name: Career Path
+    description: Career path planning and guidance
+  - name: Networking
+    description: Professional networking features
+  - name: Job Search
+    description: Job search and application tracking
+  - name: Learning
+    description: Learning and development resources
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      description: |
+        Creates a new user account. Only admins and site_admins can register users.
+        System generates a secure temporary password that must be retrieved using
+        the one-time token returned in the response.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - first_name
+                - last_name
+              properties:
+                username:
+                  type: string
+                  pattern: '^[a-z0-9_]{3,30}$'
+                  example: john_doe
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                first_name:
+                  type: string
+                  example: John
+                last_name:
+                  type: string
+                  example: Doe
+                role:
+                  type: string
+                  enum: [user, admin]
+                  default: user
+                  description: Role to assign (cannot create site_admin)
+                department:
+                  type: string
+                  example: Engineering
+                phone:
+                  type: string
+                  example: "+1-555-123-4567"
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      password_retrieval_token:
+                        type: string
+                        description: One-time token to retrieve password
+                      token_expires_at:
+                        type: string
+                        format: date-time
+                      temporary_password_expires_at:
+                        type: string
+                        format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user
+      description: |
+        Authenticates user with client-hashed password. 
+        Password must be hashed with SHA-256 on client before sending.
+        Plain text passwords are rejected for security.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password_hash
+                - client_salt
+              properties:
+                username:
+                  type: string
+                  example: john_doe
+                password_hash:
+                  type: string
+                  description: SHA-256 hash of password + client_salt
+                  example: 5e884898da28047151d0e56f8dc629...
+                client_salt:
+                  type: string
+                  description: Random salt generated by client
+                  example: a1b2c3d4e5f6...
+                mfa_token:
+                  type: string
+                  description: TOTP token if MFA enabled
+                  example: "123456"
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      token:
+                        type: string
+                        description: JWT access token (15 min expiry)
+                      refresh_token:
+                        type: string
+                        description: Refresh token for getting new access tokens
+                      expires_at:
+                        type: string
+                        format: date-time
+                      permissions:
+                        type: array
+                        items:
+                          type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Get a new access token using refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  description: Valid refresh token
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: New JWT access token
+                      expires_at:
+                        type: string
+                        format: date-time
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout user
+      description: Invalidate current session and tokens
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  /auth/password/retrieve:
+    post:
+      tags:
+        - Authentication
+      summary: Retrieve temporary password
+      description: Use one-time token to retrieve system-generated password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  description: One-time password retrieval token
+      responses:
+        '200':
+          description: Password retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      temporary_password:
+                        type: string
+                      expires_at:
+                        type: string
+                        format: date-time
+                      must_change_on_login:
+                        type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /profile:
+    get:
+      tags:
+        - Profile
+      summary: Get current user profile
+      description: Get profile information for authenticated user
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      profile:
+                        $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Profile
+      summary: Update profile
+      description: Update current user's profile information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                phone:
+                  type: string
+                bio:
+                  type: string
+                preferences:
+                  type: object
+                  properties:
+                    theme:
+                      type: string
+                      enum: [light, dark]
+                    notifications:
+                      type: boolean
+                    language:
+                      type: string
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      profile:
+                        $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /profile/change-password:
+    post:
+      tags:
+        - Profile
+      summary: Change password
+      description: Change user password (requires current password)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - current_password_hash
+                - new_password_hash
+                - client_salt
+              properties:
+                current_password_hash:
+                  type: string
+                  description: SHA-256 hash of current password + client_salt
+                new_password_hash:
+                  type: string
+                  description: SHA-256 hash of new password + client_salt
+                client_salt:
+                  type: string
+                  description: Random salt generated by client
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /experiences:
+    get:
+      tags:
+        - Experiences
+      summary: List experiences
+      description: Get user's experiences with pagination
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search term
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by category
+      responses:
+        '200':
+          description: Experiences retrieved
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      experiences:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Experience'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags:
+        - Experiences
+      summary: Create experience
+      description: Create a new experience entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperienceInput'
+      responses:
+        '201':
+          description: Experience created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      experience:
+                        $ref: '#/components/schemas/Experience'
+
+  /experiences/{experienceId}:
+    get:
+      tags:
+        - Experiences
+      summary: Get experience details
+      parameters:
+        - name: experienceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Experience retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      experience:
+                        $ref: '#/components/schemas/ExperienceDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Experiences
+      summary: Update experience
+      parameters:
+        - name: experienceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperienceInput'
+      responses:
+        '200':
+          description: Experience updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      experience:
+                        $ref: '#/components/schemas/Experience'
+
+    delete:
+      tags:
+        - Experiences
+      summary: Delete experience
+      parameters:
+        - name: experienceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Experience deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  /chat/message:
+    post:
+      tags:
+        - Chat
+      summary: Send chat message
+      description: Send a message to the AI assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  description: User's message
+                context:
+                  type: object
+                  description: Additional context for the conversation
+                stream:
+                  type: boolean
+                  default: false
+                  description: Enable streaming response
+      responses:
+        '200':
+          description: Message processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      response:
+                        type: string
+                      message_id:
+                        type: string
+                      suggestions:
+                        type: array
+                        items:
+                          type: string
+
+  /chat/history:
+    get:
+      tags:
+        - Chat
+      summary: Get chat history
+      description: Retrieve conversation history
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: session_id
+          in: query
+          schema:
+            type: string
+          description: Filter by session
+      responses:
+        '200':
+          description: History retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      messages:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ChatMessage'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+
+  /cpa-pert/analyze-experience:
+    post:
+      tags:
+        - CPA-PERT
+      summary: Analyze experience for CPA competencies
+      description: Analyze an experience and map it to CPA competency framework
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - experience_id
+              properties:
+                experience_id:
+                  type: string
+                  format: uuid
+                include_recommendations:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Analysis complete
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      competencies:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CompetencyMapping'
+                      proficiency_level:
+                        type: string
+                        enum: [Level 1, Level 2, Level 3]
+                      recommendations:
+                        type: array
+                        items:
+                          type: string
+
+  /cpa-pert/generate-response:
+    post:
+      tags:
+        - CPA-PERT
+      summary: Generate PERT response
+      description: Generate a PERT response for an experience
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - experience_id
+                - competency_area
+              properties:
+                experience_id:
+                  type: string
+                  format: uuid
+                competency_area:
+                  type: string
+                response_type:
+                  type: string
+                  enum: [situation, approach, outcome]
+                  default: situation
+      responses:
+        '200':
+          description: Response generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      response:
+                        $ref: '#/components/schemas/PERTResponse'
+
+  /analytics/skills-progression:
+    get:
+      tags:
+        - Analytics
+      summary: Get skills progression
+      description: Track skills development over time
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Skills progression data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      skills:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SkillProgression'
+                      overall_growth:
+                        type: number
+                        format: float
+
+  /resume/generate:
+    post:
+      tags:
+        - Resume
+      summary: Generate resume
+      description: Generate a resume from experiences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - template
+              properties:
+                template:
+                  type: string
+                  enum: [professional, modern, executive, technical, creative]
+                experience_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                target_role:
+                  type: string
+                include_skills:
+                  type: boolean
+                  default: true
+                format:
+                  type: string
+                  enum: [pdf, docx, html]
+                  default: pdf
+      responses:
+        '200':
+          description: Resume generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      resume_id:
+                        type: string
+                      download_url:
+                        type: string
+                      preview_url:
+                        type: string
+
+  /admin/users:
+    get:
+      tags:
+        - Admin
+      summary: List all users
+      description: Get paginated list of all users (admin/site_admin only)
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [user, admin, site_admin]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, suspended]
+      responses:
+        '200':
+          description: Users retrieved
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      users:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/User'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/audit-logs:
+    get:
+      tags:
+        - Admin
+      summary: Get audit logs
+      description: Retrieve system audit logs (site_admin only)
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: user_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: event_type
+          in: query
+          schema:
+            type: string
+            enum: [authentication, data_modification, authorization, system, security]
+      responses:
+        '200':
+          description: Audit logs retrieved
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      logs:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AuditLog'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+      
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum: [user, admin, site_admin]
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+        created_at:
+          type: string
+          format: date-time
+        last_login:
+          type: string
+          format: date-time
+          
+    UserProfile:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            phone:
+              type: string
+            bio:
+              type: string
+            preferences:
+              type: object
+            stats:
+              type: object
+              properties:
+                total_experiences:
+                  type: integer
+                total_resumes:
+                  type: integer
+                last_activity:
+                  type: string
+                  format: date-time
+                  
+    Experience:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        company:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        description:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        achievements:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          
+    ExperienceDetail:
+      allOf:
+        - $ref: '#/components/schemas/Experience'
+        - type: object
+          properties:
+            responsibilities:
+              type: array
+              items:
+                type: string
+            impact_metrics:
+              type: object
+            competency_mappings:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompetencyMapping'
+                
+    ExperienceInput:
+      type: object
+      required:
+        - title
+        - company
+        - start_date
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        description:
+          type: string
+        responsibilities:
+          type: array
+          items:
+            type: string
+        achievements:
+          type: array
+          items:
+            type: string
+        skills:
+          type: array
+          items:
+            type: string
+            
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        session_id:
+          type: string
+          
+    CompetencyMapping:
+      type: object
+      properties:
+        competency_id:
+          type: string
+        competency_name:
+          type: string
+        sub_competency:
+          type: string
+        proficiency_level:
+          type: string
+          enum: [Level 1, Level 2, Level 3]
+        evidence:
+          type: array
+          items:
+            type: string
+            
+    PERTResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        experience_id:
+          type: string
+          format: uuid
+        competency_area:
+          type: string
+        situation:
+          type: string
+        approach:
+          type: string
+        outcome:
+          type: string
+        word_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          
+    SkillProgression:
+      type: object
+      properties:
+        skill:
+          type: string
+        initial_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+        current_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+        progression_rate:
+          type: number
+          format: float
+        milestones:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              level:
+                type: integer
+              evidence:
+                type: string
+                
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        event_type:
+          type: string
+          enum: [authentication, data_modification, authorization, system, security]
+        event_category:
+          type: string
+        event_severity:
+          type: string
+          enum: [info, warning, error, critical]
+        event_name:
+          type: string
+        action:
+          type: string
+        action_result:
+          type: string
+          enum: [success, failure]
+        actor_id:
+          type: string
+          format: uuid
+        actor_username:
+          type: string
+        target_type:
+          type: string
+        target_id:
+          type: string
+        ip_address:
+          type: string
+        user_agent:
+          type: string
+          
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        total_pages:
+          type: integer
+        has_next:
+          type: boolean
+        has_prev:
+          type: boolean
+          
+    Error:
+      type: object
+      required:
+        - success
+        - error
+        - message
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error code for programmatic handling
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error context
+          
+  responses:
+    BadRequest:
+      description: Bad request - validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: VALIDATION_ERROR
+            message: Validation failed
+                
+    Unauthorized:
+      description: Authentication required or failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: AUTHENTICATION_FAILED
+            message: Invalid credentials or token expired
+            
+    Forbidden:
+      description: Insufficient privileges
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: FORBIDDEN
+            message: Insufficient privileges for this operation
+            
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: NOT_FOUND
+            message: Resource not found
+            
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Maximum requests allowed
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Requests remaining
+        X-RateLimit-Reset:
+          schema:
+            type: string
+            format: date-time
+          description: Time when limit resets
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: RATE_LIMIT_EXCEEDED
+            message: Too many requests, please try again later
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number for pagination
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20

@@ -1,0 +1,611 @@
+{
+  "info": {
+    "name": "Pathfinder API",
+    "description": "Complete API collection for Pathfinder - Career Navigation and Experience Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "experience_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate client salt and hash password",
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "const password = pm.environment.get('password') || 'test_password';",
+                  "const salt = CryptoJS.lib.WordArray.random(32).toString();",
+                  "const hash = CryptoJS.SHA256(password + salt).toString();",
+                  "",
+                  "pm.variables.set('client_salt', salt);",
+                  "pm.variables.set('password_hash', hash);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has token', () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('token');",
+                  "    pm.expect(jsonData.data).to.have.property('refresh_token');",
+                  "    ",
+                  "    // Store tokens",
+                  "    pm.collectionVariables.set('access_token', jsonData.data.token);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.data.refresh_token);",
+                  "    pm.collectionVariables.set('user_id', jsonData.data.user.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"{{username}}\",\n    \"password_hash\": \"{{password_hash}}\",\n    \"client_salt\": \"{{client_salt}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"new_user_{{$timestamp}}\",\n    \"email\": \"user_{{$timestamp}}@example.com\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\",\n    \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Token refreshed', () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.data.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"phone\": \"+1-555-123-4567\",\n    \"bio\": \"Senior software developer with 10+ years experience\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const CryptoJS = require('crypto-js');",
+                  "",
+                  "const currentPassword = pm.environment.get('password');",
+                  "const newPassword = 'new_secure_password';",
+                  "const salt = CryptoJS.lib.WordArray.random(32).toString();",
+                  "",
+                  "const currentHash = CryptoJS.SHA256(currentPassword + salt).toString();",
+                  "const newHash = CryptoJS.SHA256(newPassword + salt).toString();",
+                  "",
+                  "pm.variables.set('client_salt', salt);",
+                  "pm.variables.set('current_password_hash', currentHash);",
+                  "pm.variables.set('new_password_hash', newHash);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"current_password_hash\": \"{{current_password_hash}}\",\n    \"new_password_hash\": \"{{new_password_hash}}\",\n    \"client_salt\": \"{{client_salt}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["profile", "change-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Experiences",
+      "item": [
+        {
+          "name": "List Experiences",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/experiences?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["experiences"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Experience",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Experience created', () => {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('experience_id', jsonData.data.experience.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Senior Software Developer\",\n    \"company\": \"Tech Corp\",\n    \"start_date\": \"2020-01-01\",\n    \"end_date\": \"2023-12-31\",\n    \"description\": \"Led development of cloud-native applications using AWS and Kubernetes\",\n    \"responsibilities\": [\n        \"Architected microservices infrastructure\",\n        \"Mentored junior developers\",\n        \"Implemented CI/CD pipelines\"\n    ],\n    \"achievements\": [\n        \"Reduced deployment time by 60%\",\n        \"Improved system reliability to 99.9% uptime\"\n    ],\n    \"skills\": [\"AWS\", \"Kubernetes\", \"Python\", \"React\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/experiences",
+              "host": ["{{base_url}}"],
+              "path": ["experiences"]
+            }
+          }
+        },
+        {
+          "name": "Get Experience",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/experiences/{{experience_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["experiences", "{{experience_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Experience",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"description\": \"Led development team and architected cloud solutions for enterprise clients\",\n    \"achievements\": [\n        \"Reduced deployment time by 60%\",\n        \"Improved system reliability to 99.9% uptime\",\n        \"Saved $200K annually through infrastructure optimization\"\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/experiences/{{experience_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["experiences", "{{experience_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Experience",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/experiences/{{experience_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["experiences", "{{experience_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": \"How can I improve my resume for a senior developer position?\",\n    \"context\": {\n        \"target_role\": \"Senior Software Engineer\",\n        \"industry\": \"Technology\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/chat/message",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "message"]
+            }
+          }
+        },
+        {
+          "name": "Get Chat History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/chat/history?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["chat", "history"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "session_id",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CPA-PERT",
+      "item": [
+        {
+          "name": "Analyze Experience",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"experience_id\": \"{{experience_id}}\",\n    \"include_recommendations\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cpa-pert/analyze-experience",
+              "host": ["{{base_url}}"],
+              "path": ["cpa-pert", "analyze-experience"]
+            }
+          }
+        },
+        {
+          "name": "Generate PERT Response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"experience_id\": \"{{experience_id}}\",\n    \"competency_area\": \"Financial Reporting\",\n    \"response_type\": \"situation\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cpa-pert/generate-response",
+              "host": ["{{base_url}}"],
+              "path": ["cpa-pert", "generate-response"]
+            }
+          }
+        },
+        {
+          "name": "Get Competency Framework",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/cpa-pert/competency-framework",
+              "host": ["{{base_url}}"],
+              "path": ["cpa-pert", "competency-framework"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Resume",
+      "item": [
+        {
+          "name": "Generate Resume",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"template\": \"professional\",\n    \"experience_ids\": [\"{{experience_id}}\"],\n    \"target_role\": \"Senior Software Engineer\",\n    \"include_skills\": true,\n    \"format\": \"pdf\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/resume/generate",
+              "host": ["{{base_url}}"],
+              "path": ["resume", "generate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Skills Progression",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/analytics/skills-progression",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "skills-progression"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2023-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "end_date",
+                  "value": "2023-12-31",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/users?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "role",
+                  "value": "user",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/audit-logs?page=1&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "audit-logs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "user_id",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "event_type",
+                  "value": "authentication",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

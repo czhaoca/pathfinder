@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pathfinder API Documentation</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .topbar {
+      display: none;
+    }
+    .swagger-ui .info {
+      margin: 50px 0;
+    }
+    .swagger-ui .info .title {
+      font-size: 36px;
+      font-weight: 700;
+    }
+    .swagger-ui .info .description {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .swagger-ui .scheme-container {
+      background: #f7f7f7;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .api-key-input {
+      padding: 10px 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .api-key-input h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .api-key-input input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    .api-key-input button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #61affe;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .api-key-input button:hover {
+      background: #4e90d9;
+    }
+  </style>
+</head>
+<body>
+  <div id="api-key-setup" class="api-key-input" style="max-width: 1460px; margin: 20px auto;">
+    <h3>Authentication Setup</h3>
+    <p>Enter your JWT token to authenticate API requests:</p>
+    <input type="text" id="jwt-token" placeholder="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+    <button onclick="setAuthToken()">Set Token</button>
+    <p style="margin-top: 10px; font-size: 14px; color: #666;">
+      You can obtain a token by logging in via the <code>/api/v2/auth/login</code> endpoint.
+    </p>
+  </div>
+  
+  <div id="swagger-ui"></div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: "./openapi.yaml",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        tryItOutEnabled: true,
+        requestInterceptor: (request) => {
+          // Add auth token to requests if available
+          const token = localStorage.getItem('pathfinder_api_token');
+          if (token && request.headers) {
+            if (!token.startsWith('Bearer ')) {
+              request.headers['Authorization'] = `Bearer ${token}`;
+            } else {
+              request.headers['Authorization'] = token;
+            }
+          }
+          
+          // Add default content type if not set
+          if (!request.headers['Content-Type'] && request.body) {
+            request.headers['Content-Type'] = 'application/json';
+          }
+          
+          return request;
+        },
+        responseInterceptor: (response) => {
+          // Store token from successful login
+          if (response.url.includes('/auth/login') && response.status === 200) {
+            try {
+              const data = JSON.parse(response.text);
+              if (data.data && data.data.token) {
+                localStorage.setItem('pathfinder_api_token', data.data.token);
+                document.getElementById('jwt-token').value = `Bearer ${data.data.token}`;
+                alert('Authentication successful! Token saved.');
+              }
+            } catch (e) {
+              console.error('Failed to parse login response:', e);
+            }
+          }
+          return response;
+        },
+        onComplete: () => {
+          // Restore token if available
+          const token = localStorage.getItem('pathfinder_api_token');
+          if (token) {
+            document.getElementById('jwt-token').value = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+          }
+        }
+      });
+      
+      window.ui = ui;
+    };
+    
+    function setAuthToken() {
+      const tokenInput = document.getElementById('jwt-token');
+      const token = tokenInput.value.trim();
+      
+      if (!token) {
+        alert('Please enter a valid token');
+        return;
+      }
+      
+      // Store token
+      localStorage.setItem('pathfinder_api_token', token.replace('Bearer ', ''));
+      
+      // Update Swagger UI authorization
+      const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+      window.ui.preauthorizeApiKey('bearerAuth', authToken);
+      
+      alert('Token set successfully! You can now try authenticated endpoints.');
+    }
+    
+    // Add keyboard shortcut for setting token
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && document.activeElement.id === 'jwt-token') {
+        setAuthToken();
+      }
+    });
+  </script>
+</body>
+</html>
