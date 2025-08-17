@@ -35,41 +35,179 @@ System-wide tables use the `pf_` prefix:
 
 ## Core Data Models
 
-### User Management
+### User Management (Enhanced)
 
 ```sql
--- User accounts table
+-- Extended user accounts table with profile fields
 CREATE TABLE pf_users (
-    id VARCHAR2(36) PRIMARY KEY,
+    user_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
     username VARCHAR2(50) UNIQUE NOT NULL,
     email VARCHAR2(255) UNIQUE NOT NULL,
     password_hash VARCHAR2(255) NOT NULL,
-    full_name VARCHAR2(255),
+    first_name VARCHAR2(100),
+    last_name VARCHAR2(100),
+    account_status VARCHAR2(20) DEFAULT 'active',
+    mfa_enabled CHAR(1) DEFAULT 'N',
+    mfa_secret VARCHAR2(255),
+    email_verified CHAR(1) DEFAULT 'N',
+    
+    -- Extended profile fields
+    phone_number VARCHAR2(20),
+    phone_verified CHAR(1) DEFAULT 'N',
     avatar_url VARCHAR2(500),
     bio CLOB,
-    location VARCHAR2(255),
-    linkedin_url VARCHAR2(500),
-    github_url VARCHAR2(500),
-    website_url VARCHAR2(500),
     timezone VARCHAR2(50) DEFAULT 'UTC',
     language VARCHAR2(10) DEFAULT 'en',
-    email_verified NUMBER(1) DEFAULT 0,
-    is_active NUMBER(1) DEFAULT 1,
-    last_login TIMESTAMP,
+    date_of_birth DATE,
+    gender VARCHAR2(20),
+    nationality VARCHAR2(100),
+    
+    -- Professional info
+    current_title VARCHAR2(200),
+    current_company VARCHAR2(200),
+    years_experience NUMBER(3,1),
+    
+    -- Invitation and feature management
+    invited_by VARCHAR2(26),
+    invitation_accepted_at TIMESTAMP,
+    feature_group_id VARCHAR2(26),
+    
+    -- Analytics tracking
+    last_activity_at TIMESTAMP,
+    total_logins NUMBER(10) DEFAULT 0,
+    
+    -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP
 );
 
 -- User sessions for JWT management
 CREATE TABLE pf_user_sessions (
-    id VARCHAR2(36) PRIMARY KEY,
-    user_id VARCHAR2(36) NOT NULL,
-    refresh_token VARCHAR2(500) UNIQUE NOT NULL,
-    device_info VARCHAR2(500),
-    ip_address VARCHAR2(45),
+    session_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+    user_id VARCHAR2(26) NOT NULL,
+    token VARCHAR2(500) UNIQUE NOT NULL,
+    refresh_token VARCHAR2(500) UNIQUE,
     expires_at TIMESTAMP NOT NULL,
+    refresh_expires_at TIMESTAMP,
+    ip_address VARCHAR2(45),
+    user_agent VARCHAR2(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES pf_users(id) ON DELETE CASCADE
+    last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_active CHAR(1) DEFAULT 'Y',
+    FOREIGN KEY (user_id) REFERENCES pf_users(user_id) ON DELETE CASCADE
+);
+
+-- User invitations management
+CREATE TABLE pf_user_invitations (
+    invitation_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+    email VARCHAR2(255) NOT NULL,
+    invitation_token VARCHAR2(255) UNIQUE NOT NULL,
+    invited_by VARCHAR2(26) NOT NULL,
+    role VARCHAR2(50) DEFAULT 'user',
+    feature_group_id VARCHAR2(26),
+    expires_at TIMESTAMP NOT NULL,
+    accepted_at TIMESTAMP,
+    declined_at TIMESTAMP,
+    reminder_sent_at TIMESTAMP,
+    metadata CLOB CHECK (metadata IS JSON),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (invited_by) REFERENCES pf_users(user_id) ON DELETE CASCADE
+);
+
+-- SSO account linking
+CREATE TABLE pf_sso_accounts (
+    sso_account_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+    user_id VARCHAR2(26) NOT NULL,
+    provider VARCHAR2(50) NOT NULL,
+    provider_user_id VARCHAR2(255) NOT NULL,
+    email VARCHAR2(255),
+    display_name VARCHAR2(255),
+    avatar_url VARCHAR2(500),
+    access_token VARCHAR2(2000),
+    refresh_token VARCHAR2(2000),
+    token_expires_at TIMESTAMP,
+    profile_data CLOB CHECK (profile_data IS JSON),
+    linked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_sync_at TIMESTAMP,
+    is_primary CHAR(1) DEFAULT 'N',
+    FOREIGN KEY (user_id) REFERENCES pf_users(user_id) ON DELETE CASCADE,
+    UNIQUE (provider, provider_user_id)
+);
+
+-- Feature flags system
+CREATE TABLE pf_feature_flags (
+    flag_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+    flag_key VARCHAR2(100) UNIQUE NOT NULL,
+    flag_name VARCHAR2(200) NOT NULL,
+    description CLOB,
+    flag_type VARCHAR2(50) DEFAULT 'boolean',
+    default_value VARCHAR2(500),
+    allowed_values CLOB CHECK (allowed_values IS JSON),
+    is_system_wide CHAR(1) DEFAULT 'N',
+    requires_restart CHAR(1) DEFAULT 'N',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User groups for feature management
+CREATE TABLE pf_user_groups (
+    group_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+    group_name VARCHAR2(100) UNIQUE NOT NULL,
+    description CLOB,
+    is_default CHAR(1) DEFAULT 'N',
+    priority NUMBER(5) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User-specific feature flag overrides
+CREATE TABLE pf_user_feature_flags (
+    override_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+    user_id VARCHAR2(26),
+    group_id VARCHAR2(26),
+    flag_id VARCHAR2(26) NOT NULL,
+    override_value VARCHAR2(500),
+    reason VARCHAR2(500),
+    expires_at TIMESTAMP,
+    created_by VARCHAR2(26),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES pf_users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES pf_user_groups(group_id) ON DELETE CASCADE,
+    FOREIGN KEY (flag_id) REFERENCES pf_feature_flags(flag_id) ON DELETE CASCADE,
+    CHECK ((user_id IS NOT NULL AND group_id IS NULL) OR 
+           (user_id IS NULL AND group_id IS NOT NULL))
+);
+
+-- User analytics with partitioning
+CREATE TABLE pf_user_analytics (
+    analytics_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+    user_id VARCHAR2(26) NOT NULL,
+    event_type VARCHAR2(100) NOT NULL,
+    event_data CLOB CHECK (event_data IS JSON),
+    session_id VARCHAR2(26),
+    ip_address VARCHAR2(45),
+    user_agent VARCHAR2(500),
+    referrer VARCHAR2(500),
+    page_url VARCHAR2(500),
+    event_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES pf_users(user_id) ON DELETE CASCADE
+) PARTITION BY RANGE (event_timestamp) 
+  INTERVAL (NUMTODSINTERVAL(1, 'DAY'))
+  (PARTITION p_initial VALUES LESS THAN (DATE '2025-01-01'));
+
+-- User preferences (extended profile)
+CREATE TABLE pf_user_preferences (
+    preference_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+    user_id VARCHAR2(26) UNIQUE NOT NULL,
+    notification_preferences CLOB CHECK (notification_preferences IS JSON),
+    privacy_settings CLOB CHECK (privacy_settings IS JSON),
+    ui_preferences CLOB CHECK (ui_preferences IS JSON),
+    communication_preferences CLOB CHECK (communication_preferences IS JSON),
+    feature_preferences CLOB CHECK (feature_preferences IS JSON),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES pf_users(user_id) ON DELETE CASCADE
 );
 ```
 
@@ -369,12 +507,51 @@ CREATE TABLE pf_audit_log (
 
 ## Indexes and Performance
 
-### Primary Indexes
+### Primary Indexes (Enhanced)
 
 ```sql
--- User lookup
+-- User lookup and search
 CREATE INDEX idx_users_username ON pf_users(username);
 CREATE INDEX idx_users_email ON pf_users(email);
+CREATE INDEX idx_users_email_verified ON pf_users(email_verified);
+CREATE INDEX idx_users_invited_by ON pf_users(invited_by);
+CREATE INDEX idx_users_last_activity ON pf_users(last_activity_at);
+CREATE INDEX idx_users_feature_group ON pf_users(feature_group_id);
+
+-- Composite search index
+CREATE INDEX idx_users_search ON pf_users(
+    LOWER(username), LOWER(email), LOWER(first_name), LOWER(last_name)
+);
+
+-- Filtered index for active users
+CREATE INDEX idx_users_active_recent ON pf_users(
+    CASE WHEN account_status = 'active' THEN account_status END,
+    last_activity_at
+);
+
+-- Invitation indexes
+CREATE INDEX idx_invitation_email ON pf_user_invitations(email);
+CREATE INDEX idx_invitation_token ON pf_user_invitations(invitation_token);
+CREATE INDEX idx_invitation_expires ON pf_user_invitations(expires_at);
+
+-- SSO indexes
+CREATE INDEX idx_sso_user ON pf_sso_accounts(user_id);
+CREATE INDEX idx_sso_provider ON pf_sso_accounts(provider);
+
+-- Feature flag indexes
+CREATE INDEX idx_flag_key ON pf_feature_flags(flag_key);
+CREATE INDEX idx_flag_system ON pf_feature_flags(is_system_wide);
+CREATE INDEX idx_uff_user ON pf_user_feature_flags(user_id);
+CREATE INDEX idx_uff_group ON pf_user_feature_flags(group_id);
+CREATE INDEX idx_uff_flag ON pf_user_feature_flags(flag_id);
+
+-- Analytics indexes (local partitioned)
+CREATE INDEX idx_analytics_user ON pf_user_analytics(user_id) LOCAL;
+CREATE INDEX idx_analytics_event ON pf_user_analytics(event_type) LOCAL;
+CREATE INDEX idx_analytics_timestamp ON pf_user_analytics(event_timestamp) LOCAL;
+CREATE INDEX idx_analytics_user_date ON pf_user_analytics(
+    user_id, event_timestamp
+) LOCAL;
 
 -- Experience search (per user)
 CREATE INDEX idx_exp_dates ON pf_user_<username>_experiences(start_date, end_date);
@@ -392,6 +569,24 @@ CREATE INDEX idx_messages_conv ON pf_user_<username>_chat_messages(conversation_
 ### Materialized Views for Analytics
 
 ```sql
+-- User statistics materialized view
+CREATE MATERIALIZED VIEW pf_mv_user_stats 
+BUILD IMMEDIATE
+REFRESH COMPLETE ON DEMAND AS
+SELECT 
+    u.user_id,
+    u.username,
+    COUNT(DISTINCT a.session_id) as total_sessions,
+    COUNT(a.analytics_id) as total_events,
+    MAX(a.event_timestamp) as last_activity,
+    MIN(a.event_timestamp) as first_activity
+FROM pf_users u
+LEFT JOIN pf_user_analytics a ON u.user_id = a.user_id
+GROUP BY u.user_id, u.username;
+
+-- Index on materialized view
+CREATE INDEX idx_mv_user_stats_activity ON pf_mv_user_stats(last_activity);
+
 -- Career summary view (per user)
 CREATE MATERIALIZED VIEW pf_user_<username>_career_summary AS
 SELECT 
