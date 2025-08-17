@@ -7,6 +7,7 @@ import { RecentActivity } from '@/components/admin/RecentActivity';
 import { SecurityAlerts } from '@/components/admin/SecurityAlerts';
 import { QuickActions } from '@/components/admin/QuickActions';
 import { SystemHealthMonitor } from '@/components/admin/SystemHealthMonitor';
+import { InvitationManager } from '@/components/admin/InvitationManager';
 import { adminService } from '@/services/admin.service';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { Loader2, Bell, User } from 'lucide-react';

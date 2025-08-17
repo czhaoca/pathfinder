@@ -164,6 +164,62 @@ class EmailService {
       }
     });
   }
+
+  async sendInvitation({ to, inviterName, customMessage, invitationUrl, expiresAt, isResend = false }) {
+    return this.send({
+      to,
+      subject: isResend ? 'Reminder: Your Pathfinder Invitation' : 'You\'re Invited to Join Pathfinder',
+      template: 'invitation',
+      data: {
+        to,
+        inviterName,
+        customMessage,
+        invitationUrl,
+        expiresAt,
+        isResend,
+        unsubscribeUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/unsubscribe`,
+        privacyUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/privacy`
+      }
+    });
+  }
+
+  async sendInvitationReminder({ to, inviterName, invitationUrl, daysRemaining }) {
+    return this.send({
+      to,
+      subject: `Action Required: Your Pathfinder Invitation Expires in ${daysRemaining} Days`,
+      template: 'invitation-reminder',
+      data: {
+        to,
+        inviterName,
+        invitationUrl,
+        daysRemaining,
+        unsubscribeUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/unsubscribe`,
+        privacyUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/privacy`
+      }
+    });
+  }
+
+  async sendWelcome({ to, name, username }) {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    return this.send({
+      to,
+      subject: 'Welcome to Pathfinder - Let\'s Get Started!',
+      template: 'welcome',
+      data: {
+        to,
+        name,
+        username,
+        dashboardUrl: `${frontendUrl}/dashboard`,
+        gettingStartedUrl: `${frontendUrl}/getting-started`,
+        videoTutorialsUrl: `${frontendUrl}/tutorials`,
+        helpCenterUrl: `${frontendUrl}/help`,
+        communityUrl: `${frontendUrl}/community`,
+        profileUrl: `${frontendUrl}/profile`,
+        privacyUrl: `${frontendUrl}/privacy`,
+        supportUrl: `${frontendUrl}/support`
+      }
+    });
+  }
 }
 
 module.exports = EmailService;

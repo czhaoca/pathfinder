@@ -34,6 +34,8 @@ const CourseService = require('./services/courseService');
 const SkillAssessmentService = require('./services/skillAssessmentService');
 const CertificationService = require('./services/certificationService');
 const LearningPathService = require('./services/learningPathService');
+const InvitationService = require('./services/invitationService');
+const EmailService = require('./services/emailService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -43,6 +45,7 @@ const ExperienceRepository = require('./repositories/experienceRepository');
 const CPAPertRepository = require('./repositories/cpaPertRepository');
 const ChatRepository = require('./repositories/chatRepository');
 const AnalyticsRepository = require('./repositories/analyticsRepository');
+const InvitationRepository = require('./repositories/invitationRepository');
 
 // Controllers
 const AuthController = require('./api/controllers/authController');
@@ -90,8 +93,10 @@ class Container {
       this.register('cpaPertRepository', () => new CPAPertRepository(this.get('database'), config));
       this.register('chatRepository', () => new ChatRepository(this.get('database')));
       this.register('analyticsRepository', () => new AnalyticsRepository(this.get('database')));
+      this.register('invitationRepository', () => new InvitationRepository(this.get('database')));
 
       // Register services
+      this.register('emailService', () => new EmailService(), { singleton: true });
       this.register('auditService', () => new AuditService(this.get('auditRepository')));
       this.register('openaiService', () => {
         // Only create OpenAI service if API key is available
@@ -104,6 +109,13 @@ class Container {
         this.get('userRepository'),
         this.get('sessionRepository'),
         this.get('auditService')
+      ));
+      this.register('invitationService', () => new InvitationService(
+        this.get('invitationRepository'),
+        this.get('userRepository'),
+        this.get('emailService'),
+        this.get('auditService'),
+        this.get('authService')
       ));
       this.register('userService', () => new UserService(
         this.get('userRepository'),

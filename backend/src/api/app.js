@@ -20,6 +20,7 @@ const careerPathRoutes = require('./routes/careerPathRoutes');
 const networkingRoutes = require('./routes/networkingRoutes');
 const createJobSearchRoutes = require('./routes/jobSearchRoutes');
 const createLearningRoutes = require('./routes/learningRoutes');
+const { initializeRoutes: createInvitationRoutes } = require('./routes/invitationRoutes');
 
 // Route imports - V2 (New Authentication System)
 const authV2Routes = require('../routes/auth.v2');
@@ -181,6 +182,9 @@ class App {
     if (adminV2Routes) {
       this.app.use('/api/admin', adminV2Routes);
     }
+    
+    // Invitation routes (both admin and public)
+    this.app.use('/api', createInvitationRoutes(container));
     
     // Legacy unversioned routes (forward to v1 with deprecation warning)
     this.app.use('/api/profile', (req, res, next) => {

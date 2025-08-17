@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f3f4f6;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 600;
+    }
+    .header p {
+      margin: 8px 0 0;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 32px 24px;
+    }
+    .content p {
+      color: #374151;
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 16px 0;
+    }
+    .welcome-box {
+      background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 100%);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 24px 0;
+      text-align: center;
+    }
+    .welcome-box h2 {
+      margin: 0 0 8px;
+      color: #1e40af;
+      font-size: 20px;
+    }
+    .welcome-box p {
+      margin: 0;
+      color: #1e40af;
+      font-size: 14px;
+    }
+    .quick-start {
+      background-color: #f9fafb;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+    .quick-start h3 {
+      margin: 0 0 16px;
+      color: #111827;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .quick-start-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .quick-start-number {
+      background-color: #4F46E5;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .quick-start-content h4 {
+      margin: 0 0 4px;
+      color: #111827;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .quick-start-content p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .button-container {
+      text-align: center;
+      margin: 32px 0;
+    }
+    .button {
+      display: inline-block;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4);
+    }
+    .resources {
+      background-color: #f3f4f6;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+    .resources h3 {
+      margin: 0 0 12px;
+      color: #111827;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .resource-link {
+      display: block;
+      padding: 12px;
+      background-color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #4F46E5;
+      font-size: 14px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+      transition: background-color 0.2s;
+    }
+    .resource-link:hover {
+      background-color: #f9fafb;
+    }
+    .footer {
+      padding: 24px;
+      text-align: center;
+      background-color: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+    }
+    .footer p {
+      margin: 4px 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .footer a {
+      color: #4F46E5;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Welcome to Pathfinder!</h1>
+      <p>Your journey to career success starts here</p>
+    </div>
+    
+    <div class="content">
+      <p>Hi {{name}},</p>
+      
+      <p>Congratulations! Your Pathfinder account has been successfully created. We're thrilled to have you join our community of professionals who are taking control of their career journeys.</p>
+      
+      <div class="welcome-box">
+        <h2>Your Account Details</h2>
+        <p>Username: <strong>{{username}}</strong></p>
+        <p>Email: <strong>{{to}}</strong></p>
+      </div>
+      
+      <div class="quick-start">
+        <h3>Quick Start Guide</h3>
+        
+        <div class="quick-start-item">
+          <div class="quick-start-number">1</div>
+          <div class="quick-start-content">
+            <h4>Complete Your Profile</h4>
+            <p>Add your professional information to personalize your experience</p>
+          </div>
+        </div>
+        
+        <div class="quick-start-item">
+          <div class="quick-start-number">2</div>
+          <div class="quick-start-content">
+            <h4>Add Your Experiences</h4>
+            <p>Document your work history and achievements for better insights</p>
+          </div>
+        </div>
+        
+        <div class="quick-start-item">
+          <div class="quick-start-number">3</div>
+          <div class="quick-start-content">
+            <h4>Chat with Your AI Career Coach</h4>
+            <p>Get personalized guidance and recommendations for your career path</p>
+          </div>
+        </div>
+        
+        <div class="quick-start-item">
+          <div class="quick-start-number">4</div>
+          <div class="quick-start-content">
+            <h4>Build Your First Resume</h4>
+            <p>Create an optimized resume tailored to your target opportunities</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="button-container">
+        <a href="{{dashboardUrl}}" class="button">Go to Dashboard</a>
+      </div>
+      
+      <div class="resources">
+        <h3>Helpful Resources</h3>
+        <div class="resources-grid">
+          <a href="{{gettingStartedUrl}}" class="resource-link">Getting Started Guide</a>
+          <a href="{{videoTutorialsUrl}}" class="resource-link">Video Tutorials</a>
+          <a href="{{helpCenterUrl}}" class="resource-link">Help Center</a>
+          <a href="{{communityUrl}}" class="resource-link">Community Forum</a>
+        </div>
+      </div>
+      
+      <p>If you have any questions or need assistance, our support team is here to help. Simply reply to this email or visit our help center.</p>
+      
+      <p>We're excited to be part of your career journey!</p>
+      
+      <p>Best regards,<br>The Pathfinder Team</p>
+    </div>
+    
+    <div class="footer">
+      <p>© 2025 Pathfinder. All rights reserved.</p>
+      <p>You're receiving this email because you recently created an account.</p>
+      <p><a href="{{profileUrl}}">Manage Preferences</a> | <a href="{{privacyUrl}}">Privacy Policy</a> | <a href="{{supportUrl}}">Support</a></p>
+    </div>
+  </div>
+</body>
+</html>

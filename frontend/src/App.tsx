@@ -7,6 +7,7 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary'
 // Pages
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
+import { InviteRegistration } from '@/pages/InviteRegistration'
 import Dashboard from '@/pages/Dashboard'
 import Chat from '@/pages/Chat'
 import Experiences from '@/pages/Experiences'
@@ -31,6 +32,7 @@ import AdminDashboard from '@/pages/admin/AdminDashboard'
 import UserManagement from '@/pages/admin/UserManagement'
 import AuditLogViewer from '@/pages/admin/AuditLogViewer'
 import DeletionQueue from '@/pages/admin/DeletionQueue'
+import { InvitationManager } from '@/components/admin/InvitationManager'
 
 // Layouts
 import AuthLayout from '@/components/layout/AuthLayout'
@@ -56,6 +58,7 @@ function App() {
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/register/invite" element={<InviteRegistration />} />
           
           {/* Protected routes */}
           <Route
@@ -90,6 +93,7 @@ function App() {
             {/* Admin routes */}
             <Route path="admin" element={<AdminDashboard />} />
             <Route path="admin/users" element={<UserManagement />} />
+            <Route path="admin/invitations" element={<InvitationManager />} />
             <Route path="admin/audit-logs" element={<AuditLogViewer />} />
             <Route path="admin/deletion-queue" element={<DeletionQueue />} />
           </Route>
