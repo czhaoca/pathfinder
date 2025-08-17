@@ -385,6 +385,182 @@ async function createUserTables(db, prefix = 'pf_') {
         REFERENCES ${prefix}users(user_id) ON DELETE CASCADE
     )
   `);
+
+  // Progressive Profile Collection Tables
+  
+  // Profile field definitions
+  await db.execute(`
+    CREATE TABLE ${prefix}profile_fields (
+      field_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+      field_name VARCHAR2(100) UNIQUE NOT NULL,
+      field_label VARCHAR2(200) NOT NULL,
+      field_type VARCHAR2(50) NOT NULL,
+      field_group VARCHAR2(100),
+      validation_rules CLOB CHECK (validation_rules IS JSON),
+      options CLOB CHECK (options IS JSON),
+      help_text VARCHAR2(500),
+      placeholder VARCHAR2(200),
+      default_value VARCHAR2(500),
+      is_essential CHAR(1) DEFAULT 'N' CHECK (is_essential IN ('Y', 'N')),
+      is_sensitive CHAR(1) DEFAULT 'N' CHECK (is_sensitive IN ('Y', 'N')),
+      encryption_required CHAR(1) DEFAULT 'N' CHECK (encryption_required IN ('Y', 'N')),
+      display_order NUMBER(5) DEFAULT 0,
+      is_active CHAR(1) DEFAULT 'Y' CHECK (is_active IN ('Y', 'N')),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Create indexes for profile fields
+  const profileFieldIndexes = [
+    `CREATE INDEX ${prefix}idx_profile_fields_name ON ${prefix}profile_fields(field_name)`,
+    `CREATE INDEX ${prefix}idx_profile_fields_group ON ${prefix}profile_fields(field_group)`,
+    `CREATE INDEX ${prefix}idx_profile_fields_active ON ${prefix}profile_fields(is_active)`
+  ];
+
+  for (const index of profileFieldIndexes) {
+    try {
+      await db.execute(index);
+    } catch (error) {
+      if (!error.message.includes('ORA-00955')) {
+        console.warn(`Warning creating index: ${error.message}`);
+      }
+    }
+  }
+
+  // Feature field requirements
+  await db.execute(`
+    CREATE TABLE ${prefix}feature_field_requirements (
+      requirement_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+      feature_key VARCHAR2(100) NOT NULL,
+      field_id VARCHAR2(26) NOT NULL,
+      is_required CHAR(1) DEFAULT 'Y' CHECK (is_required IN ('Y', 'N')),
+      requirement_level VARCHAR2(20) DEFAULT 'required',
+      custom_message VARCHAR2(500),
+      alternative_fields CLOB CHECK (alternative_fields IS JSON),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT ${prefix}fk_ffr_field FOREIGN KEY (field_id) 
+        REFERENCES ${prefix}profile_fields(field_id) ON DELETE CASCADE
+    )
+  `);
+
+  // Create indexes for feature field requirements
+  const ffrIndexes = [
+    `CREATE INDEX ${prefix}idx_ffr_feature ON ${prefix}feature_field_requirements(feature_key)`,
+    `CREATE INDEX ${prefix}idx_ffr_field ON ${prefix}feature_field_requirements(field_id)`
+  ];
+
+  for (const index of ffrIndexes) {
+    try {
+      await db.execute(index);
+    } catch (error) {
+      if (!error.message.includes('ORA-00955')) {
+        console.warn(`Warning creating index: ${error.message}`);
+      }
+    }
+  }
+
+  // User profile data (flexible key-value store)
+  await db.execute(`
+    CREATE TABLE ${prefix}user_profile_data (
+      data_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+      user_id VARCHAR2(26) NOT NULL,
+      field_id VARCHAR2(26) NOT NULL,
+      field_value CLOB,
+      field_value_encrypted VARCHAR2(2000),
+      verified CHAR(1) DEFAULT 'N' CHECK (verified IN ('Y', 'N')),
+      verified_at TIMESTAMP,
+      verified_by VARCHAR2(26),
+      source VARCHAR2(50),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT ${prefix}fk_upd_user FOREIGN KEY (user_id) 
+        REFERENCES ${prefix}users(user_id) ON DELETE CASCADE,
+      CONSTRAINT ${prefix}fk_upd_field FOREIGN KEY (field_id) 
+        REFERENCES ${prefix}profile_fields(field_id) ON DELETE CASCADE,
+      CONSTRAINT ${prefix}uq_user_field UNIQUE (user_id, field_id)
+    )
+  `);
+
+  // Create indexes for user profile data
+  const updIndexes = [
+    `CREATE INDEX ${prefix}idx_upd_user ON ${prefix}user_profile_data(user_id)`,
+    `CREATE INDEX ${prefix}idx_upd_field ON ${prefix}user_profile_data(field_id)`,
+    `CREATE INDEX ${prefix}idx_upd_verified ON ${prefix}user_profile_data(verified)`
+  ];
+
+  for (const index of updIndexes) {
+    try {
+      await db.execute(index);
+    } catch (error) {
+      if (!error.message.includes('ORA-00955')) {
+        console.warn(`Warning creating index: ${error.message}`);
+      }
+    }
+  }
+
+  // Profile completion tracking
+  await db.execute(`
+    CREATE TABLE ${prefix}user_profile_completion (
+      completion_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+      user_id VARCHAR2(26) UNIQUE NOT NULL,
+      total_fields NUMBER(10) DEFAULT 0,
+      completed_fields NUMBER(10) DEFAULT 0,
+      required_fields NUMBER(10) DEFAULT 0,
+      completed_required NUMBER(10) DEFAULT 0,
+      completion_percentage NUMBER(5,2) DEFAULT 0,
+      profile_score NUMBER(5,2) DEFAULT 0,
+      last_prompted TIMESTAMP,
+      fields_skipped CLOB CHECK (fields_skipped IS JSON),
+      reminder_settings CLOB CHECK (reminder_settings IS JSON),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT ${prefix}fk_upc_user FOREIGN KEY (user_id) 
+        REFERENCES ${prefix}users(user_id) ON DELETE CASCADE
+    )
+  `);
+
+  // Create index for profile completion
+  await db.execute(`
+    CREATE INDEX ${prefix}idx_upc_user ON ${prefix}user_profile_completion(user_id)
+  `);
+
+  // Field collection prompts
+  await db.execute(`
+    CREATE TABLE ${prefix}field_collection_prompts (
+      prompt_id VARCHAR2(26) DEFAULT SYS_GUID() PRIMARY KEY,
+      user_id VARCHAR2(26) NOT NULL,
+      field_id VARCHAR2(26) NOT NULL,
+      feature_key VARCHAR2(100),
+      prompt_type VARCHAR2(50),
+      prompt_status VARCHAR2(50),
+      shown_at TIMESTAMP,
+      responded_at TIMESTAMP,
+      response VARCHAR2(50),
+      remind_after TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT ${prefix}fk_fcp_user FOREIGN KEY (user_id) 
+        REFERENCES ${prefix}users(user_id) ON DELETE CASCADE,
+      CONSTRAINT ${prefix}fk_fcp_field FOREIGN KEY (field_id) 
+        REFERENCES ${prefix}profile_fields(field_id) ON DELETE CASCADE
+    )
+  `);
+
+  // Create indexes for field collection prompts
+  const fcpIndexes = [
+    `CREATE INDEX ${prefix}idx_fcp_user_status ON ${prefix}field_collection_prompts(user_id, prompt_status)`,
+    `CREATE INDEX ${prefix}idx_fcp_remind ON ${prefix}field_collection_prompts(remind_after)`
+  ];
+
+  for (const index of fcpIndexes) {
+    try {
+      await db.execute(index);
+    } catch (error) {
+      if (!error.message.includes('ORA-00955')) {
+        console.warn(`Warning creating index: ${error.message}`);
+      }
+    }
+  }
   
   // Create materialized view for user statistics
   try {

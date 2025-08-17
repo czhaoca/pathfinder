@@ -1,0 +1,288 @@
+/**
+ * Feature Access Gate Styles
+ */
+
+.feature-access-gate {
+  width: 100%;
+  min-height: 200px;
+}
+
+/* Loading State */
+.feature-access-gate.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.feature-access-gate.loading p {
+  margin-top: 16px;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Profile Collection Mode */
+.feature-access-gate.profile-collection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 20px;
+}
+
+/* Access Denied State */
+.feature-access-gate.denied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.access-denied-card {
+  max-width: 600px;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  text-align: center;
+}
+
+/* Icon Container */
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.lock-icon {
+  width: 64px;
+  height: 64px;
+  color: #9ca3af;
+  stroke-width: 1.5;
+}
+
+/* Content */
+.access-denied-card h2 {
+  margin: 0 0 12px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.access-denied-card .description {
+  margin: 0 0 24px 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Progress Info */
+.progress-info {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.progress-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Missing Fields */
+.missing-fields,
+.recommended-fields {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.missing-fields h3,
+.recommended-fields h3 {
+  margin: 0 0 12px 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+}
+
+.fields-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.fields-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.field-icon {
+  color: #ef4444;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.fields-list.recommended .field-icon {
+  color: #f59e0b;
+}
+
+.more-fields {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.actions .btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.actions .btn-primary {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.actions .btn-primary:hover {
+  background: #2563eb;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.actions .btn-link {
+  background: transparent;
+  color: #6b7280;
+  text-decoration: underline;
+  font-weight: 400;
+}
+
+.actions .btn-link:hover {
+  color: #374151;
+}
+
+/* Benefits */
+.benefits {
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.benefits h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.benefits ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.benefits li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.benefits li::before {
+  content: '✓';
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .access-denied-card {
+    padding: 24px 16px;
+  }
+
+  .progress-info {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .lock-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .access-denied-card h2 {
+    font-size: 1.25rem;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions .btn {
+    width: 100%;
+  }
+
+  .benefits ul {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
