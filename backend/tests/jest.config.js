@@ -21,12 +21,12 @@ module.exports = {
       lines: 95
     }
   },
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/setup.js'],
   testTimeout: 30000,
   maxWorkers: 1, // Run tests sequentially for database operations
   verbose: true,
   forceExit: true,
   detectOpenHandles: true,
-  globalSetup: '<rootDir>/tests/globalSetup.js',
-  globalTeardown: '<rootDir>/tests/globalTeardown.js'
+  globalSetup: '<rootDir>/globalSetup.js',
+  globalTeardown: '<rootDir>/globalTeardown.js'
 };
