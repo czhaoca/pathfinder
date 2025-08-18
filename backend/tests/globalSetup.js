@@ -9,6 +9,12 @@ module.exports = async () => {
   // Load test environment
   dotenv.config({ path: path.join(__dirname, '../.env.test') });
   
+  // Skip database setup if SKIP_DB_SETUP is set
+  if (process.env.SKIP_DB_SETUP === 'true') {
+    console.log('⏭️  Skipping database setup (SKIP_DB_SETUP=true)');
+    return;
+  }
+  
   // Initialize Oracle client
   if (process.env.ORACLE_INSTANT_CLIENT_PATH) {
     try {

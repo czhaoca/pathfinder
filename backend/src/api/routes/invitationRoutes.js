@@ -1,9 +1,28 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const { authMiddleware } = require('../middleware/authMiddleware');
 const rateLimiter = require('../middleware/rateLimiter');
 const csrfMiddleware = require('../middleware/csrfMiddleware');
 const InvitationController = require('../controllers/invitationController');
+
+// Configure multer for CSV upload
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB max
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept CSV files only
+    if (file.mimetype === 'text/csv' || 
+        file.mimetype === 'application/csv' ||
+        file.originalname.endsWith('.csv')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV files are allowed'), false);
+    }
+  }
+});
 
 // Initialize controller (will be injected by container)
 let invitationController;
@@ -58,6 +77,15 @@ router.post(
   csrfMiddleware.protect(),
   rateLimiter({ windowMs: 60 * 60 * 1000, max: 10 }), // 10 bulk uploads per hour
   (req, res, next) => invitationController.bulkInvitations(req, res, next)
+);
+
+router.post(
+  '/admin/invitations/import-csv',
+  authMiddleware,
+  csrfMiddleware.protect(),
+  upload.single('file'),
+  rateLimiter({ windowMs: 60 * 60 * 1000, max: 10 }), // 10 CSV imports per hour
+  (req, res, next) => invitationController.importCSV(req, res, next)
 );
 
 router.get(

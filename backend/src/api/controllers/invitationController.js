@@ -235,6 +235,45 @@ class InvitationController extends BaseController {
       next(error);
     }
   }
+
+  /**
+   * Import invitations from CSV file
+   * POST /api/admin/invitations/import-csv
+   */
+  async importCSV(req, res, next) {
+    try {
+      // Validate admin role
+      if (!req.user.roles?.includes('admin') && !req.user.roles?.includes('super_admin')) {
+        throw new UnauthorizedError('Admin access required');
+      }
+
+      if (!req.file) {
+        throw new ValidationError('CSV file is required');
+      }
+
+      // Check file type
+      if (!req.file.mimetype.includes('csv') && !req.file.mimetype.includes('text/csv')) {
+        throw new ValidationError('File must be a CSV');
+      }
+
+      // Check file size (max 5MB)
+      if (req.file.size > 5 * 1024 * 1024) {
+        throw new ValidationError('File size must be less than 5MB');
+      }
+
+      const invitedBy = req.user.userId;
+      const csvContent = req.file.buffer.toString('utf-8');
+
+      const result = await this.invitationService.importFromCSV({
+        csvContent,
+        invitedBy
+      });
+
+      this.sendSuccess(res, result, 'CSV import completed');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = InvitationController;

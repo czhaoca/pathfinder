@@ -28,6 +28,9 @@ const authV2Routes = require('../routes/auth.v2');
 const usersV2Routes = require('../routes/users.v2');
 const adminV2Routes = require('../routes/admin.v2');
 
+// Admin Panel Routes
+const adminPanelRoutes = require('./routes/adminPanelRoutes');
+
 class App {
   constructor() {
     this.app = express();
@@ -154,6 +157,9 @@ class App {
       this.app.use('/api/v2/admin', adminV2Routes);
     }
     
+    // Admin Panel Enhanced Routes
+    this.app.use('/api/v2/admin/panel', adminPanelRoutes);
+    
     // API Version 1 routes (Legacy - with deprecation warning)
     this.app.use('/api/v1/*', (req, res, next) => {
       res.set('X-API-Deprecation-Warning', 'API v1 is deprecated. Please migrate to v2 by June 1, 2024.');
@@ -184,6 +190,9 @@ class App {
     if (adminV2Routes) {
       this.app.use('/api/admin', adminV2Routes);
     }
+    
+    // Unversioned admin panel routes
+    this.app.use('/api/admin/panel', adminPanelRoutes);
     
     // Invitation routes (both admin and public)
     this.app.use('/api', createInvitationRoutes(container));

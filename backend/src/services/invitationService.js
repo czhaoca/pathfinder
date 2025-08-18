@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
+const csv = require('csv-parse/sync');
 const logger = require('../utils/logger');
 const { 
   ValidationError, 
