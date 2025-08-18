@@ -2,9 +2,10 @@ const ApiResponse = require('../../utils/apiResponse');
 const { asyncHandler, ValidationError } = require('../../utils/errors');
 
 class AuthController {
-  constructor(authService, googleOAuthService, ssoService, featureFlagService) {
+  constructor(authService, googleOAuthService, linkedInOAuthService, ssoService, featureFlagService) {
     this.authService = authService;
     this.googleOAuthService = googleOAuthService;
+    this.linkedInOAuthService = linkedInOAuthService;
     this.ssoService = ssoService;
     this.featureFlagService = featureFlagService;
   }
@@ -225,6 +226,128 @@ class AuthController {
       success: true,
       message: 'Google account unlinked'
     });
+  })
+
+  // LinkedIn OAuth methods
+  linkedInAuth = asyncHandler(async (req, res) => {
+    // Check feature flag
+    const isEnabled = await this.featureFlagService.isEnabled('linkedin_oauth_enabled', req.user?.userId);
+    if (!isEnabled) {
+      return ApiResponse.error(res, 'LinkedIn authentication is not available', 403);
+    }
+
+    const { returnUrl = '/' } = req.query;
+    const userId = req.user?.userId || null;
+
+    const authUrl = await this.linkedInOAuthService.generateAuthUrl(userId, returnUrl);
+    
+    ApiResponse.success(res, { authUrl }, 'OAuth URL generated');
+  })
+
+  linkedInCallback = asyncHandler(async (req, res) => {
+    const { code, state, error } = req.query;
+
+    // Handle OAuth errors
+    if (error) {
+      return res.redirect(`/login?error=${encodeURIComponent(error)}`);
+    }
+
+    try {
+      const result = await this.linkedInOAuthService.handleCallback(code, state);
+
+      // Generate JWT tokens
+      const tokens = await this.authService.generateTokens({
+        userId: result.user.id,
+        username: result.user.username,
+        sessionId: result.sessionId
+      });
+
+      // Set cookies
+      res.cookie('access_token', tokens.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 15 * 60 * 1000 // 15 minutes
+      });
+
+      res.cookie('refresh_token', tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+
+      // Redirect to return URL or dashboard
+      res.redirect(result.returnUrl || '/dashboard');
+    } catch (error) {
+      if (error.message === 'ACCOUNT_EXISTS_REQUIRES_MERGE') {
+        // Redirect to account merge page
+        res.redirect('/auth/merge?provider=linkedin');
+      } else {
+        // Redirect to login with error
+        res.redirect(`/login?error=${encodeURIComponent(error.message)}`);
+      }
+    }
+  })
+
+  linkedInMerge = asyncHandler(async (req, res) => {
+    const { password, linkedInAuthCode } = req.validated || req.body;
+
+    // Exchange code for LinkedIn user info
+    const linkedInData = await this.linkedInOAuthService.exchangeCode(linkedInAuthCode);
+
+    // Merge accounts with password verification
+    const result = await this.linkedInOAuthService.mergeAccounts(
+      req.user.userId,
+      password,
+      linkedInData.user,
+      linkedInData.tokens
+    );
+
+    ApiResponse.success(res, {
+      success: true,
+      message: 'LinkedIn account successfully linked'
+    });
+  })
+
+  linkedInUnlink = asyncHandler(async (req, res) => {
+    await this.linkedInOAuthService.unlinkLinkedInAccount(req.user.userId);
+
+    ApiResponse.success(res, {
+      success: true,
+      message: 'LinkedIn account unlinked'
+    });
+  })
+
+  linkedInImport = asyncHandler(async (req, res) => {
+    const { importOptions, preview = false } = req.validated || req.body;
+    const userId = req.user.userId;
+
+    // Get LinkedIn tokens
+    const tokens = await this.linkedInOAuthService.getTokens(userId);
+    
+    if (!tokens) {
+      return ApiResponse.error(res, 'LinkedIn account not linked', 400);
+    }
+
+    // Preview or import
+    let result;
+    if (preview) {
+      result = await this.linkedInOAuthService.previewImport(userId, tokens.access_token);
+    } else {
+      result = await this.linkedInOAuthService.importProfile(userId, tokens.access_token, importOptions);
+    }
+
+    ApiResponse.success(res, result, preview ? 'Profile preview generated' : 'Profile imported successfully');
+  })
+
+  linkedInSync = asyncHandler(async (req, res) => {
+    const { force = false } = req.validated || req.body;
+    const userId = req.user.userId;
+
+    const result = await this.linkedInOAuthService.syncProfile(userId, force);
+
+    ApiResponse.success(res, result, 'Profile sync completed');
   })
 
   getLinkedProviders = asyncHandler(async (req, res) => {

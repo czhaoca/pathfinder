@@ -233,6 +233,30 @@ const schemas = {
       password: { required: true, type: 'string' },
       googleAuthCode: { required: true, type: 'string' }
     },
+    linkedInMerge: {
+      password: { required: true, type: 'string' },
+      linkedInAuthCode: { required: true, type: 'string' }
+    },
+    linkedInImport: {
+      importOptions: { 
+        required: false, 
+        type: 'object',
+        properties: {
+          workExperience: { type: 'boolean' },
+          education: { type: 'boolean' },
+          skills: { type: 'boolean' },
+          certifications: { type: 'boolean' },
+          summary: { type: 'boolean' },
+          profilePhoto: { type: 'boolean' },
+          location: { type: 'boolean' },
+          industry: { type: 'boolean' }
+        }
+      },
+      preview: { required: false, type: 'boolean' }
+    },
+    linkedInSync: {
+      force: { required: false, type: 'boolean' }
+    },
     refreshToken: {
       refreshToken: { required: true, type: 'string' }
     }

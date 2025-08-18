@@ -44,6 +44,58 @@ module.exports = {
     maxCallbacksPerHour: 20
   },
   
+  linkedin: {
+    // OAuth client credentials
+    clientId: process.env.LINKEDIN_CLIENT_ID,
+    clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+    redirectUri: process.env.LINKEDIN_REDIRECT_URI || 'http://localhost:3001/api/auth/linkedin/callback',
+    
+    // OAuth scopes
+    scopes: (process.env.LINKEDIN_OAUTH_SCOPES || 'openid profile email w_member_social').split(' '),
+    
+    // OAuth endpoints
+    authorizationUrl: 'https://www.linkedin.com/oauth/v2/authorization',
+    tokenUrl: 'https://www.linkedin.com/oauth/v2/accessToken',
+    userInfoUrl: 'https://api.linkedin.com/v2/userinfo',
+    profileUrl: 'https://api.linkedin.com/v2/me',
+    positionsUrl: 'https://api.linkedin.com/v2/positions',
+    educationUrl: 'https://api.linkedin.com/v2/educations',
+    skillsUrl: 'https://api.linkedin.com/v2/skills',
+    certificationsUrl: 'https://api.linkedin.com/v2/certifications',
+    
+    // Security settings
+    useStateParameter: true,
+    usePKCE: true,
+    stateExpiration: parseInt(process.env.LINKEDIN_STATE_EXPIRATION || '300'), // 5 minutes default
+    
+    // Feature flags
+    enabled: process.env.LINKEDIN_OAUTH_ENABLED === 'true',
+    allowSignup: process.env.LINKEDIN_ALLOW_SIGNUP !== 'false', // Default true
+    requireEmailVerification: false, // LinkedIn verifies emails
+    autoLinkAccounts: process.env.LINKEDIN_AUTO_LINK_ACCOUNTS === 'true',
+    
+    // Import settings
+    importFields: {
+      workExperience: process.env.LINKEDIN_IMPORT_WORK_EXPERIENCE !== 'false',
+      education: process.env.LINKEDIN_IMPORT_EDUCATION !== 'false',
+      skills: process.env.LINKEDIN_IMPORT_SKILLS !== 'false',
+      certifications: process.env.LINKEDIN_IMPORT_CERTIFICATIONS !== 'false',
+      summary: process.env.LINKEDIN_IMPORT_SUMMARY !== 'false',
+      profilePhoto: process.env.LINKEDIN_IMPORT_PROFILE_PHOTO !== 'false',
+      location: process.env.LINKEDIN_IMPORT_LOCATION !== 'false',
+      industry: process.env.LINKEDIN_IMPORT_INDUSTRY !== 'false'
+    },
+    
+    // Sync settings
+    syncInterval: parseInt(process.env.LINKEDIN_SYNC_INTERVAL || '86400000'), // 24 hours default
+    syncEnabledDefault: process.env.LINKEDIN_SYNC_ENABLED_DEFAULT === 'true',
+    
+    // Rate limiting
+    maxAttemptsPerHour: 20,
+    maxImportsPerHour: 10,
+    maxSyncsPerHour: 20
+  },
+  
   // Future providers can be added here
   github: {
     clientId: process.env.GITHUB_CLIENT_ID,

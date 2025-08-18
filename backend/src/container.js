@@ -37,6 +37,8 @@ const LearningPathService = require('./services/learningPathService');
 const InvitationService = require('./services/invitationService');
 const EmailService = require('./services/emailService');
 const GoogleOAuthService = require('./services/googleOAuthService');
+const LinkedInOAuthService = require('./services/linkedInOAuthService');
+const ProfileImportService = require('./services/profileImportService');
 const SSOService = require('./services/ssoService');
 const FeatureFlagService = require('./services/featureFlagService');
 const EncryptionService = require('./services/encryption');
@@ -117,6 +119,30 @@ class Container {
           this.get('auditService'),
           this.get('database'),
           this.get('encryptionService')
+        );
+      }, { singleton: true });
+      
+      // Register Profile Import Service
+      this.register('profileImportService', () => new ProfileImportService(
+        this.get('database'),
+        this.get('experienceService'),
+        this.get('educationService') || this.get('learningService'),
+        this.get('skillsGapService'),
+        this.get('certificationService')
+      ), { singleton: true });
+      
+      // Register LinkedIn OAuth Service
+      this.register('linkedInOAuthService', () => {
+        const oauthConfig = require('./config/oauth');
+        return new LinkedInOAuthService(
+          oauthConfig,
+          this.get('userService'),
+          this.get('ssoService'),
+          this.get('auditService'),
+          this.get('database'),
+          this.get('encryptionService'),
+          this.get('profileImportService'),
+          this.get('featureFlagService')
         );
       }, { singleton: true });
       this.register('openaiService', () => {
@@ -270,6 +296,7 @@ class Container {
       this.register('authController', () => new AuthController(
         this.get('authService'),
         this.get('googleOAuthService'),
+        this.get('linkedInOAuthService'),
         this.get('ssoService'),
         this.get('featureFlagService')
       ));
