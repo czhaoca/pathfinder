@@ -65,6 +65,7 @@
     "node-fetch": "^3.3.2",
     "node-schedule": "^2.1.1",
     "nodemailer": "^7.0.5",
+    "oci-objectstorage": "^2.114.0",
     "oracledb": "^6.3.0",
     "pdf-parse": "^1.1.1",
     "pdfkit": "^0.17.1",

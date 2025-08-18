@@ -5,6 +5,12 @@ module.exports = {
     '**/tests/**/*.test.js',
     '**/tests/**/*.spec.js'
   ],
+  transformIgnorePatterns: [
+    'node_modules/(?!(node-fetch|oci-objectstorage)/)'
+  ],
+  moduleNameMapper: {
+    'oci-objectstorage': '<rootDir>/tests/mocks/oci-objectstorage.js'
+  },
   coverageDirectory: '<rootDir>/coverage',
   collectCoverageFrom: [
     'src/**/*.js',
