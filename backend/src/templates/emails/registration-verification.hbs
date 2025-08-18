@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - Pathfinder</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        h1 {
+            color: #2d3748;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .verification-code {
+            background-color: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2b6cb0;
+            letter-spacing: 4px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #4299e1;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .button:hover {
+            background-color: #3182ce;
+        }
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            color: #a0aec0;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #718096;
+            text-align: center;
+        }
+        .warning {
+            background-color: #fff5f5;
+            border-left: 4px solid #fc8181;
+            padding: 10px 15px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .link {
+            color: #4299e1;
+            text-decoration: none;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🧭 Pathfinder</div>
+        </div>
+        
+        <h1>Welcome {{firstName}}! Verify Your Email</h1>
+        
+        <div class="content">
+            <p>Thank you for registering with Pathfinder! You're just one step away from accessing your account.</p>
+            
+            <p>Please verify your email address by clicking the button below or using the verification code:</p>
+            
+            <center>
+                <a href="{{verificationUrl}}" class="button">Verify Email Address</a>
+            </center>
+            
+            <div class="divider">— OR —</div>
+            
+            <div class="verification-code">
+                <p style="margin: 0 0 10px 0; color: #718096;">Enter this code on the verification page:</p>
+                <div class="code">{{verificationCode}}</div>
+            </div>
+            
+            <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+            <p style="word-break: break-all;">
+                <a href="{{verificationUrl}}" class="link">{{verificationUrl}}</a>
+            </p>
+            
+            <div class="warning">
+                <strong>Important:</strong> This verification link will expire in {{expiresIn}}. If it expires, you'll need to request a new verification email.
+            </div>
+            
+            <p>If you didn't create an account with Pathfinder, please ignore this email or contact our support team if you have concerns.</p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message from Pathfinder. Please do not reply to this email.</p>
+            <p>
+                Need help? Visit our <a href="https://pathfinder.app/support" class="link">Support Center</a> |
+                <a href="https://pathfinder.app/privacy" class="link">Privacy Policy</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 12px; color: #a0aec0;">
+                © {{year}} Pathfinder. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -220,6 +220,73 @@ class EmailService {
       }
     });
   }
+
+  async sendVerificationEmail({ email, username, firstName, verificationToken, verificationCode }) {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+    
+    return this.send({
+      to: email,
+      subject: 'Verify your Pathfinder account',
+      template: 'registration-verification',
+      data: {
+        username,
+        firstName: firstName || username,
+        verificationUrl: `${frontendUrl}/verify-email?token=${verificationToken}`,
+        verificationApiUrl: `${backendUrl}/api/auth/verify-email?token=${verificationToken}`,
+        verificationCode,
+        expiresIn: '24 hours'
+      }
+    });
+  }
+
+  async sendWelcomeEmail({ email, firstName, username }) {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    
+    return this.send({
+      to: email,
+      subject: 'Welcome to Pathfinder!',
+      template: 'registration-welcome',
+      data: {
+        firstName: firstName || username,
+        username,
+        loginUrl: `${frontendUrl}/login`,
+        dashboardUrl: `${frontendUrl}/dashboard`,
+        profileUrl: `${frontendUrl}/profile`,
+        gettingStartedUrl: `${frontendUrl}/getting-started`
+      }
+    });
+  }
+
+  async sendPasswordResetEmail({ email, username, resetToken }) {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    
+    return this.send({
+      to: email,
+      subject: 'Reset your Pathfinder password',
+      template: 'password-reset',
+      data: {
+        username,
+        resetUrl: `${frontendUrl}/reset-password?token=${resetToken}`,
+        expiresIn: '1 hour'
+      }
+    });
+  }
+
+  async sendSecurityAlertEmail({ email, username, alertType, details }) {
+    return this.send({
+      to: email,
+      subject: `Security Alert: ${alertType}`,
+      template: 'security-alert',
+      data: {
+        username,
+        alertType,
+        details,
+        timestamp: new Date().toISOString(),
+        supportUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/support`
+      }
+    });
+  }
 }
 
 module.exports = EmailService;
