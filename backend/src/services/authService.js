@@ -247,6 +247,38 @@ class AuthService {
 
     return { token, refreshToken };
   }
+
+  async userHasPassword(userId) {
+    try {
+      const user = await this.userRepository.findById(userId);
+      if (!user) {
+        throw new ValidationError('User not found');
+      }
+      // Check if password hash exists and is not a placeholder
+      return !!(user.passwordHash && user.passwordHash.length > 0 && !user.passwordHash.startsWith('oauth_'));
+    } catch (error) {
+      logger.error('Check password error', { error: error.message, userId });
+      throw error;
+    }
+  }
+
+  async getUserSessions(userId) {
+    try {
+      const sessions = await this.sessionRepository.findByUserId(userId);
+      return sessions.map(session => ({
+        sessionId: session.sessionId,
+        createdAt: session.createdAt,
+        lastActivity: session.lastActivity,
+        expiresAt: session.expiresAt,
+        ipAddress: session.ipAddress,
+        userAgent: session.userAgent,
+        isCurrent: false
+      }));
+    } catch (error) {
+      logger.error('Get sessions error', { error: error.message, userId });
+      throw new DatabaseError('Failed to retrieve sessions');
+    }
+  }
 }
 
 module.exports = AuthService;

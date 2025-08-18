@@ -114,6 +114,86 @@ class UserService {
       profileCompleteness: 50
     };
   }
+
+  async findById(userId, connection = null) {
+    return await this.userRepository.findById(userId, connection);
+  }
+
+  async findByEmail(email, connection = null) {
+    return await this.userRepository.findByEmail(email, connection);
+  }
+
+  async create(userData, connection = null) {
+    const passwordHash = userData.password ? 
+      await bcrypt.hash(userData.password, 10) : 
+      userData.passwordHash || `oauth_${userData.source}_no_password`;
+
+    const user = await this.userRepository.create({
+      ...userData,
+      passwordHash,
+      emailVerified: userData.emailVerified || userData.source === 'google_oauth'
+    }, connection);
+
+    await this.auditService.log({
+      userId: user.userId,
+      action: 'USER_CREATED',
+      resourceType: 'user',
+      resourceId: user.userId,
+      details: { source: userData.source }
+    });
+
+    return user;
+  }
+
+  async usernameExists(username, connection = null) {
+    const user = await this.userRepository.findByUsername(username, connection);
+    return !!user;
+  }
+
+  async hasPassword(userId, connection = null) {
+    const user = await this.userRepository.findById(userId, connection);
+    if (!user) return false;
+    
+    // Check if password hash exists and is not an OAuth placeholder
+    return !!(user.passwordHash && 
+              user.passwordHash.length > 0 && 
+              !user.passwordHash.startsWith('oauth_'));
+  }
+
+  async verifyPassword(userId, password) {
+    const user = await this.userRepository.findById(userId);
+    if (!user || !user.passwordHash) return false;
+    
+    // Can't verify OAuth placeholder passwords
+    if (user.passwordHash.startsWith('oauth_')) return false;
+    
+    return await bcrypt.compare(password, user.passwordHash);
+  }
+
+  async updateProfileFromGoogle(userId, googleUser, connection = null) {
+    const updates = {};
+    const user = await this.userRepository.findById(userId, connection);
+    
+    // Only update fields if they're missing
+    if (!user.firstName && googleUser.given_name) {
+      updates.firstName = googleUser.given_name;
+    }
+    if (!user.lastName && googleUser.family_name) {
+      updates.lastName = googleUser.family_name;
+    }
+    if (!user.avatarUrl && googleUser.picture) {
+      updates.avatarUrl = googleUser.picture;
+    }
+    if (!user.emailVerified && googleUser.email_verified) {
+      updates.emailVerified = true;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await this.userRepository.updateProfile(userId, updates, connection);
+    }
+
+    return true;
+  }
 }
 
 module.exports = UserService;

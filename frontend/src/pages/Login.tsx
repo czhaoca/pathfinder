@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
+import { GoogleSignInButton, OrDivider } from '@/components/auth/GoogleSignIn'
+import { Alert } from '@/components/ui/alert'
 
 const loginSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -20,8 +22,10 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { login, isLoading } = authStore()
   const [showPassword, setShowPassword] = useState(false)
+  const [oauthError, setOauthError] = useState<string | null>(null)
 
   const {
     register,
@@ -30,6 +34,16 @@ export default function Login() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   })
+
+  useEffect(() => {
+    // Check for OAuth error in URL params
+    const error = searchParams.get('error')
+    if (error) {
+      setOauthError(decodeURIComponent(error))
+      // Clear the error from URL
+      window.history.replaceState({}, document.title, '/login')
+    }
+  }, [searchParams])
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -52,6 +66,11 @@ export default function Login() {
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
+            {oauthError && (
+              <Alert variant="destructive">
+                {oauthError}
+              </Alert>
+            )}
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
@@ -103,6 +122,15 @@ export default function Login() {
                 'Sign in'
               )}
             </Button>
+            
+            <OrDivider />
+            
+            <GoogleSignInButton 
+              fullWidth 
+              variant="outline"
+              returnUrl="/dashboard"
+            />
+            
             <div className="text-sm text-center space-y-2">
               <Link
                 to="/forgot-password"

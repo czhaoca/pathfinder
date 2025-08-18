@@ -2,8 +2,11 @@ const ApiResponse = require('../../utils/apiResponse');
 const { asyncHandler, ValidationError } = require('../../utils/errors');
 
 class AuthController {
-  constructor(authService) {
+  constructor(authService, googleOAuthService, ssoService, featureFlagService) {
     this.authService = authService;
+    this.googleOAuthService = googleOAuthService;
+    this.ssoService = ssoService;
+    this.featureFlagService = featureFlagService;
   }
 
   register = asyncHandler(async (req, res) => {
@@ -131,6 +134,114 @@ class AuthController {
     });
 
     ApiResponse.success(res, null, 'Session revoked successfully');
+  })
+
+  // Google OAuth methods
+  googleAuth = asyncHandler(async (req, res) => {
+    // Check feature flag
+    const isEnabled = await this.featureFlagService.isEnabled('google_oauth_enabled', req.user?.userId);
+    if (!isEnabled) {
+      return ApiResponse.error(res, 'Google authentication is not available', 403);
+    }
+
+    const { returnUrl = '/' } = req.query;
+    const userId = req.user?.userId || null;
+
+    const authUrl = await this.googleOAuthService.generateAuthUrl(userId, returnUrl);
+    
+    ApiResponse.success(res, { authUrl }, 'OAuth URL generated');
+  })
+
+  googleCallback = asyncHandler(async (req, res) => {
+    const { code, state, error } = req.query;
+
+    // Handle OAuth errors
+    if (error) {
+      return res.redirect(`/login?error=${encodeURIComponent(error)}`);
+    }
+
+    try {
+      const result = await this.googleOAuthService.handleCallback(code, state);
+
+      // Generate JWT tokens
+      const tokens = await this.authService.generateTokens({
+        userId: result.user.id,
+        username: result.user.username,
+        sessionId: result.sessionId
+      });
+
+      // Set cookies
+      res.cookie('access_token', tokens.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 15 * 60 * 1000 // 15 minutes
+      });
+
+      res.cookie('refresh_token', tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+
+      // Redirect to return URL or dashboard
+      res.redirect(result.returnUrl || '/dashboard');
+    } catch (error) {
+      if (error.message === 'ACCOUNT_EXISTS_REQUIRES_MERGE') {
+        // Redirect to account merge page
+        res.redirect('/auth/merge?provider=google');
+      } else {
+        // Redirect to login with error
+        res.redirect(`/login?error=${encodeURIComponent(error.message)}`);
+      }
+    }
+  })
+
+  googleMerge = asyncHandler(async (req, res) => {
+    const { password, googleAuthCode } = req.validated || req.body;
+
+    // Exchange code for Google user info
+    const googleData = await this.googleOAuthService.exchangeCode(googleAuthCode);
+
+    // Merge accounts with password verification
+    const result = await this.googleOAuthService.mergeAccounts(
+      req.user.userId,
+      password,
+      googleData.user,
+      googleData.tokens
+    );
+
+    ApiResponse.success(res, {
+      success: true,
+      message: 'Google account successfully linked'
+    });
+  })
+
+  googleUnlink = asyncHandler(async (req, res) => {
+    await this.googleOAuthService.unlinkGoogleAccount(req.user.userId);
+
+    ApiResponse.success(res, {
+      success: true,
+      message: 'Google account unlinked'
+    });
+  })
+
+  getLinkedProviders = asyncHandler(async (req, res) => {
+    const providers = await this.ssoService.getUserProviders(req.user.userId);
+    
+    const linkedProviders = providers.map(p => ({
+      provider: p.provider,
+      email: p.email,
+      displayName: p.displayName,
+      linkedAt: p.linkedAt,
+      isPrimary: p.isPrimary
+    }));
+
+    ApiResponse.success(res, { 
+      providers: linkedProviders,
+      hasPassword: await this.authService.userHasPassword(req.user.userId)
+    }, 'Linked providers retrieved');
   })
 }
 

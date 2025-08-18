@@ -36,6 +36,10 @@ const CertificationService = require('./services/certificationService');
 const LearningPathService = require('./services/learningPathService');
 const InvitationService = require('./services/invitationService');
 const EmailService = require('./services/emailService');
+const GoogleOAuthService = require('./services/googleOAuthService');
+const SSOService = require('./services/ssoService');
+const FeatureFlagService = require('./services/featureFlagService');
+const EncryptionService = require('./services/encryption');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -63,6 +67,7 @@ const LearningController = require('./api/controllers/learningController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
+const RateLimiter = require('./services/rate-limiter');
 
 // Utils
 const CacheManager = require('./utils/cache');
@@ -98,6 +103,22 @@ class Container {
       // Register services
       this.register('emailService', () => new EmailService(), { singleton: true });
       this.register('auditService', () => new AuditService(this.get('auditRepository')));
+      this.register('encryptionService', () => new EncryptionService(), { singleton: true });
+      this.register('featureFlagService', () => new FeatureFlagService(
+        this.get('database')
+      ), { singleton: true });
+      this.register('ssoService', () => new SSOService(this.get('database')));
+      this.register('googleOAuthService', () => {
+        const oauthConfig = require('./config/oauth');
+        return new GoogleOAuthService(
+          oauthConfig,
+          this.get('userService'),
+          this.get('ssoService'),
+          this.get('auditService'),
+          this.get('database'),
+          this.get('encryptionService')
+        );
+      }, { singleton: true });
       this.register('openaiService', () => {
         // Only create OpenAI service if API key is available
         if (process.env.OPENAI_API_KEY) {
@@ -243,9 +264,15 @@ class Container {
 
       // Register middleware
       this.register('authMiddleware', () => new AuthMiddleware(this.get('authService')));
+      this.register('rateLimiter', () => new RateLimiter(), { singleton: true });
 
       // Register controllers
-      this.register('authController', () => new AuthController(this.get('authService')));
+      this.register('authController', () => new AuthController(
+        this.get('authService'),
+        this.get('googleOAuthService'),
+        this.get('ssoService'),
+        this.get('featureFlagService')
+      ));
       this.register('profileController', () => new ProfileController(this.get('userService')));
       this.register('experienceController', () => new ExperienceController(this.get('experienceService')));
       this.register('chatController', () => new ChatController(this.get('chatService')));

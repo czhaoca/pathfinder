@@ -499,6 +499,95 @@ class AuthService {
       hierarchy[role]?.includes(targetRole)
     );
   }
+
+  /**
+   * Google OAuth Methods
+   */
+  
+  /**
+   * Get Google OAuth authorization URL
+   */
+  async getGoogleAuthUrl(returnUrl?: string): Promise<{ authUrl: string }> {
+    try {
+      const params = returnUrl ? `?returnUrl=${encodeURIComponent(returnUrl)}` : '';
+      const response = await api.get<{ authUrl: string }>(`/api/auth/google${params}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  /**
+   * Merge Google account with existing account
+   */
+  async mergeGoogleAccount(password: string, googleAuthCode: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await api.post<{ success: boolean; message: string }>('/api/auth/google/merge', {
+        password,
+        googleAuthCode
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  /**
+   * Unlink OAuth provider from account
+   */
+  async unlinkProvider(provider: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await api.delete<{ success: boolean; message: string }>(`/api/auth/${provider}/unlink`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  /**
+   * Get linked OAuth providers
+   */
+  async getLinkedProviders(): Promise<{ providers: any[]; hasPassword: boolean }> {
+    try {
+      const response = await api.get<{ providers: any[]; hasPassword: boolean }>('/api/auth/sso/providers');
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  /**
+   * Check if user has password set (for OAuth users)
+   */
+  async userHasPassword(): Promise<boolean> {
+    try {
+      const response = await api.get<{ hasPassword: boolean }>('/api/auth/has-password');
+      return response.data.hasPassword;
+    } catch (error) {
+      console.error('Failed to check password status:', error);
+      return true; // Assume has password on error
+    }
+  }
+
+  /**
+   * Set password for OAuth user
+   */
+  async setPassword(password: string): Promise<{ success: boolean }> {
+    try {
+      validatePassword(password);
+      
+      const { hash, salt } = await PasswordHasher.hashPassword(password);
+      
+      const response = await api.post<{ success: boolean }>('/api/auth/set-password', {
+        passwordHash: hash,
+        clientSalt: salt
+      });
+      
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
 }
 
 export const authService = new AuthService();

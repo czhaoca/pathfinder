@@ -229,6 +229,10 @@ const schemas = {
     resendVerification: {
       email: { required: true, type: 'email' }
     },
+    googleMerge: {
+      password: { required: true, type: 'string' },
+      googleAuthCode: { required: true, type: 'string' }
+    },
     refreshToken: {
       refreshToken: { required: true, type: 'string' }
     }

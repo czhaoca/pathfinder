@@ -351,6 +351,44 @@ class FeatureFlagService {
   }
 
   /**
+   * Convenience method: Check if feature is enabled
+   */
+  async isEnabled(featureKey, userId = null) {
+    const context = userId ? { user_id: userId } : {};
+    return await this.isFeatureEnabled(featureKey, context);
+  }
+
+  /**
+   * Convenience method: Set feature flag value
+   */
+  async setFlag(featureKey, enabled, options = {}) {
+    try {
+      // Check if flag exists
+      let flag = await this._getFeatureFlag(featureKey);
+      
+      if (!flag) {
+        // Create new flag
+        await this.createFeatureFlag({
+          feature_key: featureKey,
+          feature_name: options.name || featureKey,
+          description: options.description || `Feature flag for ${featureKey}`,
+          feature_category: options.category || 'experimental',
+          created_by: options.createdBy || 'system'
+        });
+        flag = await this._getFeatureFlag(featureKey);
+      }
+
+      // Update rollout percentage
+      await this.updateRolloutPercentage(flag.id, enabled ? 100 : 0);
+      
+      return true;
+    } catch (error) {
+      logger.error(`Error setting feature flag ${featureKey}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Create new feature flag
    */
   async createFeatureFlag(flagData) {
