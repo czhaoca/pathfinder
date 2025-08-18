@@ -21,6 +21,7 @@ const networkingRoutes = require('./routes/networkingRoutes');
 const createJobSearchRoutes = require('./routes/jobSearchRoutes');
 const createLearningRoutes = require('./routes/learningRoutes');
 const { initializeRoutes: createInvitationRoutes } = require('./routes/invitationRoutes');
+const createAnalyticsDashboardRoutes = require('./routes/analyticsDashboardRoutes');
 
 // Route imports - V2 (New Authentication System)
 const authV2Routes = require('../routes/auth.v2');
@@ -170,6 +171,7 @@ class App {
       this.app.use('/api/v1/cpa-pert/enhanced', createCPAPertEnhancedRoutes(container));
     }
     this.app.use('/api/v1/analytics', createAnalyticsRoutes(container));
+    this.app.use('/api/v1/analytics/dashboard', createAnalyticsDashboardRoutes(container));
     this.app.use('/api/v1/resume', createResumeRoutes(container));
     this.app.use('/api/v1', careerPathRoutes);
     this.app.use('/api/v1', networkingRoutes);
@@ -198,6 +200,7 @@ class App {
       this.app.use('/api/cpa-pert/enhanced', createCPAPertEnhancedRoutes(container));
     }
     this.app.use('/api/analytics', createAnalyticsRoutes(container));
+    this.app.use('/api/analytics/dashboard', createAnalyticsDashboardRoutes(container));
     this.app.use('/api/resume', createResumeRoutes(container));
     this.app.use('/api', careerPathRoutes);
     this.app.use('/api', networkingRoutes);

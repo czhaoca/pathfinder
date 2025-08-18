@@ -1,0 +1,141 @@
+.metrics-overview {
+  width: 100%;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.metric-card {
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.metric-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--muted-foreground);
+}
+
+.metric-icon-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.trend-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.trend-icon.growing {
+  color: #10b981;
+}
+
+.trend-icon.declining {
+  color: #ef4444;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 8px;
+}
+
+.metric-value.positive {
+  color: #10b981;
+}
+
+.metric-value.negative {
+  color: #ef4444;
+}
+
+.metric-value.status-good {
+  color: #10b981;
+}
+
+.metric-value.status-warning {
+  color: #f59e0b;
+}
+
+.metric-value.status-bad {
+  color: #ef4444;
+}
+
+.metric-value.status-neutral {
+  color: var(--foreground);
+}
+
+.metric-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-change {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.metric-change.positive {
+  color: #10b981;
+}
+
+.metric-change.negative {
+  color: #ef4444;
+}
+
+.metric-sublabel {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.metric-trend {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-transform: capitalize;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-value {
+    font-size: 1.5rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .metric-card {
+    background-color: #1a1a1a;
+    border-color: #2a2a2a;
+  }
+  
+  .metric-card:hover {
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+  }
+}

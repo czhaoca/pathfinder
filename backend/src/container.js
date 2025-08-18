@@ -42,6 +42,9 @@ const ProfileImportService = require('./services/profileImportService');
 const SSOService = require('./services/ssoService');
 const FeatureFlagService = require('./services/featureFlagService');
 const EncryptionService = require('./services/encryption');
+const UserAnalyticsService = require('./services/userAnalyticsService');
+const AnalyticsDashboardService = require('./services/analyticsDashboardService');
+const CacheService = require('./services/cacheService');
 
 // Repositories
 const UserRepository = require('./repositories/userRepository');
@@ -52,6 +55,7 @@ const CPAPertRepository = require('./repositories/cpaPertRepository');
 const ChatRepository = require('./repositories/chatRepository');
 const AnalyticsRepository = require('./repositories/analyticsRepository');
 const InvitationRepository = require('./repositories/invitationRepository');
+const UserAnalyticsRepository = require('./repositories/userAnalyticsRepository');
 
 // Controllers
 const AuthController = require('./api/controllers/authController');
@@ -66,6 +70,9 @@ const CareerPathController = require('./api/controllers/careerPathController');
 const NetworkingController = require('./api/controllers/networkingController');
 const JobSearchController = require('./api/controllers/jobSearchController');
 const LearningController = require('./api/controllers/learningController');
+const InvitationController = require('./api/controllers/invitationController');
+const ConfigurationController = require('./api/controllers/configurationController');
+const AnalyticsDashboardController = require('./api/controllers/analyticsDashboardController');
 
 // Middleware
 const AuthMiddleware = require('./api/middleware/authMiddleware');
@@ -101,9 +108,11 @@ class Container {
       this.register('chatRepository', () => new ChatRepository(this.get('database')));
       this.register('analyticsRepository', () => new AnalyticsRepository(this.get('database')));
       this.register('invitationRepository', () => new InvitationRepository(this.get('database')));
+      this.register('userAnalyticsRepository', () => new UserAnalyticsRepository(this.get('database')));
 
       // Register services
       this.register('emailService', () => new EmailService(), { singleton: true });
+      this.register('cacheService', () => new CacheService(), { singleton: true });
       this.register('auditService', () => new AuditService(this.get('auditRepository')));
       this.register('encryptionService', () => new EncryptionService(), { singleton: true });
       this.register('featureFlagService', () => new FeatureFlagService(
@@ -197,6 +206,15 @@ class Container {
         this.get('userRepository'),
         this.get('auditService'),
         this.get('openaiService')
+      ));
+      this.register('userAnalyticsService', () => new UserAnalyticsService(
+        this.get('userAnalyticsRepository'),
+        null, // OCI config - optional
+        this.get('cacheService')
+      ));
+      this.register('analyticsDashboardService', () => new AnalyticsDashboardService(
+        this.get('analyticsRepository'),
+        this.get('cacheService')
       ));
       this.register('resumeService', () => new ResumeService(
         this.get('experienceRepository'),
@@ -340,6 +358,10 @@ class Container {
         this.get('skillAssessmentService'),
         this.get('certificationService'),
         this.get('learningPathService')
+      ));
+      this.register('analyticsDashboardController', () => new AnalyticsDashboardController(
+        this.get('analyticsDashboardService'),
+        this.get('auditService')
       ));
 
       logger.info('Dependency container initialized');

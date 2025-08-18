@@ -1,0 +1,257 @@
+.analytics-dashboard {
+  padding: 24px;
+  background-color: var(--background);
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--foreground);
+}
+
+.dashboard-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.view-controls {
+  flex: 1;
+}
+
+.realtime-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.realtime-toggle label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.export-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.export-format-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--background);
+  font-size: 0.875rem;
+}
+
+.dashboard-content {
+  margin-top: 24px;
+}
+
+.overview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.chart-card {
+  padding: 20px;
+}
+
+.chart-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.users-view,
+.engagement-view,
+.performance-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.metrics-cards {
+  margin-bottom: 24px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.performance-chart,
+.error-metrics,
+.availability-metrics {
+  min-height: 200px;
+}
+
+.performance-chart h3,
+.error-metrics h3,
+.availability-metrics h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--foreground);
+}
+
+.metric-values {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.metric:last-child {
+  border-bottom: none;
+}
+
+.metric .label {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.metric .value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.funnel-analysis h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Loading States */
+.analytics-dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.analytics-dashboard-loading p {
+  font-size: 1rem;
+  color: var(--muted-foreground);
+}
+
+/* Error States */
+.analytics-dashboard-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+/* Empty State */
+.analytics-dashboard-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.analytics-dashboard-empty p {
+  font-size: 1.125rem;
+  color: var(--muted-foreground);
+}
+
+/* Export Overlay */
+.export-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.export-message {
+  background-color: var(--background);
+  padding: 32px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.export-message p {
+  font-size: 1rem;
+  color: var(--foreground);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .export-controls {
+    flex-direction: column;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .analytics-dashboard {
+    background-color: #0a0a0a;
+  }
+  
+  .chart-card {
+    background-color: #1a1a1a;
+    border-color: #2a2a2a;
+  }
+  
+  .export-format-select {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border-color: #2a2a2a;
+  }
+}
